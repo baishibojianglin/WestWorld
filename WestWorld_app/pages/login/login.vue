@@ -20,12 +20,11 @@
 	import common from '../../common/common.js';
 	import Aes from '../../common/Aes.js';
 
-	// 生成签名 sign
-	let get13Timestamp = (new Date()).getTime(); // 获取13位的时间戳, 'time': get13Timestamp
-	let tempJson = '{"did":"12345dg","version":1}'; // 注意：不要有空格
-	let encode = Aes.encode(tempJson);
-	let sign = common.setSign(tempJson);
-	console.log('sign', sign)
+	/* 生成签名 sign s */
+	let get13Timestamp = (new Date()).getTime(); // 获取13位的时间戳
+	let tempJson = {"did": "12345dg", "version": 1, 'time': get13Timestamp}; // 注意：此处为json对象，不是json字符串
+	let sign = common.setSign(tempJson); //console.log('sign', sign)
+	/* 生成签名 sign e */
 
 	export default {
 		data() {
@@ -67,12 +66,11 @@
 						password: this.password,
 					},
 					header: {
-						'content-type': "application/json; charset=utf-8",
-						'sign': sign, // 签名，TODO：对参数如did进行AES加密 '6IpZZyb4DOmjTaPBGZtufjnSS4HScjAhL49NFjE6AJyVdsVtoHEoIXUsjrwu6m+o'
-						// 'version': 1, // APP大版本号
-						// 'model': getApp().globalData.systemInfo.model, // 手机型号
-						// 'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
-						// 'did': '12345dg', // 设备号
+						'sign': sign, // 签名，TODO：对参数如did等进行AES加密，生成sign如：'6IpZZyb4DOmjTaPBGZtufjnSS4HScjAhL49NFjE6AJyVdsVtoHEoIXUsjrwu6m+o'
+						'version': 1, // APP大版本号
+						'model': getApp().globalData.systemInfo.model, // 手机型号
+						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
+						'did': '12345dg', // 设备号
 					},
 					method: 'POST',
 					success: function(res){

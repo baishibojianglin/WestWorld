@@ -55,7 +55,8 @@ class IAuth
     public static function checkSignPass($data)
     {
         // AES解密
-        $str = (new Aes())->decrypt($data['sign']);
+        // $str = (new Aes())->decrypt($data['sign']);
+        $str = Aes::opensslDecrypt($data['sign']);
         if(empty($str)) {
             return false;
         }
@@ -67,9 +68,9 @@ class IAuth
         }
         if(!config('app_debug')) {
             // sign有效时间判定
-            /*if ((time() - ceil($arr['time'] / 1000)) > config('app.app_sign_time')) {
+            if ((time() - ceil($arr['time'] / 1000)) > config('app.app_sign_time')) {
                 return false;
-            }*/
+            }
 
             // sign唯一性判定
             //echo Cache::get($data['sign']);exit;

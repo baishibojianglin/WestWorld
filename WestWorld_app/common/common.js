@@ -24,7 +24,7 @@ const common = class{
 
 	/**
 	 * 生成每次请求的sign验签算法
-	 * @param {Object} tempJson
+	 * @param {Object} tempJson 此处为json对象，不是json字符串
 	 */
 	setSign(tempJson) {
 		// 1.按字典排序
