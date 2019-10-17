@@ -1,0 +1,156 @@
+<?php
+
+namespace app\api\controller\v1;
+
+use app\api\controller\Common;
+use app\common\lib\Aes;
+use app\common\lib\exception\ApiException;
+use app\common\lib\IAuth;
+use app\common\model\User;
+use think\Controller;
+
+/**
+ * api模块客户端登录控制器类
+ * Class Login
+ * @package app\api\controller\v1
+ */
+class Login extends Common
+{
+    /**
+     * 保存新建的资源（用户登录或注册）
+     * 系统默认以 手机号码 + 短信验证码 注册，以 手机号码 + 短信验证码（或密码） 登录
+     *
+     * @return \think\response\Json
+     * @throws ApiException
+     */
+    public function save()
+    {
+        // 判断是否为POST请求
+        if (!request()->isPost()) {
+            return show(config('code.error'), '请求不合法', [], 400);
+        }
+
+        // 传入的参数
+        $param = input('param.');
+        // 实例化Aes
+        $aesObj = new Aes();
+
+        // 判断传入的参数是否存在
+        // 手机号码
+        if (empty($param['phone'])) {
+            return show(config('code.error'), '手机号码不能为空', [], 404);
+        }/* else {
+            // 客户端需对手机号码AES加密（可以与短信验证码一起加密），服务端对手机号码AES解密
+            $param['phone'] = $aesObj->decrypt($param['phone']);
+        }*/
+        // 手机短信验证码或密码二选一
+        if (empty($param['code']) && empty($param['password'])) {
+            return show(config('code.error'), '手机短信验证码或密码不能为空', [], 404);
+        }/* else {
+            // 客户端需对短信验证码AES加密，服务端对短信验证码AES解密
+            $param['code'] = $aesObj->decrypt($param['code']);
+        }*/
+
+        // 当通过手机短信验证码登录时，判断手机短信验证码是否合法
+        if (!empty($param['code'])) {
+            $code = ''; // TODO 调用阿里云短信服务接口
+            if ($code != $param['code']) {
+                return show(config('code.error'), '手机短信验证码不合法', [], 404);
+            }
+        }
+
+        // validate验证
+        $validate = validate('User');
+        if (!$validate->check($param, [], 'login')) {
+            return show(config('code.error'), $validate->getError(), [], 403);
+        }
+
+        $token = IAuth::setAppLoginToken($param['phone']); // 设置登录的唯一性token
+        $data = [
+            'token' => $token, // token
+            'time_out' => strtotime('+' . config('app.login_time_out_day') . 'days'), // token失效时间
+        ];
+
+        // 查询该手机号用户是否存在
+        $user = User::get(['phone' => $param['phone']]);
+        if ($user && $user->status == config('code.status_enable')) { // 用户已存在，则登录并更新token和token失效时间
+            // 当通过密码登录时，判断密码是否正确
+            if (!empty($param['password'])) {
+                if (IAuth::encrypt($param['password']) != $user->password) {
+                    return show(config('code.error'), '密码错误', [], 403);
+                }
+            }
+
+            // 更新token和token失效时间
+            try { // 捕获异常
+                $id = model('User')->save($data, ['phone' => $param['phone']]); // 更新
+            } catch (\Exception $e) {
+                throw new ApiException($e->getMessage(), 500, config('code.error'));
+            }
+        } else { // 如果为首次登录，则注册用户
+            if (!empty($param['code'])) {
+                $data['user_name'] = 'hunter-' . $param['phone']; // 定义默认用户名
+                $data['phone'] = $param['phone'];
+                $data['status'] = config('code.status_enable');
+
+                // 注册用户
+                try { // 捕获异常
+                    $id = model('User')->add($data, 'user_id'); // 新增
+                } catch (\Exception $e) {
+                    throw new ApiException($e->getMessage(), 500, config('code.error'));
+                }
+            } else { // 首次登录（实为注册），当短信验证码为空，则以密码（上面已经判断短信验证码或密码二选一）注册时，并且系统默认不能用密码注册，则会注册失败
+                return show(config('code.error'), '用户不存在', [], 403);
+            }
+        }
+
+        // 判断是否登录或注册成功
+        if ($id) {
+            // 返回token给客户端
+            $result = [
+                'token' => $aesObj->encrypt($token . '&' . $id), // AES加密（自定义拼接字符串）
+            ];
+            return show(config('code.success'), 'OK', $result);
+        } else {
+            return show(config('code.error'), '用户登录失败', [], 403);
+        }
+    }
+
+    /**
+     * 保存更新的资源（退出登录）
+     * 方式1.把token字段值清空，让app再次请求的时候，找不到token，从而登录失败
+     * 方式2.把token失效时间字段time_out值清空或修改，使当前时间大于token失效时间时，登录时间过期，从而登录失败
+     *
+     * @param $id
+     * @return \think\response\Json
+     * @throws ApiException
+     */
+    public function update($id)
+    {
+        // 判断为PUT请求
+        if (request()->isPut()) {
+            // 获取token
+            $aesObj = new Aes(); // 实例化
+            $accessUserToken = $aesObj->decrypt($this->headers['access-user-token']); // AES解密
+            list($token, $id) = explode('&', $accessUserToken); // token
+
+            // 清空token和token失效时间
+            $data = [
+                //'token' => '', // token
+                'time_out' => 0, // token失效时间
+            ];
+            try { // 捕获异常
+                $result = model('User')->save($data, ['token' => $token]); // 更新
+            } catch (\Exception $e) {
+                throw new ApiException($e->getMessage(), 500, config('code.error'));
+            }
+            if ($result) {
+                return show(config('code.success'), '退出登录成功', [], 201);
+            } else {
+                return show(config('code.error'), '退出登录失败', [], 403);
+            }
+        } else {
+            return show(config('code.error'), '请求不合法', [], 400);
+        }
+    }
+}
