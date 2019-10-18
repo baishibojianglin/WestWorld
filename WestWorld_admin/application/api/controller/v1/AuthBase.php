@@ -50,8 +50,7 @@ class AuthBase extends Common
         }
 
         // 判断 access_user_token 合法性
-        $aesObj = new Aes(); // 实例化
-        $accessUserToken = $aesObj->decrypt($this->headers['access-user-token']); // AES解密
+        $accessUserToken = Aes::opensslDecrypt($this->headers['access-user-token']); // AES解密
         if (empty($accessUserToken)) {
             return false;
         }

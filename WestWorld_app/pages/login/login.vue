@@ -3,34 +3,35 @@
 		<image class="logo" src="/static/logo.png"></image>
 		<view class="text-area">
 			<text class="iconfont iconyonghu"></text>
-            <input type="text" v-model="username" placeholder="请输入账号" />
+            <input type="text" v-model="username" placeholder="手机号" />
 		</view>
 		<view class="text-area">
 			<text class="iconfont iconmima"></text>
-		    <input type="password" v-model="password" placeholder="请输入密码" />
+		    <input type="password" v-model="password" placeholder="密码" />
 		</view>
 		<button class="buttonwidth white" @tap="bindLogin">登 录</button>
 		<view class="loginbottom">
-			<navigator url="./regist">未注册？去注册</navigator>
+			<navigator url="./regist">注册用户</navigator>
+			<text>|</text>
+			<navigator url="./regist">忘记密码？</navigator>
 		</view>
 	</view>
 </template>
 
 <script>
 	import common from '../../common/common.js';
-	import Aes from '../../common/Aes.js';
 
 	/* 生成签名 sign s */
 	let get13Timestamp = (new Date()).getTime(); // 获取13位的时间戳
 	let tempJson = {"did": "12345dg", "version": 1, 'time': get13Timestamp}; // 注意：此处为json对象，不是json字符串
-	let sign = common.setSign(tempJson); //console.log('sign', sign)
+	let sign = common.setSign(tempJson); console.log('sign', sign)
 	/* 生成签名 sign e */
 
 	export default {
 		data() {
 			return {
 				username: '18235235456',
-				password: ''
+				password: '123456'
 			}
 		},
 		methods: {
@@ -135,8 +136,13 @@
 	}
 	.loginbottom{
 		margin-top:30upx;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
 	}
-	.loginbottom navigator{
+	.loginbottom navigator, .loginbottom text{
 		font-size: 24upx;
+		color: #007aff;
+		padding: 0 20upx;
 	}
 </style>

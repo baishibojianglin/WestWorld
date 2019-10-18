@@ -22,13 +22,14 @@ class User extends AuthBase
      * @param int $id
      * @return \think\Response
      */
-    public function read($id)
+    public function read($id = 0)
     {
         // 实例化Aes
-        $aesObj = new Aes();
+        //$aesObj = new Aes();
 
         // AES加密
-        $data = $aesObj->encrypt($this->user);
+        //$data = $aesObj->encrypt($this->user);
+        $data = Aes::opensslEncrypt($this->user);
 
         return show(config('code.success'), 'OK', $data);
     }

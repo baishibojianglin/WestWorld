@@ -89,7 +89,7 @@ class Login extends Common
             }
         } else { // 如果为首次登录，则注册用户
             if (!empty($param['code'])) {
-                $data['user_name'] = 'hunter-' . $param['phone']; // 定义默认用户名
+                $data['user_name'] = 'WEST-' . $param['phone']; // 定义默认用户名
                 $data['phone'] = $param['phone'];
                 $data['status'] = config('code.status_enable');
 
@@ -108,11 +108,104 @@ class Login extends Common
         if ($id) {
             // 返回token给客户端
             $result = [
-                'token' => $aesObj->encrypt($token . '&' . $id), // AES加密（自定义拼接字符串）
+                'access-user-token' => Aes::opensslEncrypt($token . '&' . $id), // AES加密（自定义拼接字符串）
             ];
             return show(config('code.success'), 'OK', $result);
         } else {
             return show(config('code.error'), '用户登录失败', [], 403);
+        }
+    }
+
+    /**
+     * 用户注册
+     * 以 手机号码 + 短信验证码 注册，同时需输入 密码 便于 手机号码 + 密码 登录
+     * @return \think\response\Json
+     * @throws ApiException
+     */
+    public function register()
+    {
+        // 判断是否为POST请求
+        if (request()->isPost()) {
+            // 传入的参数
+            $param = input('param.');
+            // 实例化Aes
+            $aesObj = new Aes();
+
+
+            // 判断传入的参数是否存在及合法性
+            // 手机号码
+            if (empty($param['phone'])) {
+                return show(config('code.error'), '手机号码不能为空', [], 404);
+            }/* else {
+            // 客户端需对手机号码AES加密（可以与短信验证码一起加密），服务端对手机号码AES解密
+                $param['phone'] = $aesObj->decrypt($param['phone']);
+            }*/
+
+            // 手机短信验证码
+            if (empty($param['code'])) {
+                return show(config('code.error'), '短信验证码不能为空', [], 404);
+            } else {
+                // 客户端需对短信验证码AES加密，服务端对短信验证码AES解密
+                //$param['code'] = $aesObj->decrypt($param['code']);
+
+                // 判断短信验证码是否合法
+                $code = '1234'; // TODO：获取 调用阿里云短信服务接口时 生成的session值
+                if ($code != $param['code']) {
+                    return show(config('code.error'), '短信验证码不合法', [], 404);
+                }
+            }
+
+            // 密码
+            if (empty($param['password'])) {
+                return show(config('code.error'), '密码不能为空', [], 404);
+            }
+            // 确认两次密码一致性
+            if ($param['repassword'] != $param['password']) {
+                return show(config('code.error'), '两次输入密码不一致', [], 404);
+            }
+
+
+            // validate验证 TODO：需做注册场景的验证
+            $validate = validate('User');
+            if (!$validate->check($param, [], 'login')) {
+                return show(config('code.error'), $validate->getError(), [], 403);
+            }
+
+            // 查询该手机号用户是否存在
+            $user = User::get(['phone' => $param['phone']]);
+            if ($user) { // 用户已存在
+                return show(config('code.error'), '用户已存在', [], 403);
+            } else { // 用户不存在，则注册用户
+                // 设置唯一性token
+                $token = IAuth::setAppLoginToken($param['phone']);
+
+                $data['token'] = $token; // token
+                $data['time_out'] = strtotime('+' . config('app.login_time_out_day') . 'days'); // token失效时间
+                $data['user_name'] = 'WEST-' . trim($param['phone']); // 定义默认用户名
+                $data['phone'] = trim($param['phone']);
+                $data['password'] = IAuth::encrypt($param['password']);
+                $data['status'] = config('code.status_enable');
+
+                // 注册用户
+                try { // 捕获异常
+                    $id = model('User')->add($data, 'user_id'); // 新增
+                } catch (\Exception $e) {
+                    throw new ApiException($e->getMessage(), 500, config('code.error'));
+                }
+            }
+
+            // 判断是否注册成功
+            if ($id) {
+                // 返回token给客户端
+                $result = [
+                    'token' => $aesObj->encrypt($token . '&' . $id), // AES加密（自定义拼接字符串）
+                ];
+                return show(config('code.success'), 'OK', $result);
+            } else {
+                return show(config('code.error'), '用户注册失败', [], 403);
+            }
+        } else {
+            return show(config('code.error'), '请求不合法', [], 400);
         }
     }
 

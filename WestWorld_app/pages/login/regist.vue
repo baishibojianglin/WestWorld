@@ -3,25 +3,28 @@
 		<image class="logo" src="/static/logo.png"></image>
 		<view class="text-area">
 			<text class="iconfont iconyonghu"></text>
-            <input  v-model="username" placeholder="请输入账号" />
+            <input  v-model="username" placeholder="手机号码" />
 		</view>
 		<view class="text-area">
 			<text class="iconfont iconmima"></text>
-		    <input password="true" v-model="password" placeholder="请输入密码" />
+		    <input password="true" v-model="password" placeholder="输入密码" />
 		</view>
 		<view class="text-area">
 			<text class="iconfont iconmima"></text>
-		    <input password="true" v-model="password" placeholder="请确认密码" />
+		    <input password="true" v-model="repassword" placeholder="确认密码" />
 		</view>
 		<view class="text-area">
 			<text class="iconfont iconmima"></text>
-		    <input password="true" v-model="notecode" placeholder="短信验证码" />
+			<input v-model="notecode" placeholder="短信验证码" />
 		</view>
-		<button class="buttonwidth white" v-on:click="login()">注 册</button>
+		<view class="text-area">
+			<text class="getnotecode">获取验证码</text>
+		</view>
+		<button class="buttonwidth white" v-on:click="register()">注 册</button>
 		<view class="loginbottom">
 			<navigator url="./login">已注册？去登录</navigator>
 		</view>
-		<uni-popup class="popupstyle" ref="popup"  type="center">{{content}}</uni-popup>
+		<uni-popup class="popupstyle" ref="popup" type="center">{{content}}</uni-popup>
 	</view>
 </template>
 
@@ -30,45 +33,67 @@
 	export default {
 		data() {
 			return {
-				username:'',
-				password:'',
-				content:''
+				username: '18765432101',
+				password: '123456',
+				repassword: '',
+				notecode: '',
+				content: ''
 			}
-
 		},
 		components: {uniPopup},
 		methods: {
-			//提交登录信息
-			login(){
-			  var self=this;
-			  uni.request({
-				url:'http://www.hunter.com/index.php/home/Login/login',
-				method:'POST',
-				header:{'content-type': 'application/x-www-form-urlencoded'},
-				data:{
-					username:this.username,
-					password:this.password
-				},
-				success:function(res){
-					if(res.data.status==0){
-						//验证失败
-						self.content=res.data.words;
-						self.openPopup();						
-					}else{
-						//验证成功跳转
-						uni.navigateTo({
-						    url: '../index/index'
-						});
-					}
-
+			/**
+			 * 提交注册信息
+			 */
+			register(){
+				var self=this;
+				
+				// 客户端对账号信息进行校验
+				if (this.repassword != this.password) {
+					uni.showToast({
+						icon: 'none',
+						title: '两次输入密码不一致'
+					});
+					return;
 				}
-			  })				
+				
+				// 发起网络请求
+				uni.request({
+					url: this.$url + '/api/v1/register',
+					data: {
+						phone: this.username,
+						password: this.password,
+						repassword: this.repassword,
+						code: this.notecode,
+					},
+					header: {
+						'content-type': 'application/x-www-form-urlencoded',
+					},
+					method: 'POST',
+					success:function(res){
+						console.log(res);
+						if(0 == res.data.status){ // 验证失败
+							/* self.content = res.data.message;
+							self.openPopup(); */
+							uni.showToast({
+							    icon: 'none',
+							    title: res.data.message
+							});
+							// return;
+						}else{ // 验证成功跳转
+							uni.navigateTo({
+								url: '../index/index'
+							});
+						}
+
+					}
+				})
 			},
+
 			//弹窗
 			openPopup(){
-			      this.$refs.popup.open()
+				this.$refs.popup.open()
 			}
-
 		}
 	}
 </script>
@@ -121,5 +146,8 @@
 	}
 	.popupstyle{
 		font-size: 24upx;
+	}
+	.getnotecode{
+		right: -300upx;
 	}
 </style>

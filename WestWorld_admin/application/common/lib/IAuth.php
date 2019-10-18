@@ -39,8 +39,8 @@ class IAuth
         ksort($data); // ksort() 函数对关联数组按照键名进行升序排序。
         // 2.以&符号拼接字符串数据
         $string = http_build_query($data); // 生成 URL-encode 之后的请求字符串
-        // 3.通过aes来加密
-        $string = (new Aes())->encrypt($string);
+        // 3.通过AES来加密
+        $string = Aes::opensslEncrypt($string); //$string = (new Aes())->encrypt($string);
         /*// 4.所有字符转化大写（该步骤不要，因为不能转大写，否则解密时不知道那些字符是小写）
         $string = strtoupper($string);*/
 
@@ -55,8 +55,7 @@ class IAuth
     public static function checkSignPass($data)
     {
         // AES解密
-        // $str = (new Aes())->decrypt($data['sign']);
-        $str = Aes::opensslDecrypt($data['sign']);
+        $str = Aes::opensslDecrypt($data['sign']); //$str = (new Aes())->decrypt($data['sign']);
         if(empty($str)) {
             return false;
         }
@@ -66,7 +65,7 @@ class IAuth
         if(!is_array($arr) || empty($arr['did']) || $arr['did'] != $data['did']) { // 其他headers信息如version、apptype、model等都要做类似判断
             return false;
         }
-        if(!config('app_debug')) {
+        if(!config('app_debug')) { // TODO：生产环境关闭应用调试模式
             // sign有效时间判定
             if ((time() - ceil($arr['time'] / 1000)) > config('app.app_sign_time')) {
                 return false;

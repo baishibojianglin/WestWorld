@@ -23,7 +23,7 @@
 
 use think\Route;
 
-// 测试路由
+// 示例路由
 Route::get('test', 'api/test/index'); // 读取：显示资源列表
 Route::get('test/create', 'api/test/create'); // 读取：显示创建资源表单页
 Route::post('test', 'api/test/save'); // 新增：保存新建的资源
@@ -31,7 +31,6 @@ Route::get('test/:id', 'api/test/read'); // 读取：显示指定的资源
 Route::get('test/:id', 'api/test/edit'); // 读取：显示编辑资源表单页
 Route::put('test/:id', 'api/test/update'); // 更新：保存更新的资源
 Route::delete('test/:id', 'api/test/delete'); // 删除：删除指定资源
-
 Route::resource('test', 'api/test'); // 资源路由：设置后会自动注册7个路由规则
 
 // 客户端路由
@@ -39,7 +38,8 @@ Route::resource('test', 'api/test'); // 资源路由：设置后会自动注册7
 Route::get('api/:ver/index', 'api/:ver.index/index');
 // 登录
 Route::post('api/:ver/login', 'api/:ver.login/save');
-//Route::post('api/login', 'api/login/save');
+// 注册
+Route::post('api/:ver/register', 'api/:ver.login/register');
 // 退出登录
 Route::put('api/:ver/login/:id', 'api/:ver.login/update');
 // 用户
