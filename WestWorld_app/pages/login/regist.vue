@@ -29,7 +29,9 @@
 </template>
 
 <script>
-	import uniPopup from "@/components/uni-popup/uni-popup.vue" //引入弹窗组件
+	import uniPopup from "@/components/uni-popup/uni-popup.vue"; //引入弹窗组件
+	import common from '../../common/common.js';
+
 	export default {
 		data() {
 			return {
@@ -68,6 +70,11 @@
 					},
 					header: {
 						'content-type': 'application/x-www-form-urlencoded',
+						'sign': common.sign(), // 签名
+						'version': 1, // APP大版本号
+						'model': getApp().globalData.systemInfo.model, // 手机型号
+						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
+						'did': '12345dg', // 设备号
 					},
 					method: 'POST',
 					success:function(res){

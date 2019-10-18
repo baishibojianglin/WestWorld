@@ -198,12 +198,29 @@ class Login extends Common
             if ($id) {
                 // 返回token给客户端
                 $result = [
-                    'token' => $aesObj->encrypt($token . '&' . $id), // AES加密（自定义拼接字符串）
+                    'access-user-token' => Aes::opensslEncrypt($token . '&' . $id), // AES加密（自定义拼接字符串）
                 ];
                 return show(config('code.success'), 'OK', $result);
             } else {
                 return show(config('code.error'), '用户注册失败', [], 403);
             }
+        } else {
+            return show(config('code.error'), '请求不合法', [], 400);
+        }
+    }
+
+    /**
+     * 找回密码
+     * 手机号码 + 短信 方式
+     */
+    public function pwd()
+    {
+        // 判断为PUT请求
+        if (request()->isPut()) {
+            // 传入的参数
+            $param = input('param.');
+
+            return show(1, 'ok', $param, 404);
         } else {
             return show(config('code.error'), '请求不合法', [], 400);
         }

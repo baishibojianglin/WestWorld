@@ -3,17 +3,28 @@
 		<image class="logo" src="/static/logo.png"></image>
 		<view class="text-area">
 			<text class="iconfont iconyonghu"></text>
-            <input type="text" v-model="username" placeholder="手机号" />
+            <input  v-model="username" placeholder="手机号码" />
 		</view>
 		<view class="text-area">
 			<text class="iconfont iconmima"></text>
-		    <input type="password" v-model="password" placeholder="密码" />
+			<input v-model="notecode" placeholder="短信验证码" />
 		</view>
-		<button class="buttonwidth white" @tap="bindLogin">登 录</button>
+		<view class="text-area">
+			<text class="getnotecode">获取验证码</text>
+		</view>
+		<view class="text-area">
+			<text class="iconfont iconmima"></text>
+		    <input password="true" v-model="password" placeholder="输入新密码" />
+		</view>
+		<view class="text-area">
+			<text class="iconfont iconmima"></text>
+		    <input password="true" v-model="repassword" placeholder="确认新密码" />
+		</view>
+		<button class="buttonwidth white" v-on:click="register()">确 认</button>
 		<view class="loginbottom">
-			<navigator url="./regist">注册用户</navigator>
+			<navigator url="../login/regist">注册</navigator>
 			<text>|</text>
-			<navigator url="../pwd/pwd">忘记密码？</navigator>
+			<navigator url="../login/login">登录</navigator>
 		</view>
 	</view>
 </template>
@@ -24,64 +35,62 @@
 	export default {
 		data() {
 			return {
-				username: '18235235456',
-				password: '123456'
+				username: '18765432101',
+				password: '123456',
+				repassword: '',
+				notecode: '',
+				content: ''
 			}
 		},
 		methods: {
 			/**
-			 * 登录
+			 * 提交注册信息
 			 */
-			bindLogin() {
-			    /**
-			     * 客户端对账号信息进行一些必要的校验。
-			     */
-			    if (this.username.length < 5) {
-			        uni.showToast({
-			            icon: 'none',
-			            title: '账号最短为 5 个字符'
-			        });
-			        return;
-			    }
-			    if (this.password.length < 6) {
-			        uni.showToast({
-			            icon: 'none',
-			            title: '密码最短为 6 个字符'
-			        });
-			        return;
-			    }
+			register(){
+				var self=this;
 				
-			    /**
-				 * 使用 uni.request 将账号信息发送至服务端，客户端在回调函数中获取结果信息。
-			     */
+				// 客户端对账号信息进行校验
+				if (this.repassword != this.password) {
+					uni.showToast({
+						icon: 'none',
+						title: '两次输入密码不一致'
+					});
+					return;
+				}
+				
+				// 发起网络请求
 				uni.request({
-					url: this.$url + '/api/v1/login', // '/dpc/api/v1/login'
+					url: this.$url + '/api/v1/pwd',
 					data: {
 						phone: this.username,
 						password: this.password,
+						repassword: this.repassword,
+						code: this.notecode,
 					},
 					header: {
-						'sign': common.sign(), // 签名，TODO：对参数如did等进行AES加密，生成sign如：'6IpZZyb4DOmjTaPBGZtufjnSS4HScjAhL49NFjE6AJyVdsVtoHEoIXUsjrwu6m+o'
+						'content-type': 'application/x-www-form-urlencoded',
+						'sign': common.sign(), // 签名
 						'version': 1, // APP大版本号
 						'model': getApp().globalData.systemInfo.model, // 手机型号
 						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
 						'did': '12345dg', // 设备号
 					},
-					method: 'POST',
-					success: function(res){
+					method: 'PUT',
+					success:function(res){
 						console.log(res);
-						if (1 == res.data.status) {
-						    // this.toMain(this.username);
-							uni.reLaunch({
-							    url: '../index/index', // 跳转到首页
+						if(0 == res.data.status){ // 验证失败
+							uni.showToast({
+							    icon: 'none',
+							    title: res.data.message
 							});
-						} else {
-						    uni.showToast({
-						        icon: 'none',
-						        title: res.data.message, // '用户账号或密码不正确'
-						    });
+							// return;
+						}else{ // 验证成功跳转
+							uni.navigateTo({
+								url: '../index/index'
+							});
 						}
-					},
+
+					}
 				})
 			}
 		}
@@ -96,7 +105,7 @@
 		justify-content: center;
 		color:$uni-color-error;
 	}
-	.logo {
+	.logo{
 		height: 200upx;
 		width: 200upx;
 		margin: 100upx auto 50upx auto;
@@ -138,5 +147,8 @@
 		font-size: 24upx;
 		color: #007aff;
 		padding: 0 20upx;
+	}
+	.getnotecode{
+		right: -300upx;
 	}
 </style>

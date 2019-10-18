@@ -40,6 +40,8 @@ Route::get('api/:ver/index', 'api/:ver.index/index');
 Route::post('api/:ver/login', 'api/:ver.login/save');
 // 注册
 Route::post('api/:ver/register', 'api/:ver.login/register');
+// 找回密码
+Route::put('api/:ver/pwd', 'api/:ver.login/pwd');
 // 退出登录
 Route::put('api/:ver/login/:id', 'api/:ver.login/update');
 // 用户
