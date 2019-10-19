@@ -37,13 +37,13 @@ Route::resource('test', 'api/test'); // 资源路由：设置后会自动注册7
 // 首页
 Route::get('api/:ver/index', 'api/:ver.index/index');
 // 登录
-Route::post('api/:ver/login', 'api/:ver.login/save');
+Route::put('api/:ver/login', 'api/:ver.login/login');
 // 注册
 Route::post('api/:ver/register', 'api/:ver.login/register');
 // 找回密码
 Route::put('api/:ver/pwd', 'api/:ver.login/pwd');
 // 退出登录
-Route::put('api/:ver/login/:id', 'api/:ver.login/update');
+Route::put('api/:ver/logout', 'api/:ver.login/logout');
 // 用户
 Route::resource('api/:ver/user', 'api/:ver.user');
 // 图片上传

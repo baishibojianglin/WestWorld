@@ -24,8 +24,8 @@
 	export default {
 		data() {
 			return {
-				username: '18235235456',
-				password: '123456'
+				username: '18765432101',
+				password: 'abc123'
 			}
 		},
 		methods: {
@@ -36,20 +36,22 @@
 			    /**
 			     * 客户端对账号信息进行一些必要的校验。
 			     */
-			    if (this.username.length < 5) {
-			        uni.showToast({
-			            icon: 'none',
-			            title: '账号最短为 5 个字符'
-			        });
+				// 手机号
+				if (!this.username.match(/^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/)) {
+					uni.showToast({
+						icon: 'none',
+						title: '手机号不合法'
+					});
 			        return;
-			    }
-			    if (this.password.length < 6) {
+				}
+				// 密码
+				if (!this.password.match(/^[a-zA-Z]\w{5,17}$/)) {
 			        uni.showToast({
-			            icon: 'none',
-			            title: '密码最短为 6 个字符'
-			        });
+						icon: 'none',
+						title: '以字母开头，长度在6~18之间，只能包含字母、数字和下划线'
+					});
 			        return;
-			    }
+				}
 				
 			    /**
 				 * 使用 uni.request 将账号信息发送至服务端，客户端在回调函数中获取结果信息。
@@ -67,7 +69,7 @@
 						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
 						'did': '12345dg', // 设备号
 					},
-					method: 'POST',
+					method: 'PUT',
 					success: function(res){
 						console.log(res);
 						if (1 == res.data.status) {

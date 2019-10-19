@@ -1,6 +1,12 @@
 {
 	"pages": [
 		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "WEST WORLD"
+			}
+		},
+		{
 			"path": "pages/login/login",
 			"style": {
 				"navigationBarTitleText": "登录"
@@ -11,16 +17,11 @@
 			"style": {
 				"navigationBarTitleText": "注册"
 			}
-		},{
+		},
+		{
 		    "path" : "pages/pwd/pwd",
 		    "style" : {
 				"navigationBarTitleText": "找回密码"
-			}
-		},
-		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "WEST WORLD"
 			}
 		}
     ],

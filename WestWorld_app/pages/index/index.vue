@@ -4,6 +4,9 @@
 		<view class="text-area">
 			<text class="title">{{title}}</text>
 		</view>
+		<view class="btn-row">
+		    <button type="default" @tap="logout">退 出</button>
+		</view>
 	</view>
 </template>
 
@@ -18,7 +21,20 @@
 
 		},
 		methods: {
-
+			logout(){
+				uni.request({
+					url: '',
+					header: {
+						
+					},
+					method: 'PUT',
+					success:function(res){
+						uni.reLaunch({
+						    url: '../login/login', // 跳转到登录页
+						});
+					}
+				})
+			}
 		}
 	}
 </script>

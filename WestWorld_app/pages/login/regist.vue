@@ -36,7 +36,7 @@
 		data() {
 			return {
 				username: '18765432101',
-				password: '123456',
+				password: 'abc123',
 				repassword: '',
 				notecode: '',
 				content: ''
@@ -50,7 +50,24 @@
 			register(){
 				var self=this;
 				
-				// 客户端对账号信息进行校验
+				// 客户端对表单验证
+				// 手机号
+				if (!this.username.match(/^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/)) {
+					uni.showToast({
+						icon: 'none',
+						title: '手机号不合法'
+					});
+				    return;
+				}
+				// 密码
+				if (!this.password.match(/^[a-zA-Z]\w{5,17}$/)) {
+				    uni.showToast({
+						icon: 'none',
+						title: '以字母开头，长度在6~18之间，只能包含字母、数字和下划线'
+					});
+				    return;
+				}
+				// 确认两次密码一致性
 				if (this.repassword != this.password) {
 					uni.showToast({
 						icon: 'none',
@@ -58,7 +75,7 @@
 					});
 					return;
 				}
-				
+
 				// 发起网络请求
 				uni.request({
 					url: this.$url + '/api/v1/register',
@@ -86,13 +103,12 @@
 							    icon: 'none',
 							    title: res.data.message
 							});
-							// return;
+							return;
 						}else{ // 验证成功跳转
 							uni.navigateTo({
-								url: '../index/index'
+								url: '../login/login'
 							});
 						}
-
 					}
 				})
 			},
