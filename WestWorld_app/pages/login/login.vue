@@ -20,7 +20,8 @@
 
 <script>
 	import common from '../../common/common.js';
-
+	import {mapState, mapMutations} from 'vuex'; // 导入 vuex 的 mapState 和 mapMutations 方法
+	
 	export default {
 		data() {
 			return {
@@ -28,11 +29,18 @@
 				password: 'abc123'
 			}
 		},
+		computed: {
+			...mapState(['hasLogin']), // 对全局变量 hasLogin 进行监控
+		},
 		methods: {
+			...mapMutations(['login']), // 对全局方法 login 进行监控
+			
 			/**
 			 * 登录
 			 */
 			bindLogin() {
+				self = this;
+				
 			    /**
 			     * 客户端对账号信息进行一些必要的校验。
 			     */
@@ -57,7 +65,7 @@
 				 * 使用 uni.request 将账号信息发送至服务端，客户端在回调函数中获取结果信息。
 			     */
 				uni.request({
-					url: this.$url + '/api/v1/login', // '/dpc/api/v1/login'
+					url: this.$serverUrl + '/api/v1/login', // '/dpc/api/v1/login'
 					data: {
 						phone: this.username,
 						password: this.password,
@@ -71,11 +79,12 @@
 					},
 					method: 'PUT',
 					success: function(res){
-						console.log(res);
+						console.log('login success', res);
 						if (1 == res.data.status) {
-						    // this.toMain(this.username);
+							// self.toMain(res.data.data);
+							self.login(res.data.data);
 							uni.reLaunch({
-							    url: '../index/index', // 跳转到首页
+								url: '../index/index', // 跳转到首页
 							});
 						} else {
 						    uni.showToast({
@@ -85,6 +94,17 @@
 						}
 					},
 				})
+			},
+			
+			/**
+			 * 定义登录成功后跳转到首页的函数
+			 * @param {Object} provider
+			 */
+			toMain(provider){
+				this.login(provider);
+				uni.reLaunch({
+					url: '../index/index', // 跳转到首页
+				});
 			}
 		}
 	}

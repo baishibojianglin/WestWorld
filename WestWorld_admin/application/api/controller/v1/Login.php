@@ -85,7 +85,7 @@ class Login extends Common
         if ($id) {
             // 返回token给客户端
             $result = [
-                'access-user-token' => Aes::opensslEncrypt($token . '&' . $id), // AES加密（自定义拼接字符串）
+                'token' => Aes::opensslEncrypt($token . '&' . $id), // AES加密（自定义拼接字符串）
             ];
             return show(config('code.success'), 'OK', $result);
         } else {
@@ -175,7 +175,7 @@ class Login extends Common
             if ($id) {
                 // 返回token给客户端
                 $result = [
-                    'access-user-token' => Aes::opensslEncrypt($token . '&' . $id), // AES加密（自定义拼接字符串）
+                    'token' => Aes::opensslEncrypt($token . '&' . $id), // AES加密（自定义拼接字符串）
                 ];
                 return show(config('code.success'), 'OK', $result);
             } else {
@@ -387,7 +387,7 @@ class Login extends Common
         if ($id) {
             // 返回token给客户端
             $result = [
-                'access-user-token' => Aes::opensslEncrypt($token . '&' . $id), // AES加密（自定义拼接字符串）
+                'token' => Aes::opensslEncrypt($token . '&' . $id), // AES加密（自定义拼接字符串）
             ];
             return show(config('code.success'), 'OK', $result);
         } else {

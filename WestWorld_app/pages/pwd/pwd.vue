@@ -77,7 +77,7 @@
 				
 				// 发起网络请求
 				uni.request({
-					url: this.$url + '/api/v1/pwd',
+					url: this.$serverUrl + '/api/v1/pwd',
 					data: {
 						phone: this.username,
 						password: this.password,

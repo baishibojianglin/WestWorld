@@ -1,68 +1,41 @@
 <template>
-	<view class="content">
-		<image class="logo" src="/static/logo.png"></image>
-		<view class="text-area">
-			<text class="title">{{title}}</text>
-		</view>
-		<view class="btn-row">
-		    <button type="default" @tap="logout">退 出</button>
-		</view>
+	<view class="page">
+		<view v-if="!hasLogin">现在是未登录状态，点击按钮进行登录</view>
+		<view v-else>现在是登录状态，您的用户token是：{{userInfo.token}}</view>
+		<button type="primary" @click="bindLogin">{{hasLogin ? '退出登录' : '登录'}}</button>
 	</view>
 </template>
-
 <script>
+	import {mapState, mapMutations} from 'vuex';
+	
 	export default {
-		data() {
-			return {
-				title: 'Hello'
-			}
-		},
-		onLoad() {
-
-		},
+		computed: mapState(['hasLogin', 'userInfo']), // 对全局变量 hasLogin、userInfo 进行监控
 		methods: {
-			logout(){
-				uni.request({
-					url: '',
-					header: {
-						
-					},
-					method: 'PUT',
-					success:function(res){
-						uni.reLaunch({
-						    url: '../login/login', // 跳转到登录页
-						});
-					}
-				})
+			...mapMutations(['logout']), // 对全局方法 logout 进行监控
+			bindLogin() {
+				if (this.hasLogin) {
+					this.logout()
+				} else {
+					uni.navigateTo({
+						url: '/pages/login/login'
+					})
+				}
 			}
 		}
 	}
 </script>
 
 <style>
-	.content {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
+	.page{
+		padding: 50upx 30upx;
 	}
-
-	.logo {
-		height: 200upx;
-		width: 200upx;
-		margin-top: 200upx;
-		margin-left: auto;
-		margin-right: auto;
-		margin-bottom: 50upx;
+	view{
+		line-height: 1.5;
+		font-size: 32upx;
 	}
-
-	.text-area {
-		display: flex;
-		justify-content: center;
-	}
-
-	.title {
-		font-size: 36upx;
-		color: #8f8f94;
+	button{
+		margin-top: 30upx;
+		height: 80upx;
+		line-height: 80upx;
 	}
 </style>
