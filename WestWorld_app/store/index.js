@@ -24,7 +24,7 @@ const store = new Vuex.Store({
 				key: 'userInfo',
 				data: provider
 			})
-			console.log('setStorage userInfo', state.userInfo);
+			// console.log('setStorage userInfo', state.userInfo);
 		},
 		
 		/**

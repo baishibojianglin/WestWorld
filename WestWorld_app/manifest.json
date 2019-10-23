@@ -70,8 +70,8 @@
     "mp-toutiao" : {
         "usingComponents" : true
     },
-    /*h5跨域设置*/
     "h5" : {
+		// 开发环境 server 配置
         "devServer" : {
             "port" : 8080,
             "disableHostCheck" : true,

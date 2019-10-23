@@ -5,10 +5,11 @@
 		// 全局变量
 		globalData: {
 			systemInfo: '', // 设备系统信息
+			version: 1, // 应用大版本号
 		},
 		
 		onLaunch: function() {
-			console.log('App Launch')
+			// console.log('App Launch')
 			
 			// 获取设备系统信息
 			uni.getSystemInfo({
@@ -23,7 +24,7 @@
 				success:(res) => {
 					this.login(res.data);
 					// 如果还需要重新校验或是想要刷新token的有效时间 就再联网请求一次
-					uni.request({
+					/* uni.request({
 						url: `${this.$serverUrl}/auth.php`,
 						header: {
 							"Content-Type": "application/x-www-form-urlencoded",
@@ -38,15 +39,15 @@
 								this.login(e.data);
 							}
 						}
-					})
+					}) */
 				}
 			});
 		},
 		onShow: function() {
-			console.log('App Show')
+			// console.log('App Show')
 		},
 		onHide: function() {
-			console.log('App Hide')
+			// console.log('App Hide')
 		},
 		
 		methods: {
@@ -57,4 +58,5 @@
 
 <style>
 	/*每个页面公共css */
+	@import './common/uni.css';
 </style>

@@ -94,7 +94,6 @@
 					},
 					method: 'PUT',
 					success:function(res){
-						console.log(res);
 						if(0 == res.data.status){ // 验证失败
 							uni.showToast({
 							    icon: 'none',

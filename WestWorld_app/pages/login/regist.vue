@@ -95,7 +95,7 @@
 					},
 					method: 'POST',
 					success:function(res){
-						console.log(res);
+						// console.log('register success', res);
 						if(0 == res.data.status){ // 验证失败
 							/* self.content = res.data.message;
 							self.openPopup(); */

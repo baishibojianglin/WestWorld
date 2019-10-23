@@ -39,7 +39,7 @@
 			 * 登录
 			 */
 			bindLogin() {
-				self = this;
+				let self = this;
 				
 			    /**
 			     * 客户端对账号信息进行一些必要的校验。
@@ -79,7 +79,7 @@
 					},
 					method: 'PUT',
 					success: function(res){
-						console.log('login success', res);
+						// console.log('login success', res);
 						if (1 == res.data.status) {
 							// self.toMain(res.data.data);
 							self.login(res.data.data);
