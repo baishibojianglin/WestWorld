@@ -9,7 +9,7 @@
 			<text class="iconfont iconmima"></text>
 		    <input type="password" v-model="password" placeholder="密码" />
 		</view>
-		<button class="buttonwidth white" @tap="bindLogin">登 录</button>
+		<button class="buttonwidth white" @click="bindLogin">登 录</button>
 		<view class="loginbottom">
 			<navigator url="./regist">注册用户</navigator>
 			<text>|</text>
