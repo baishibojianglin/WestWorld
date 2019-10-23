@@ -1,7 +1,7 @@
 <template>
 	<view class="page">
 		<view class="uni-padding-wrap uni-common-mt">
-			<view class="uni-flex uni-row" v-if="hasLogin">
+			<view class="uni-flex uni-row userData" v-if="hasLogin">
 				<view class="text uni-flex" style="width: 200upx;height: 220upx;-webkit-justify-content: center;justify-content: center;-webkit-align-items: center;align-items: center;">
 					<image :src="userData.avatar" style="width: 200upx;height: 200upx;"></image>
 				</view>
@@ -12,7 +12,7 @@
 					</view>
 					<view class="uni-flex uni-row">
 						<view class="text" style="-webkit-flex: 1;flex: 1;">{{userData.phone}}</view>
-						<view class="text" style="-webkit-flex: 1;flex: 1;">{{userData.email}}</view>
+						<view class="text" style="-webkit-flex: 1;flex: 1;">{{userData.create_time}}</view>
 					</view>
 				</view>
 			</view>
@@ -64,8 +64,13 @@
 					},
 					method: 'GET',
 					success:function(res){
-						let userData = JSON.parse(Aes.decode(res.data.data));
-						userData.avatar = userData.avatar ? self.$imgServerUrl + userData.avatar.replace(/\\/g, "/") : '../../static/img/user.png'; //用户头像
+						let userData = JSON.parse(Aes.decode(res.data.data)); // 用户信息
+						userData.avatar = userData.avatar ? self.$imgServerUrl + userData.avatar.replace(/\\/g, "/") : '../../static/img/user.png'; // 用户头像
+						
+						// 用户创建时间
+						let create_time = new Date(userData.create_time);
+						userData.create_time = create_time.getFullYear() + '.' + create_time.getMonth() + '.' + create_time.getDate();
+						
 						self.userData = userData;
 					}
 				})
@@ -75,10 +80,13 @@
 </script>
 
 <style>
+	.userData{
+		background-color: #f8f8f8;
+	}
 	.text {
-		margin: 15upx 10upx;
+		margin: 10upx 5upx;
 		padding: 0 20upx;
-		background-color: #ebebeb;
+		/* background-color: #ebebeb; */
 		height: 70upx;
 		line-height: 70upx;
 		text-align: center;

@@ -87,7 +87,7 @@
 					header: {
 						'content-type': 'application/x-www-form-urlencoded',
 						'sign': common.sign(), // 签名
-						'version': 1, // APP大版本号
+						'version': getApp().globalData.version, // 应用大版本号
 						'model': getApp().globalData.systemInfo.model, // 手机型号
 						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
 						'did': '12345dg', // 设备号
