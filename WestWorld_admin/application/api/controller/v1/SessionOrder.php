@@ -29,8 +29,8 @@ class SessionOrder extends AuthBase
             // 查询条件
             $map = [];
             $map['so.user_id'] = isset($this->user->user_id) ? $this->user->user_id : 0; // 当前登录用户id
-            if (!empty($param['store_name'])) { // 店铺名称
-                $map['s.store_name'] = ['like', '%' . $param['store_name'] . '%'];
+            if (!empty($param['venue_name'])) { // 场馆名称
+                $map['s.venue_name'] = ['like', '%' . $param['venue_name'] . '%'];
             }
             if (!empty($param['user_name'])) { // 用户名称
                 $map['u.user_name'] = ['like', '%' . $param['user_name'] . '%'];
@@ -60,7 +60,7 @@ class SessionOrder extends AuthBase
                 $status = config('code.pay_status');
                 foreach ($data as $key => $value) {
                     $data[$key]['pay_status_msg'] = $status[$value['pay_status']]; // 定义status_msg
-                    //$data[$key]['store_info'] = model('Store')->find($value['store_id']); // 获取店鋪信息
+                    //$data[$key]['venue_info'] = model('Venue')->find($value['venue_id']); // 获取店鋪信息
                 }
 
                 return show(config('code.success'), 'OK', $data);

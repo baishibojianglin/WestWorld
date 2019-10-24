@@ -33,8 +33,8 @@ class SessionTemplate extends Base
 
             // 查询条件
             $map = [];
-            if (!empty($param['store_name'])) {
-                $map['s.store_name'] = ['like', '%' . $param['store_name'] . '%'];
+            if (!empty($param['venue_name'])) {
+                $map['s.venue_name'] = ['like', '%' . $param['venue_name'] . '%'];
             }
             if (!empty($param['create_time'])) {
                 $map['st.create_time'] = $param['create_time'];
@@ -50,7 +50,7 @@ class SessionTemplate extends Base
             $status = config('code.status');
             foreach ($data as $key => $value) {
                 $data[$key]['status_msg'] = $status[$value['status']]; // 定义status_msg
-                //$data[$key]['store_info'] = model('Store')->find($value['store_id']); // 获取店鋪信息
+                //$data[$key]['venue_info'] = model('Venue')->find($value['venue_id']); // 获取店鋪信息
             }
 
             return show(config('code.success'), 'OK', $data);

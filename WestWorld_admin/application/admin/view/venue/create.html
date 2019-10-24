@@ -7,27 +7,27 @@
         <div class="pagewrap">
             <span class="layui-breadcrumb">
                 <a href="">首页</a>
-                <a href="">店铺</a>
-                <a href="javascript:history.go(-1);"><cite>店铺列表 <i title="返回" class="layui-btn layui-btn-xs layui-icon layui-icon-return"></i></cite></a>
+                <a href="">场馆</a>
+                <a href="javascript:history.go(-1);"><cite>场馆列表 <i title="返回" class="layui-btn layui-btn-xs layui-icon layui-icon-return"></i></cite></a>
             </span>
         </div>
     </div>
     <div class="layui-row">
         <div class="layui-card">
-            <div class="layui-card-header">添加店铺</div>
+            <div class="layui-card-header">添加场馆</div>
             <div class="layui-card-body">
 
                 <form class="layui-form" lay-filter="layui_form">
                     <div class="layui-form-item">
-                        <label class="layui-form-label">店铺名称</label>
+                        <label class="layui-form-label">场馆名称</label>
                         <div class="layui-input-block">
-                            <input type="text" name="store_name" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+                            <input type="text" name="venue_name" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">店铺账号</label>
+                        <label class="layui-form-label">场馆账号</label>
                         <div class="layui-input-block">
-                            <input type="text" name="store_account" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+                            <input type="text" name="venue_account" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -47,15 +47,15 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">店铺头像</label>
-                        <button type="button" class="layui-btn" id="head_pic">
+                        <label class="layui-form-label">场馆缩略图</label>
+                        <button type="button" class="layui-btn" id="thumb">
                             <i class="layui-icon">&#xe67c;</i>上传图片
                         </button>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">店铺电话</label>
+                        <label class="layui-form-label">场馆电话</label>
                         <div class="layui-input-block">
-                            <input type="text" name="store_phone" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+                            <input type="text" name="venue_phone" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -65,16 +65,16 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">店铺介绍</label>
+                        <label class="layui-form-label">场馆介绍</label>
                         <div class="layui-input-block">
                             <!-- UMeditor 加载编辑器的容器 -->
-                            <script type="text/plain" id="container" name="store_description" class="layui-textarea" style="height: 240px;"></script>
+                            <script type="text/plain" id="container" name="venue_description" class="layui-textarea" style="height: 240px;"></script>
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">店长</label>
                         <div class="layui-input-block">
-                            <input type="text" name="store_manager" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+                            <input type="text" name="venue_manager" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -84,7 +84,7 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">默认店铺比赛场次模板ID</label>
+                        <label class="layui-form-label">场馆默认的比赛场次模板ID</label>
                         <div class="layui-input-block">
                             <select name="session_template_id" lay-filter="session_template_id" lay-verify="required">
                                 <option value="">请选择…</option>
@@ -102,9 +102,9 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">店铺关闭原因</label>
+                        <label class="layui-form-label">场馆关闭原因</label>
                         <div class="layui-input-block">
-                            <input type="text" name="store_close_info" placeholder="请输入" autocomplete="off" class="layui-input">
+                            <input type="text" name="venue_close_info" placeholder="请输入" autocomplete="off" class="layui-input">
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -137,7 +137,7 @@
 
 <script>
     // 声明全局变量
-    var head_pic; // 声明头像路径变量
+    var thumb; // 声明缩略图路径变量
 
     /**
      * 表单模块 - layui.form
@@ -152,7 +152,7 @@
             /*ajax请求 s*/
             // TODO：在 /public/static/ 目录下新建 common.js 文件，封装公用 ajax 方法
             var _data = data.field;
-            var url = "{:url('admin/store/save')}";
+            var url = "{:url('admin/venue/save')}";
             ajaxRequest(url, 'post', _data);
             /*ajax请求 e*/
 
@@ -168,18 +168,18 @@
 
         //执行实例
         var uploadInst = upload.render({
-            elem: '#avatar' //绑定元素
+            elem: '#thumb' //绑定元素
             ,url: '{:url("admin/upload/uploadThumb")}' //上传接口
-            ,data: {name: "avatar", dir: "member"}
-            ,field: 'avatar' // 设定文件域的字段名
+            ,data: {name: "thumb", dir: "member"}
+            ,field: 'thumb' // 设定文件域的字段名
             ,done: function(res){
                 //上传完毕回调
-                avatar = res.data; // 获取头像路径值
-                //console.log(avatar);
-                if (avatar) {
-                    //$('#avatar').hide();
-                    $('#avatar').next().remove('img');
-                    $('#avatar').after(' <img src="/' + avatar + '" alt="" title="' + avatar + '" class="layui-upload-img" width="200">');
+                thumb = res.data; // 获取缩略图路径值
+                //console.log(thumb);
+                if (thumb) {
+                    //$('#thumb').hide();
+                    $('#thumb').next().remove('img');
+                    $('#thumb').after(' <img src="/' + thumb + '" alt="" title="' + thumb + '" class="layui-upload-img" width="200">');
                 }
             }
             ,error: function(){

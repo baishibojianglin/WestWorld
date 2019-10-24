@@ -5,26 +5,26 @@ namespace app\common\model;
 use think\Model;
 
 /**
- * 店铺模型类
- * Class Store
+ * 场馆模型类
+ * Class Venue
  * @package app\common\model
  */
-class Store extends Base
+class Venue extends Base
 {
     /**
-     * 获取店铺列表数据（基于paginate()自动化分页）
+     * 获取场馆列表数据（基于paginate()自动化分页）
      * @param array $map
      * @return \think\Paginator
      */
-    public function getStore($map = [])
+    public function getVenue($map = [])
     {
         if(!isset($map['is_delete'])) {
             $map['is_delete'] = ['neq', config('code.is_delete')];
         }
 
-        $order = ['store_id' => 'desc'];
+        $order = ['venue_id' => 'desc'];
 
-        $result = $this->field('store_description', true) // 字段排除
+        $result = $this->field('venue_description', true) // 字段排除
             ->where($map)
             ->order($order)
             ->paginate();
@@ -32,19 +32,19 @@ class Store extends Base
     }
 
     /**
-     * 根据条件获取店铺列表数据
+     * 根据条件获取场馆列表数据
      * @param array $map
      * @param int $from
      * @param int $size
      * @return false|\PDOStatement|string|\think\Collection
      */
-    public function getStoreByCondition($map = [], $from = 0, $size = 5)
+    public function getVenueByCondition($map = [], $from = 0, $size = 5)
     {
         if(!isset($map['is_delete'])) {
             $map['is_delete'] = ['neq', config('code.is_delete')];
         }
 
-        $order = ['store_id' => 'desc'];
+        $order = ['venue_id' => 'desc'];
 
         $result = $this->where($map)
             ->field($this->_getListField())
@@ -56,12 +56,12 @@ class Store extends Base
     }
 
     /**
-     * 根据条件获取店铺列表数据的总数
+     * 根据条件获取场馆列表数据的总数
      * @param array $map
      * @return int|string
      * @throws \think\Exception
      */
-    public function getStoreCountByCondition($map = [])
+    public function getVenueCountByCondition($map = [])
     {
         if(!isset($map['is_delete'])) {
             $map['is_delete'] = ['neq', config('code.is_delete')];
@@ -78,21 +78,21 @@ class Store extends Base
     private function _getListField()
     {
         return [
-            'store_id',
-            'store_name',
-            'store_account',
+            'venue_id',
+            'venue_name',
+            'venue_account',
             'grade_id',
-            'store_phone',
+            'venue_phone',
             'address',
-            'head_pic',
-            //'store_description',
-            'store_manager',
+            'thumb',
+            //'venue_description',
+            'venue_manager',
             'manager_phone',
-            'store_sales',
-            'store_money',
+            'venue_sales',
+            'venue_money',
             'pending_money',
             'status',
-            'store_close_info',
+            'venue_close_info',
             'is_delete',
             'create_time',
             'update_time',

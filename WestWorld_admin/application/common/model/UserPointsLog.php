@@ -22,7 +22,7 @@ class UserPointsLog extends Base
         $order = ['upl.id' => 'desc'];
         $join = [
             ['__USER__ u', 'u.user_id = upl.user_id', 'LEFT'],
-            ['__STORE__ s', 's.store_id = upl.store_id', 'LEFT'],
+            ['__VENUE__ s', 's.venue_id = upl.venue_id', 'LEFT'],
         ];
 
         $result = $this->alias('upl')
@@ -43,7 +43,7 @@ class UserPointsLog extends Base
         return [
             'upl.*',
             'u.user_name',
-            's.store_name',
+            's.venue_name',
         ];
     }
 }

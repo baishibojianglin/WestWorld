@@ -26,7 +26,7 @@ class SessionOrder extends Base
         $order = ['so.session_order_id' => 'desc'];
         $join = [
             ['__USER__ u', 'u.user_id = so.user_id', 'LEFT'],
-            ['__STORE__ s', 's.store_id = so.store_id', 'LEFT'],
+            ['__VENUE__ s', 's.venue_id = so.venue_id', 'LEFT'],
             ['__SESSION_TEMPLATE__ st', 'st.session_template_id = so.session_template_id', 'LEFT'],
         ];
 
@@ -53,7 +53,7 @@ class SessionOrder extends Base
 
         $join = [
             ['__USER__ u', 'u.user_id = so.user_id', 'LEFT'],
-            ['__STORE__ s', 's.store_id = so.store_id', 'LEFT'],
+            ['__VENUE__ s', 's.venue_id = so.venue_id', 'LEFT'],
             ['__SESSION_TEMPLATE__ st', 'st.session_template_id = so.session_template_id', 'LEFT'],
         ];
 
@@ -76,7 +76,7 @@ class SessionOrder extends Base
             'so.session_order_id',
             'so.order_sn',
             'so.user_id',
-            'so.store_id',
+            'so.venue_id',
             'so.session_template_id',
             'so.session_price',
             'so.session_date',
@@ -88,11 +88,11 @@ class SessionOrder extends Base
             'so.get_points',
             'u.user_name',
             'u.phone user_phone',
-            'u.head_pic',
-            's.store_name',
-            's.store_account',
-            's.store_phone',
-            's.store_manager',
+            'u.avatar',
+            's.venue_name',
+            's.venue_account',
+            's.venue_phone',
+            's.venue_manager',
         ];
     }
 }

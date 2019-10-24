@@ -1,15 +1,15 @@
 <?php
 
-namespace app\store\controller;
+namespace app\venue\controller;
 
 use app\common\lib\exception\ApiException;
 use think\Controller;
 use think\Request;
 
 /**
- * store模块店鋪比赛场次模板控制器类
+ * venue模块店鋪比赛场次模板控制器类
  * Class SessionTemplate
- * @package app\store\controller
+ * @package app\venue\controller
  */
 class SessionTemplate extends Base
 {
@@ -28,9 +28,9 @@ class SessionTemplate extends Base
 
             // 查询条件
             $map = [];
-            $map['st.store_id'] = $this->session_store->store_id;
-            if (!empty($param['store_name'])) {
-                $map['s.store_name'] = ['like', '%' . $param['store_name'] . '%'];
+            $map['st.venue_id'] = $this->session_venue->venue_id;
+            if (!empty($param['venue_name'])) {
+                $map['s.venue_name'] = ['like', '%' . $param['venue_name'] . '%'];
             }
             if (!empty($param['create_time'])) {
                 $map['st.create_time'] = $param['create_time'];
@@ -51,7 +51,7 @@ class SessionTemplate extends Base
                 $status = config('code.status');
                 foreach ($data as $key => $value) {
                     $data[$key]['status_msg'] = $status[$value['status']]; // 定义status_msg
-                    //$data[$key]['store_info'] = model('Store')->find($value['store_id']); // 获取店鋪信息
+                    //$data[$key]['venue_info'] = model('Venue')->find($value['venue_id']); // 获取店鋪信息
                 }
 
                 return show(config('code.success'), 'ok', $data);
@@ -92,7 +92,7 @@ class SessionTemplate extends Base
         if (request()->isGet()) {
             // 查询条件
             $map = [];
-            $map['st.store_id'] = $this->session_store->store_id;
+            $map['st.venue_id'] = $this->session_venue->venue_id;
 
             try {
                 $data = model('SessionTemplate')->getSessionTemplateById($map, $id);
@@ -160,11 +160,11 @@ class SessionTemplate extends Base
 
             // 查询条件
             $map = [];
-            $map['store_id'] = $this->session_store->store_id;
+            $map['venue_id'] = $this->session_venue->venue_id;
 
             // 更新
             try {
-                $result = model('SessionTemplate')->save($data, ['session_template_id' => $id, 'store_id' => $map['store_id']]); // 更新
+                $result = model('SessionTemplate')->save($data, ['session_template_id' => $id, 'venue_id' => $map['venue_id']]); // 更新
             } catch (\Exception $e) {
                 throw new ApiException($e->getMessage(), 500, config('code.error'));
             }

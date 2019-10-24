@@ -1,6 +1,6 @@
 <?php
 
-namespace app\store\controller;
+namespace app\venue\controller;
 
 use app\common\lib\exception\ApiException;
 use think\Controller;
@@ -8,9 +8,9 @@ use think\Db;
 use think\Request;
 
 /**
- * store模块比赛场次订单控制器类
+ * venue模块比赛场次订单控制器类
  * Class SessionOrder
- * @package app\store\controller
+ * @package app\venue\controller
  */
 class SessionOrder extends Base
 {
@@ -29,9 +29,9 @@ class SessionOrder extends Base
 
             // 查询条件
             $map = [];
-            $map['s.store_id'] = isset($this->session_store->store_id) ? $this->session_store->store_id : 0; // 当前登录店铺id
-            if (!empty($param['store_name'])) { // 店铺名称
-                $map['s.store_name'] = ['like', '%' . $param['store_name'] . '%'];
+            $map['s.venue_id'] = isset($this->session_venue->venue_id) ? $this->session_venue->venue_id : 0; // 当前登录场馆id
+            if (!empty($param['venue_name'])) { // 场馆名称
+                $map['s.venue_name'] = ['like', '%' . $param['venue_name'] . '%'];
             }
             if (!empty($param['user_name'])) { // 用户名称
                 $map['u.user_name'] = ['like', '%' . $param['user_name'] . '%'];
@@ -61,7 +61,7 @@ class SessionOrder extends Base
                 $status = config('code.pay_status');
                 foreach ($data as $key => $value) {
                     $data[$key]['pay_status_msg'] = $status[$value['pay_status']]; // 定义status_msg
-                    //$data[$key]['store_info'] = model('Store')->find($value['store_id']); // 获取店鋪信息
+                    //$data[$key]['venue_info'] = model('Venue')->find($value['venue_id']); // 获取店鋪信息
                 }
 
                 return show(config('code.success'), 'ok', $data);
@@ -125,7 +125,7 @@ class SessionOrder extends Base
     }
 
     /**
-     * 保存更新的该比赛场次订单用户获得的比赛积分（店铺手动修改积分）
+     * 保存更新的该比赛场次订单用户获得的比赛积分（场馆手动修改积分）
      * @param $id
      * @return \think\response\Json
      * @throws ApiException
@@ -149,10 +149,10 @@ class SessionOrder extends Base
             Db::startTrans();
             $result = [];
             try{
-                // 查询 session_order 表 user_id, store_id, get_points
-                $result[] = $session_order = Db::name('session_order')->field('order_sn, user_id, store_id, get_points')->find($data['session_order_id']);
+                // 查询 session_order 表 user_id, venue_id, get_points
+                $result[] = $session_order = Db::name('session_order')->field('order_sn, user_id, venue_id, get_points')->find($data['session_order_id']);
                 $user_id = $session_order['user_id'];
-                $store_id = $session_order['store_id'];
+                $venue_id = $session_order['venue_id'];
                 $change_points = $data['get_points'] - $session_order['get_points']; // 变动积分 = 传入的积分 - 订单原来的积分
 
                 // 查询用户积分 get_points, user_points
@@ -171,24 +171,24 @@ class SessionOrder extends Base
                 // 新增用户积分变动日志
                 $user_points_log_data = [
                     'user_id' => $user_id,
-                    'store_id' => $store_id,
+                    'venue_id' => $venue_id,
                     'before_points' => $user['user_points'],
                     'change_points' => $change_points,
                     'after_points' => ($user['user_points'] + $change_points),
-                    'log_content' => '店铺手动修改积分：订单编号' . $session_order['order_sn'],
+                    'log_content' => '场馆手动修改积分：订单编号' . $session_order['order_sn'],
                     'log_time' => time(),
                     'operator_type' => 2,
-                    'operator_id' => $this->session_store->store_id,
+                    'operator_id' => $this->session_venue->venue_id,
                 ];
                 $result[] = db('user_points_log', [], false)->insert($user_points_log_data);
 
-                // 查询用户在各店铺积分 get_points
-                $result[] = $user_store_points = db('user_store_points', [], false)->field('get_points')->where(['user_id' => $user_id, 'store_id' => $store_id])->find();
+                // 查询用户在各场馆积分 get_points
+                $result[] = $user_venue_points = db('user_venue_points', [], false)->field('get_points')->where(['user_id' => $user_id, 'venue_id' => $venue_id])->find();
 
-                // 更新用户在各店铺积分
-                $result[] = db('user_store_points', [], false)
-                    ->where(['user_id' => $user_id, 'store_id' => $store_id])
-                    ->update(['get_points' => $user_store_points['get_points'] + $change_points]);
+                // 更新用户在各场馆积分
+                $result[] = db('user_venue_points', [], false)
+                    ->where(['user_id' => $user_id, 'venue_id' => $venue_id])
+                    ->update(['get_points' => $user_venue_points['get_points'] + $change_points]);
 
                 // 提交事务
                 Db::commit();

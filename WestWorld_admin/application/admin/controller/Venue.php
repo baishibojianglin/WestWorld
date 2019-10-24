@@ -8,20 +8,20 @@ use think\Controller;
 use think\Request;
 
 /**
- * 后台店铺管理控制器类
- * Class Store
+ * 后台场馆管理控制器类
+ * Class Venue
  * @package app\admin\controller
  */
-class Store extends Base
+class Venue extends Base
 {
     /**
      * 数据表主键id字段
      * @var string
      */
-    public $store_id = 'store_id';
+    public $venue_id = 'venue_id';
 
     /**
-     * 显示店铺资源列表
+     * 显示场馆资源列表
      * @return \think\response\Json
      */
     public function index()
@@ -33,10 +33,10 @@ class Store extends Base
     }
 
     /**
-     * 获取店铺资源列表
+     * 获取场馆资源列表
      * @return \think\response\Json
      */
-    public function getStore()
+    public function getVenue()
     {
         // 判断为GET请求
         if (request()->isGet()) {
@@ -49,18 +49,18 @@ class Store extends Base
             if (!empty($param['grade_id'])) {
                 $map['grade_id'] = input('param.grade_id', 0, 'intval'); //intval($param['grade_id'])
             }
-            if (!empty($param['store_name'])) {
-                $map['store_name'] = ['like', '%' . trim($param['store_name']) . '%'];
+            if (!empty($param['venue_name'])) {
+                $map['venue_name'] = ['like', '%' . trim($param['venue_name']) . '%'];
             }
-            if (!empty($param['store_account'])) {
-                $map['store_account'] = ['like', '%' . trim($param['store_account']) . '%'];
+            if (!empty($param['venue_account'])) {
+                $map['venue_account'] = ['like', '%' . trim($param['venue_account']) . '%'];
             }
             if (!empty($param['create_time'])) {
                 $map['create_time'] = $param['create_time'];
             }
 
             /*// 获取分页列表数据 模式一：基于paginate()自动化分页
-            $data = model('Store')->getStore();
+            $data = model('Venue')->getVenue();
             $status = config('code.status');
             foreach($data as $key => $value){
                 $data[$key]['status_msg'] = $status[$value['status']];
@@ -71,9 +71,9 @@ class Store extends Base
             //$param['size'] = 1; // 定义每页条数
             $this->getPageAndSize($param); // 获取分页page、size
             // 获取列表数据
-            $list = model('Store')->getStoreByCondition($map, $this->from, $this->size);
+            $list = model('Venue')->getVenueByCondition($map, $this->from, $this->size);
             // 获取列表数据总数
-            $total = model('Store')->getStoreCountByCondition($map);
+            $total = model('Venue')->getVenueCountByCondition($map);
             // 总页数：结合 总数 / size 向上取整 => 有多少页
             $pages = ceil($total / $this->size); // 1.1 => 2
 
@@ -87,7 +87,7 @@ class Store extends Base
                 'pages' => $pages,
                 'list' => $list,
             ];
-            return show(config('code.success'), 'ok', $data); // http://test.battle.com/admin_store?page=2&size=1
+            return show(config('code.success'), 'ok', $data); // http://test.battle.com/admin_venue?page=2&size=1
             //return $this->fetch('', ['data' => $data]);
         }
     }
@@ -117,18 +117,18 @@ class Store extends Base
         if(request()->isPost()){
             $data = input('post.');
             // 数据需要校验：参照validate机制
-            // store_name唯一性,store_account自动生成且唯一性…
+            // venue_name唯一性,venue_account自动生成且唯一性…
 
             // 入库操作
             try {
-                $id = model('Store')->add($data, $this->store_id);
+                $id = model('Venue')->add($data, $this->venue_id);
             } catch (\Exception $e) {
                 return show(0, '新增失败 ' . $e->getMessage(), [], 400);
                 //return $this->result('', 0, '新增失败');
             }
             if ($id) {
-                return show(1, 'ok', ['jump_url' => url('Store/index')], 200);
-                //return $this->result(['jump_url' => url('Store/index')], 1, 'ok');
+                return show(1, 'ok', ['jump_url' => url('Venue/index')], 200);
+                //return $this->result(['jump_url' => url('Venue/index')], 1, 'ok');
             } else {
                 return show(0, '新增失败', [], 400);
                 //return $this->result('', 0, '新增失败');
@@ -137,7 +137,7 @@ class Store extends Base
     }
 
     /**
-     * 显示指定的店铺资源
+     * 显示指定的场馆资源
      * @param int $id
      * @return \think\response\Json
      * @throws ApiException
@@ -147,7 +147,7 @@ class Store extends Base
         // 判断为GET请求
         if (request()->isGet()) {
             try {
-                $data = model('Store')->find($id);
+                $data = model('Venue')->find($id);
             } catch (\Exception $e) {
                 throw new ApiException($e->getMessage(), 500, config('code.error'));
             }
@@ -180,7 +180,7 @@ class Store extends Base
     }
 
     /**
-     * 保存更新的店铺资源
+     * 保存更新的场馆资源
      * @param Request $request
      * @param int $id
      * @return \think\response\Json
@@ -192,36 +192,36 @@ class Store extends Base
         $param = input('param.');
 
         // validate验证
-        $validate = validate('Store');
+        $validate = validate('Venue');
         if (!$validate->check($param, [], 'update')) {
             return show(config('code.error'), $validate->getError(), [], 403);
         }
 
         // 判断数据是否存在
         $data = [];
-        if (!empty($param['store_name'])) { // 店铺名称
-            $data['store_name'] = trim($param['store_name']);
+        if (!empty($param['venue_name'])) { // 场馆名称
+            $data['venue_name'] = trim($param['venue_name']);
         }
-        if (!empty($param['store_account'])) { // 店铺账号
-            $data['store_account'] = trim($param['store_account']);
+        if (!empty($param['venue_account'])) { // 场馆账号
+            $data['venue_account'] = trim($param['venue_account']);
         }
         if (!empty($param['password'])) { // 密码
             $data['password'] = IAuth::encrypt($param['password']);
         }
-        if (isset($param['grade_id'])) { // 店铺等级id
+        if (isset($param['grade_id'])) { // 场馆等级id
             $data['grade_id'] = input('param.grade_id', null, 'intval');
         }
-        if (!empty($param['store_phone'])) { // 店铺电话
-            $data['store_phone'] = trim($param['store_phone']);
+        if (!empty($param['venue_phone'])) { // 场馆电话
+            $data['venue_phone'] = trim($param['venue_phone']);
         }
         if (!empty($param['address'])) { // 详细地址
             $data['address'] = trim($param['address']);
         }
-        if (!empty($param['store_description'])) { // 店铺介绍
-            $data['store_description'] = $param['store_description'];
+        if (!empty($param['venue_description'])) { // 场馆介绍
+            $data['venue_description'] = $param['venue_description'];
         }
-        if (!empty($param['store_manager'])) { // 店长
-            $data['store_manager'] = trim($param['store_manager']);
+        if (!empty($param['venue_manager'])) { // 店长
+            $data['venue_manager'] = trim($param['venue_manager']);
         }
         if (!empty($param['manager_phone'])) { // 店长电话
             $data['manager_phone'] = trim($param['manager_phone']);
@@ -236,7 +236,7 @@ class Store extends Base
 
         // 更新
         try {
-            $result = model('Store')->save($data, ['store_id' => $id]); // 更新
+            $result = model('Venue')->save($data, ['venue_id' => $id]); // 更新
         } catch (\Exception $e) {
             throw new ApiException($e->getMessage(), 500, config('code.error'));
         }

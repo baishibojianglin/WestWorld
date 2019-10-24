@@ -50,8 +50,8 @@ Route::resource('api/:ver/user', 'api/:ver.user');
 Route::post('api/:ver/image', 'api/:ver.image/save');
 // 比赛场次订单
 Route::resource('api/:ver/session_order', 'api/:ver.session_order');
-// 店铺
-Route::resource('api/:ver/store', 'api/:ver.store');
+// 场馆
+Route::resource('api/:ver/venue', 'api/:ver.venue');
 // 店鋪比赛场次模板
 Route::resource('api/:ver/session_template', 'api/:ver.session_template');
 

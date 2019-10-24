@@ -1,13 +1,13 @@
 <?php
 
-namespace app\store\controller;
+namespace app\venue\controller;
 
 use think\Controller;
 
 /**
- * store模块基础控制器类库
+ * venue模块基础控制器类库
  * Class Base
- * @package app\store\controller
+ * @package app\venue\controller
  */
 class Base extends Controller
 {
@@ -33,13 +33,13 @@ class Base extends Controller
      * 模块
      * @var string
      */
-    public $module = 'store';
+    public $module = 'venue';
 
     /**
-     * 当前登录店铺session值
+     * 当前登录场馆session值
      * @var mixed
      */
-    public $session_store;
+    public $session_venue;
 
     /**
      * 初始化
@@ -48,7 +48,7 @@ class Base extends Controller
     {
         // 初始化参数
         $this->module = request()->module();
-        $this->session_store = session(config('store.session_store'), '', config('store.session_store_scope'));
+        $this->session_venue = session(config('venue.session_venue'), '', config('venue.session_venue_scope'));
 
         // 判断是否登录
         $isLogin = $this->isLogin();
@@ -64,8 +64,8 @@ class Base extends Controller
     public function isLogin()
     {
         /*// 获取session
-        $store_data = session(config('store.session_store'), '', config('store.session_store_scope'));*/
-        if ($this->session_store && $this->session_store->store_id) {
+        $venue_data = session(config('venue.session_venue'), '', config('venue.session_venue_scope'));*/
+        if ($this->session_venue && $this->session_venue->venue_id) {
             return true;
         }
         return false;

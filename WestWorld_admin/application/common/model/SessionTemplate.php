@@ -27,7 +27,7 @@ class SessionTemplate extends Base
 
         $result = $this->alias('st')
             ->field($this->_getListField())
-            ->join('__STORE__ s', 's.store_id = st.store_id', 'LEFT')
+            ->join('__VENUE__ s', 's.venue_id = st.venue_id', 'LEFT')
             ->where($map)
             ->order($order)
             ->paginate($size);
@@ -48,8 +48,8 @@ class SessionTemplate extends Base
 
         $data = model('SessionTemplate')
             ->alias('st')
-            ->field('st.*, s.store_name, s.store_account, s.store_phone, s.store_manager')
-            ->join('__STORE__ s', 's.store_id = st.store_id', 'LEFT')
+            ->field('st.*, s.venue_name, s.venue_account, s.venue_phone, s.venue_manager')
+            ->join('__VENUE__ s', 's.venue_id = st.venue_id', 'LEFT')
             ->where($map)
             ->find($id);
         return $data;
@@ -63,15 +63,15 @@ class SessionTemplate extends Base
     {
         return [
             'st.session_template_id',
-            'st.store_id',
+            'st.venue_id',
             'st.status',
             'st.is_delete',
             'st.create_time',
             'st.update_time',
-            's.store_name',
-            's.store_account',
-            's.store_phone',
-            's.store_manager',
+            's.venue_name',
+            's.venue_account',
+            's.venue_phone',
+            's.venue_manager',
         ];
     }
 }

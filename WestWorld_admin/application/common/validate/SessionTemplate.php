@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: 問安冬日
+ * User: Yan
  * Date: 2019/7/29
  * Time: 10:43
  */
@@ -13,12 +13,12 @@ use think\Validate;
 class SessionTemplate extends Validate
 {
     protected $rule = [
-        'store_id' => 'require',
+        'venue_id' => 'require',
         'session_template' => 'require',
     ];
 
     protected $message = [
-        'store_id.require' => '店铺不能为空',
+        'venue_id.require' => '场馆不能为空',
         'session_template.require' => '店鋪比赛场次模板不能为空',
     ];
 

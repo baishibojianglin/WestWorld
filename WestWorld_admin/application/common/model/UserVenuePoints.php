@@ -5,24 +5,24 @@ namespace app\common\model;
 use think\Model;
 
 /**
- * 用户在各店铺积分模型类
- * Class UserStorePoints
+ * 用户在各场馆积分模型类
+ * Class UserVenuePoints
  * @package app\common\model
  */
-class UserStorePoints extends Base
+class UserVenuePoints extends Base
 {
     /**
-     * 获取用户在各店铺积分列表数据（基于paginate()自动化分页）
+     * 获取用户在各场馆积分列表数据（基于paginate()自动化分页）
      * @param array $map
      * @param int $size
      * @return \think\Paginator
      */
-    public function getUserStorePoints($map = [], $size = 5)
+    public function getUserVenuePoints($map = [], $size = 5)
     {
         $order = ['usp.id' => 'desc'];
         $join = [
             ['__USER__ u', 'u.user_id = usp.user_id', 'LEFT'],
-            ['__STORE__ s', 's.store_id = usp.store_id', 'LEFT'],
+            ['__VENUE__ s', 's.venue_id = usp.venue_id', 'LEFT'],
         ];
 
         $result = $this->alias('usp')
@@ -43,16 +43,16 @@ class UserStorePoints extends Base
         return [
             'usp.id',
             'usp.user_id',
-            'usp.store_id',
+            'usp.venue_id',
             'usp.pay_money',
             'usp.get_points',
             'u.user_name',
             'u.phone user_phone',
-            'u.head_pic',
-            's.store_name',
-            's.store_account',
-            's.store_phone',
-            's.store_manager',
+            'u.avatar',
+            's.venue_name',
+            's.venue_account',
+            's.venue_phone',
+            's.venue_manager',
         ];
     }
 }

@@ -31,8 +31,8 @@ class UserPointsLog extends Base
             if (!empty($param['user_name'])) {
                 $map['u.user_name'] = ['like', '%' . $param['user_name'] . '%'];
             }
-            if (!empty($param['store_name'])) {
-                $map['s.store_name'] = ['like', '%' . $param['store_name'] . '%'];
+            if (!empty($param['venue_name'])) {
+                $map['s.venue_name'] = ['like', '%' . $param['venue_name'] . '%'];
             }
             if (!empty($param['log_time'])) {
                 $map['upl.log_time'] = $param['log_time'];

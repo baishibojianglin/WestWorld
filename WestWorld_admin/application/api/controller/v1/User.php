@@ -69,7 +69,7 @@ class User extends AuthBase
             // 判断传入的参数是否存在
             $data = [];
             if (!empty($param['file'])) { // 头像
-                $data['head_pic'] = $param['file'];
+                $data['avatar'] = $param['file'];
             }
             if (!empty($param['user_name'])) { // 用户名 // TODO 如果用户名是唯一性的，在表单输入用户名的时候做用户名唯一性验证接口
                 $data['user_name'] = $param['user_name'];

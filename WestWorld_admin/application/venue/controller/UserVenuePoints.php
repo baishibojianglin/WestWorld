@@ -1,20 +1,20 @@
 <?php
 
-namespace app\store\controller;
+namespace app\venue\controller;
 
 use app\common\lib\exception\ApiException;
 use think\Controller;
 use think\Request;
 
 /**
- * store模块用户在各店铺积分控制器类
- * Class UserStorePoints
- * @package app\store\controller
+ * venue模块用户在各场馆积分控制器类
+ * Class UserVenuePoints
+ * @package app\venue\controller
  */
-class UserStorePoints extends Base
+class UserVenuePoints extends Base
 {
     /**
-     * 显示用户在各店铺积分资源列表
+     * 显示用户在各场馆积分资源列表
      * @return \think\response\Json
      * @throws ApiException
      */
@@ -28,7 +28,7 @@ class UserStorePoints extends Base
 
             // 查询条件
             $map = [];
-            $map['s.store_id'] = isset($this->session_store->store_id) ? $this->session_store->store_id : 0; // 当前登录店铺id
+            $map['s.venue_id'] = isset($this->session_venue->venue_id) ? $this->session_venue->venue_id : 0; // 当前登录场馆id
             if (!empty($param['user_name'])) { // 用户名称
                 $map['u.user_name'] = ['like', '%' . $param['user_name'] . '%'];
             }
@@ -38,7 +38,7 @@ class UserStorePoints extends Base
 
             // 获取分页列表数据 模式一：基于paginate()自动化分页
             try {
-                $data = model('UserStorePoints')->getUserStorePoints($map, $this->size);
+                $data = model('UserVenuePoints')->getUserVenuePoints($map, $this->size);
             } catch (\Exception $e) {
                 throw new ApiException($e->getMessage(), 500, config('code.error'));
             }
