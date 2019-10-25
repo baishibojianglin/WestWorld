@@ -126,9 +126,9 @@
 			
 			if (this.hasLogin) {
 				uni.request({
-					url: this.$serverUrl + '/api/v1/user/1',
+					url: this.$serverUrl + 'user/1',
 					header: {
-						'sign': common.sign(), // 签名，TODO：对参数如did等进行AES加密，生成sign如：'6IpZZyb4DOmjTaPBGZtufjnSS4HScjAhL49NFjE6AJyVdsVtoHEoIXUsjrwu6m+o'
+						'sign': common.sign(), // 签名
 						'version': getApp().globalData.version, // 应用大版本号
 						'model': getApp().globalData.systemInfo.model, // 手机型号
 						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台

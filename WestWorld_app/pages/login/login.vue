@@ -65,7 +65,7 @@
 				 * 使用 uni.request 将账号信息发送至服务端，客户端在回调函数中获取结果信息。
 			     */
 				uni.request({
-					url: this.$serverUrl + '/api/v1/login', // '/dpc/api/v1/login'
+					url: this.$serverUrl + 'login', // '/dpc/api/v1/login'
 					data: {
 						phone: this.username,
 						password: this.password,
