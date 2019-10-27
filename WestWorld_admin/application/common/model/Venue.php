@@ -84,6 +84,8 @@ class Venue extends Base
             'grade_id',
             'venue_phone',
             'address',
+            'longitude',
+            'latitude',
             'thumb',
             //'venue_description',
             'venue_manager',

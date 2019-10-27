@@ -24,7 +24,10 @@
 				<view class="uni-media-list">
 					<image class="uni-media-list-logo" :src="value.thumb"></image>
 					<view class="uni-media-list-body">
-						<view class="uni-media-list-text-top">{{ value.venue_name }}</view>
+						<view class="uni-media-list-text-top">
+							{{ value.venue_name }}
+							<text style="float: right;margin-right: 20upx;">{{ value.distance }}</text>
+						</view>
 						<view class="uni-media-list-text-bottom">
 							<text>{{ value.address }}</text>
 							<text>{{ value.venue_phone }}</text>
@@ -59,7 +62,7 @@
 				/* swiper e */
 				
 				/* 附近场馆 s */
-				title: '附近场馆',
+				title: '场 馆',
 				
 				listData: [],
 				last_id: '',
@@ -73,15 +76,40 @@
 				/* 附近场馆 e */
 			}
 		},
+		globalData: {
+			longitude: '', // 当前位置的经度
+			latitude: '', // 当前位置的纬度
+		},
 		onLoad() {
-			this.getList();
+			// this.getList();
+			let self = this;
 			
-			uni.getLocation({
-			    type: 'wgs84',
-			    success: function (res) {
-			        console.log('当前位置的经度：' + res.longitude);
-			        console.log('当前位置的纬度：' + res.latitude);
-			    }
+			uni.showModal({
+				title: '授权定位',
+				content: '获取你的地理位置，查看场馆',
+				cancelText: '全部',
+				confirmText: '附近',
+				success: function (res) {
+					// 获取当前的地理位置、速度
+					uni.getLocation({
+						type: 'wgs84',
+						success: function (res1) {
+							// console.log('当前位置的经度：' + res.longitude);
+							// console.log('当前位置的纬度：' + res.latitude);
+							getApp().globalData.longitude = res1.longitude.toFixed(6);
+							getApp().globalData.latitude = res1.latitude.toFixed(6);
+							
+							if (res.confirm == true) {
+								// 获取（指定距离）场馆列表数据
+								self.getList(1);
+							}
+							if (res.cancel == true) {
+								// 获取（所有）场馆列表数据
+								self.getList(0);
+							}
+						}
+					});
+				}
 			});
 		},
 		onPullDownRefresh() {
@@ -97,7 +125,7 @@
 		computed: mapState(['hasLogin', 'userInfo']), // 对全局变量 hasLogin、userInfo 进行监控
 		methods: {
 			...mapMutations(['logout']), // 对全局方法 logout 进行监控
-			getList() {
+			getList(listFlag) {
 				let self = this
 				
 				var data = {
@@ -113,6 +141,11 @@
 				uni.request({
 					url: this.$serverUrl + 'venue', //'https://unidemo.dcloud.net.cn/api/news'
 					// data: data,
+					data: {
+						longitude: getApp().globalData.longitude, //103.989685
+						latitude: getApp().globalData.latitude, //30.716756
+						listFlag: listFlag, // 获取附近或所有场馆列表的标识
+					},
 					header: {
 						'sign': common.sign(), // 签名
 						'version': getApp().globalData.version, // 应用大版本号
@@ -128,13 +161,21 @@
 							this.last_id = list[list.length - 1].id;
 							this.reload = false; */
 							
-							// console.log(data)
 							let venueList = data.data.data.list;
+							console.log(data.data.data);
 							venueList.forEach ((item, index) => {
-								item.thumb = item.thumb ? self.$imgServerUrl + item.thumb.replace(/\\/g, "/") : '../../static/img/home.png'; // 场馆缩略图
+								// 场馆缩略图
+								item.thumb = item.thumb ? self.$imgServerUrl + item.thumb.replace(/\\/g, "/") : '../../static/img/home.png';
+								
+								// 场馆和用户的距离
+								if (1 < item.distance) {
+									item.distance = item.distance + '㎞'; // 后端PHP计算的距离
+								} else {
+									item.distance = item.distance * 1000 + 'm';
+								}
+								// item.distance = common.distance(globalData.latitude, globalData.longitude, item.latitude, item.longitude) + ' ㎞'; // 前端JS计算的距离
 							})
 							self.listData = venueList;
-							console.log(self.listData)
 						}
 					},
 					fail: (data, code) => {

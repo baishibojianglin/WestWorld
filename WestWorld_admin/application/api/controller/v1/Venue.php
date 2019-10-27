@@ -49,9 +49,35 @@ class Venue extends Common
             // 获取分页列表数据 模式二：page当前页，size每页条数，from每页从第几条开始 => 'limit from,size'
             //$param['size'] = 1; // 定义每页条数
             $this->getPageAndSize($param); // 获取分页page、size
-            // 获取列表数据
+
+            // 判断列表的标识 listFlag （1附近，0所有场馆）
+            if (1 == $param['listFlag']) {
+                // 获取所有列表数据
+                $list = model('Venue')->getVenueByCondition($map, $this->from, $this->size);
+
+                // 定义经纬度范围值
+                $mapLongitude = [];
+                $mapLatitude = [];
+
+                foreach ($list as $key => $value) {
+                    // 判断经纬度存在
+                    if (!empty($param['longitude']) && !empty($param['latitude'])) {
+                        $list[$key]['distance'] = round(distance($param['latitude'], $param['longitude'], $value['latitude'], $value['longitude']), 3);
+
+                        // 获取指定距离（如距定位 2km 内的）经纬度
+                        if ($list[$key]['distance'] <= 2) {
+                            $mapLongitude[] = $value['longitude'];
+                            $mapLatitude[] = $value['latitude'];
+                        }
+                    }
+                }
+                $map['longitude'] = ['in', $mapLongitude];
+                $map['latitude'] = ['in', $mapLatitude];
+            }
+
+            // 获取（指定距离）列表数据
             $list = model('Venue')->getVenueByCondition($map, $this->from, $this->size);
-            // 获取列表数据总数
+            // 获取（指定距离）列表数据总数
             $total = model('Venue')->getVenueCountByCondition($map);
             // 总页数：结合 总数 + size => 有多少页
             $pages = ceil($total / $this->size); // 1.1 => 2
@@ -60,14 +86,15 @@ class Venue extends Common
             $status = config('code.status');
             foreach ($list as $key => $value) {
                 $list[$key]['status_msg'] = $status[$value['status']];
+
+                // 经纬度
+                if (isset($param['longitude']) && isset($param['latitude'])) {
+                    $list[$key]['distance'] = round(distance($param['latitude'], $param['longitude'], $value['latitude'], $value['longitude']), 3);
+                }
             }
-            $data = [
-                'total' => $total,
-                'pages' => $pages,
-                'list' => $list,
-            ];
-            return show(config('code.success'), 'ok', $data); // http://test.battle.com/admin_venue?page=2&size=1
-            //return $this->fetch('', ['data' => $data]);
+
+            $data = ['total' => $total, 'pages' => $pages, 'list' => $list,];
+            return show(config('code.success'), 'ok', $data); // http://serverName/admin_venue?page=2&size=1
         }
     }
 
