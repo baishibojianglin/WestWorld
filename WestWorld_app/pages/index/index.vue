@@ -44,7 +44,7 @@
 <script>
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	var dateUtils = require('../../common/util.js').dateUtils;
-	import {mapState, mapMutations} from 'vuex';
+	import {mapState} from 'vuex';
 	import common from '../../common/common.js';
 	
 	export default {
@@ -122,9 +122,12 @@
 			this.status = 'more';
 			this.getList();
 		},
-		computed: mapState(['hasLogin', 'userInfo']), // 对全局变量 hasLogin、userInfo 进行监控
+		computed: mapState(['userInfo']), // 对全局变量 userInfo 进行监控
 		methods: {
-			...mapMutations(['logout']), // 对全局方法 logout 进行监控
+			/**
+			 * 获取场馆列表数据
+			 * @param {Object} listFlag
+			 */
 			getList(listFlag) {
 				let self = this
 				
@@ -162,7 +165,6 @@
 							this.reload = false; */
 							
 							let venueList = data.data.data.list;
-							console.log(data.data.data);
 							venueList.forEach ((item, index) => {
 								// 场馆缩略图
 								item.thumb = item.thumb ? self.$imgServerUrl + item.thumb.replace(/\\/g, "/") : '../../static/img/home.png';
@@ -183,20 +185,21 @@
 					}
 				});
 			},
+			/**
+			 * 跳转场馆详情页
+			 * @param {Object} e
+			 */
 			goDetail: function(e) {
-				// 				if (!/前|刚刚/.test(e.published_at)) {
-				// 					e.published_at = dateUtils.format(e.published_at);
-				// 				}
 				let detail = {
-					author_name: e.author_name,
-					cover: e.cover,
-					id: e.id,
-					post_id: e.post_id,
-					published_at: e.published_at,
-					title: e.title
+					venue_id: e.venue_id,
+					venue_name: e.venue_name,
+					thumb: e.thumb,
+					address: e.address,
+					venue_phone: e.venue_phone,
+					distance: e.distance
 				};
 				uni.navigateTo({
-					url: '../list2detail-detail/list2detail-detail?detailDate=' + encodeURIComponent(JSON.stringify(detail))
+					url: '../venue/venue-detail?detailData=' + encodeURIComponent(JSON.stringify(detail))
 				});
 			},
 			setTime: function(items) {

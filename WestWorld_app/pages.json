@@ -30,6 +30,26 @@
 				"navigationBarTitleText": "个人中心"
 			}
 		}
+        ,{
+            "path" : "pages/venue/venue-detail",
+            "style": {
+            	"navigationBarTitleText": "详情",
+            	"app-plus": {
+            		"titleNView": {
+            			"type": "transparent",
+            			"buttons": [{
+            				"type": "share"
+            			}]
+            		}
+            	},
+            	"h5": {
+            		"titleNView": {
+            			"type": "transparent",
+            			"buttons": []
+            		}
+            	}
+            }
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
