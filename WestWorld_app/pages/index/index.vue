@@ -155,7 +155,6 @@
 						'model': getApp().globalData.systemInfo.model, // 手机型号
 						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
 						'did': '12345dg', // 设备号
-						'access-user-token': this.userInfo.token
 					},
 					success: data => {
 						if (data.statusCode == 200) {
@@ -196,7 +195,8 @@
 					thumb: e.thumb,
 					address: e.address,
 					venue_phone: e.venue_phone,
-					distance: e.distance
+					longitude: e.longitude,
+					latitude: e.latitude
 				};
 				uni.navigateTo({
 					url: '../venue/venue-detail?detailData=' + encodeURIComponent(JSON.stringify(detail))
