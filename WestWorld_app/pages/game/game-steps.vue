@@ -4,20 +4,46 @@
 		<view class="example-body">
 			<uni-steps :options="list1" :active="active" />
 		</view>
+		
+		<view class="example-body uni-common-mt">
+			<view class="content uni-common-mb">
+				<view v-show="current === 0">
+					选项卡1的内容
+				</view>
+				<view v-show="current === 1">
+					选项卡2的内容
+				</view>
+				<view v-show="current === 2">
+					选项卡3的内容
+				</view>
+				<view v-show="current === 3">
+					选项卡4的内容
+				</view>
+				<view v-show="current === 4">
+					选项卡5的内容
+				</view>
+				<view v-show="current === 5">
+					选项卡6的内容
+				</view>
+			</view>
+			<uni-segmented-control :current="current" :values="items" :style-type="styleType" :active-color="activeColor" @clickItem="onClickItem" />
+		</view>
+		
 		<button type="primary" @click="change">{{ active === 5 ? '确定' : '下一步' }}</button>
 	</view>
 </template>
 
 <script>
-	import {uniSteps} from '@dcloudio/uni-ui'
+	import {uniSteps, uniSegmentedControl} from '@dcloudio/uni-ui'
 
 	export default {
 		components: {
-			uniSteps
+			uniSteps, // 步骤条
+			uniSegmentedControl // 分段器
 		},
 		data() {
 			return {
-				/* 步骤 s */
+				/* 步骤条 s */
 				active: 0,
 				list1: [{
 					title: '1',
@@ -38,20 +64,47 @@
 					title: '6',
 					desc: '确定'
 				}],
-				/* 步骤 e */
+				/* 步骤条 e */
+				
+				/* 分段器 s */
+				items: ['场景', '时间', '价格','人数', '设备', '确定'],
+				colors: ['#007aff', '#4cd964', '#dd524d'],
+				current: 0,
+				colorIndex: 0,
+				activeColor: '#4cd964',
+				styleType: 'text',
+				/* 分段器 e */
 			}
 		},
 		onLoad(event) {
 			console.log(event)
 		},
 		methods: {
-			change() {
+			/* 步骤条 s */
+			change() {console.log(this.active);
+				// 步骤条
 				if (this.active < this.list1.length - 1) {
 					this.active += 1
 				} else {
 					this.active = 0
 				}
+				
+				// 分段器
+				this.current = this.active
+			},
+			/* 步骤条 e */
+			
+			/* 分段器 s */
+			onClickItem(index) {
+				if (this.current !== index) {
+					// 分段器
+					this.current = index
+					
+					// 步骤条
+					this.active = this.current
+				}
 			}
+			/* 分段器 e */
 		}
 	}
 </script>
