@@ -9,7 +9,13 @@
 			<text class="venue-address"><text class="uni-icon uni-icon-location"></text>{{banner.address}}</text>
 			<text class="venue-location"><text class="uni-icon uni-icon-map uni-bg-red" @click="openLocation()"></text></text>
 		</view>
+		
+		<view class="uni-padding-wrap uni-common-mt uni-common-mb">
+			<button type="warn" @click="toGame()">加入比赛</button>
+		</view>
+		
 		<view class="article-content">
+			<page-head :title="contentTitle"></page-head>
 			<rich-text :nodes="htmlNodes"></rich-text>
 		</view>
 		<!-- #ifdef MP-WEIXIN || MP-QQ -->
@@ -27,7 +33,8 @@
 		data() {
 			return {
 				banner: {},
-				htmlNodes: []
+				htmlNodes: [],
+				contentTitle: '场馆介绍'
 			}
 		},
 		onLoad(event) {
@@ -91,6 +98,14 @@
 				    success: function () {
 				        console.log('success');
 				    }
+				});
+			},
+			/**
+			 * 跳转比赛选择页
+			 */
+			toGame() {
+				uni.navigateTo({
+				    url: '../game/game-steps?id=' + this.banner.venue_id + '&venueData=' + JSON.stringify(this.banner)
 				});
 			}
 		}

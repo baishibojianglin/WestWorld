@@ -50,6 +50,12 @@
             	}
             }
         }
+        ,{
+            "path" : "pages/game/game-steps",
+            "style" : {
+				"navigationBarTitleText": "加入比赛"
+			}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
