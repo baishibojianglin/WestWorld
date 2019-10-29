@@ -1,7 +1,6 @@
 {
   "name": "WestWorld_app",
   "version": "1.0.0",
-  "description": "",
   "main": "main.js",
   "dependencies": {
     "@dcloudio/uni-ui": "^1.0.4",
@@ -13,5 +12,6 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "description": ""
 }
