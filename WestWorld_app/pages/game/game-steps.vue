@@ -1,14 +1,29 @@
 <template>
 	<view>
-		<view class="example-title">步骤</view>
+		<view class="example-title">步骤 <image :src="venueData.thumb" style="width: 80upx; height: 80upx; border-radius: 10upx;"></image></view>
 		<view class="example-body">
-			<uni-steps :options="list1" :active="active" />
+			<uni-steps :options="stepsList" :active="active" />
 		</view>
 		
-		<view class="example-body uni-common-mt">
+		<view class="example-title">{{active === 5 ? '' : '选择'}}{{ items[active] }}</view>
+		<view class="example-body">
 			<view class="content uni-common-mb">
 				<view v-show="current === 0">
-					选项卡1的内容
+					
+					<radio-group @change="radioChange">
+					
+						<uni-grid :column="3" :highlight="true"><!-- @change="scene" -->
+							<uni-grid-item v-for="(item, index) in sceneList" :key="index">
+								<image :src="item.thumb" class="image" mode="aspectFill" />
+								<text class="text">{{ item.text }}</text>
+								
+								<radio :id="item.scene_id" :value="item.scene_id" :checked="item.checked"></radio>
+								
+							</uni-grid-item>
+						</uni-grid>
+						
+					</radio-group>
+					
 				</view>
 				<view v-show="current === 1">
 					选项卡2的内容
@@ -34,23 +49,26 @@
 </template>
 
 <script>
-	import {uniSteps, uniSegmentedControl} from '@dcloudio/uni-ui'
+	import {uniSteps, uniSegmentedControl, uniGrid, uniGridItem} from '@dcloudio/uni-ui'
 
 	export default {
 		components: {
 			uniSteps, // 步骤条
-			uniSegmentedControl // 分段器
+			uniSegmentedControl, // 分段器
+			uniGrid, uniGridItem
 		},
 		data() {
 			return {
+				venueData: {},
+				
 				/* 步骤条 s */
 				active: 0,
-				list1: [{
+				stepsList: [{
 					title: '1',
 					desc: '场景'
 				}, {
 					title: '2',
-					desc: '时间'
+					desc: '场次'
 				}, {
 					title: '3',
 					desc: '价格'
@@ -67,23 +85,89 @@
 				/* 步骤条 e */
 				
 				/* 分段器 s */
-				items: ['场景', '时间', '价格','人数', '设备', '确定'],
+				items: ['场景', '场次', '价格', '人数', '设备', '确定'],
 				colors: ['#007aff', '#4cd964', '#dd524d'],
 				current: 0,
 				colorIndex: 0,
 				activeColor: '#4cd964',
 				styleType: 'text',
 				/* 分段器 e */
+				
+				/* 选择场景 s */
+				sceneList: [{
+						scene_id: '1',
+						scene_name: 'city',
+						thumb: '../../static/img/home.png',
+						text: '城市',
+						value: '值'
+					},
+					{
+						scene_id: '2',
+						scene_name: 'country',
+						thumb: '../../static/img/home.png',
+						text: '乡村',
+						value: '值',
+						// checked: ''
+					},
+					{
+						scene_id: '3',
+						scene_name: '3',
+						thumb: '../../static/img/home.png',
+						text: '草原'
+					},
+					{
+						scene_id: '4',
+						scene_name: '4',
+						thumb: '../../static/img/home.png',
+						text: '森林'
+					},
+					{
+						scene_id: '5',
+						scene_name: '5',
+						thumb: '../../static/img/home.png',
+						text: '沙漠'
+					},
+					{
+						scene_id: '6',
+						scene_name: '6',
+						thumb: '../../static/img/home.png',
+						text: '雪地'
+					}
+				],
+				
+				sceneId: '', // 选中的场景ID
+				/* 选择场景 e */
+				
+				sessionId: '', // 选中的场次ID
 			}
 		},
 		onLoad(event) {
-			console.log(event)
+			// console.log(event)
+			this.venueData = JSON.parse(event.venueData);
 		},
 		methods: {
 			/* 步骤条 s */
-			change() {console.log(this.active);
+			change() {console.log(this.active)
 				// 步骤条
-				if (this.active < this.list1.length - 1) {
+				if (this.active < this.stepsList.length - 1) {
+					
+					// 所有步骤必须判断是否选择场景
+					if (!this.sceneId) {
+						uni.showToast({
+							title: '请选择场景',
+							icon: 'none'
+						});
+						return;
+					}
+					// 除第一步外，其他步骤必须判断是否选择场次
+					if (!this.sessionId && this.active !== 0) {
+						uni.showToast({
+							title: '请选择场次',
+							icon: 'none'
+						});
+						return;
+					}
+					
 					this.active += 1
 				} else {
 					this.active = 0
@@ -103,8 +187,15 @@
 					// 步骤条
 					this.active = this.current
 				}
-			}
+			},
 			/* 分段器 e */
+			
+			radioChange: function(e) {
+				var checked = e.target.value
+				// console.log(checked)
+				
+				this.sceneId = checked
+			}
 		}
 	}
 </script>
@@ -175,5 +266,15 @@
 
 	button {
 		margin: 30upx;
+	}
+	
+	.image {
+		width: 50upx;
+		height: 50upx;
+	}
+	
+	.text {
+		font-size: 26upx;
+		margin-top: 10upx;
 	}
 </style>
