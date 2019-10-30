@@ -3,8 +3,54 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "WEST WORLD"
+				"navigationBarTitleText": "WEST WORLD",
+				"app-plus": {
+					"titleNView": {
+						"titleColor": "#fff",
+						// "backgroundColor": "#007AFF",
+						"buttons": [{
+						    "fontSrc": "/static/uni.ttf",
+						    "text": "\ue537",
+						    "width": "auto",
+						    "fontSize": "28px",
+						    "color": "#000000",
+							"float": "left"
+						}],
+						// "type": "transparent",
+						"searchInput": {
+						    "backgroundColor": "#fff",
+						    "borderRadius": "6px",
+						    "placeholder": "请输入地址 如：大钟寺",
+						    "disabled": true
+						}
+					}
+				}
 			}
+		},
+		{
+		    "path": "pages/index/search/search",
+		    "style": {
+		        "navigationBarTitleText": "搜索",
+		        "app-plus": {
+		            "titleNView": {
+		                "titleColor": "#fff",
+		                "backgroundColor": "#007AFF",
+		                "buttons": [{
+		                    "fontSrc": "/static/uni.ttf",
+		                    "text": "\ue537",
+		                    "width": "auto",
+		                    "fontSize": "28px",
+		                    "color": "#fff"
+		                }],
+		                "searchInput": {
+		                    "backgroundColor": "#fff",
+		                    "borderRadius": "6px",
+		                    "placeholder": "请输入地址 如：大钟寺",
+		                    "autoFocus": true
+		                }
+		            }
+		        }
+		    }
 		},
 		{
 			"path": "pages/login/login",
