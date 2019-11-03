@@ -96,7 +96,7 @@
             }
         }
         ,{
-            "path" : "pages/game/game-steps",
+            "path" : "pages/game/join/join-steps",
             "style" : {
 				"navigationBarTitleText": "加入比赛"
 			}

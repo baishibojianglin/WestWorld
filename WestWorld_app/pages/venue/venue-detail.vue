@@ -105,7 +105,7 @@
 			 */
 			toGame() {
 				uni.navigateTo({
-				    url: '../game/game-steps?id=' + this.banner.venue_id + '&venueData=' + JSON.stringify(this.banner)
+				    url: '/pages/game/join/join-steps?id=' + this.banner.venue_id + '&venueData=' + JSON.stringify(this.banner)
 				});
 			}
 		}
