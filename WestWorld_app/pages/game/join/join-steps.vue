@@ -92,7 +92,16 @@
 				<!-- 人数 e -->
 				<!-- 装备 s -->
 				<view v-show="current === 4">
-					选项卡5的内容
+					<view class="uni-list">
+						<view class="uni-list-cell">
+							<view class="uni-list-cell-left">装备</view>
+							<view class="uni-list-cell-db">
+								<picker @change="pickerChangeEquipment" :value="equipmentArray[equipmentIndex].equipment_id" :range="equipmentArray" range-key="equipment_name">
+									<view class="tag-view"><uni-tag :text="equipmentArray[equipmentIndex].equipment_name" type="success" size="small"></uni-tag></view>
+								</picker>
+							</view>
+						</view>
+					</view>
 				</view>
 				<!-- 装备 e -->
 				<view v-show="current === 5">
@@ -293,9 +302,9 @@
 				
 				/* 场次 s */
 				sessionArray: [
-					{session_id: 1, session:'10:00~11:00'},
-					{session_id: 2, session:'11:00~12:00'}, 
-					{session_id: 3, session:'12:00~13:00'},
+					{session_id: 1, session: '10:00~11:00'},
+					{session_id: 2, session: '11:00~12:00'}, 
+					{session_id: 3, session: '12:00~13:00'},
 				],
 				index: 0,
 				/* 场次 e */
@@ -332,6 +341,19 @@
 				showClearIcon: false,
 				inputClearValue: '',
 				/* 选择人数 e */
+				
+				/* 选择装备 e */
+				/* 装备 s */
+				equipmentArray: [
+					{equipment_id: 1, equipment_name: 'EQP001'},
+					{equipment_id: 2, equipment_name: 'EQP002'}, 
+					{equipment_id: 3, equipment_name: 'EQP003'},
+				],
+				equipmentIndex: 0,
+				/* 装备 e */
+				
+				equipmentId: '', // 选中的装备ID
+				/* 选择装备 e */
 			}
 		},
 		onLoad(event) {
@@ -373,12 +395,21 @@
 					return;
 				}
 				// 选好第1、2、3步外，其他步骤必须判断是否选择人数
-				if (!this.inputClearValue && this.active > 2) {
+				if ((this.inputClearValue < 1 || this.inputClearValue > 3) && this.active > 2) {
 					uni.showToast({
-						title: '请输入人数',
+						title: '请输入1~3人',
 						icon: 'none'
 					});
 					this.current = this.active = 3;
+					return;
+				}
+				// 选好第1、2、3、4步外，其他步骤必须判断是否选择装备
+				if (!this.equipmentId && this.active > 3) {
+					uni.showToast({
+						title: '请选择装备',
+						icon: 'none'
+					});
+					this.current = this.active = 4;
 					return;
 				}
 				
@@ -491,6 +522,7 @@
 			},
 			/* 选择房间 e */
 			
+			/* 选择人数 s */
 			// 清除输入框的内容
 			clearInput: function(event) {
 				this.inputClearValue = event.target.value;
@@ -505,6 +537,17 @@
 				this.inputClearValue = '';
 				this.showClearIcon = false;
 			},
+			/* 选择人数 e */
+			
+			/* 选择装备 s */
+			pickerChangeEquipment: function(e) {
+				console.log('picker发送选择改变，携带值为：' + e.target.value)
+				this.equipmentIndex = e.target.value
+				
+				this.equipmentId = this.equipmentArray[this.equipmentIndex].equipment_id; // 选中的装备ID
+				console.log('选中的装备ID', this.equipmentId)
+			},
+			/* 选择装备 e */
 		}
 	}
 </script>
