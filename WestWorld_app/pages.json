@@ -100,7 +100,13 @@
             "style" : {
 				"navigationBarTitleText": "加入比赛"
 			}
-        }
+        },
+		{
+			"path": "pages/API/request-payment/request-payment",
+			"style": {
+				"navigationBarTitleText": "发起支付"
+			}
+		}
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

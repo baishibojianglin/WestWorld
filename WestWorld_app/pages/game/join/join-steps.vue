@@ -58,7 +58,7 @@
 								<view class="uni-list-cell-db">
 									<picker @change="bindPickerChange" :value="sessionArray[index].session_id" :range="sessionArray" range-key="session">
 										<!-- <view class="uni-input">{{sessionArray[index].session}}</view> -->
-										<view class="tag-view"><uni-tag :text="sessionArray[index].session" type="success" size="small"></uni-tag></view>
+										<view class="tag-view"><uni-tag :text="sessionArray[index].session_time" type="success" size="small"></uni-tag> <text class="red uni-bold">￥{{ sessionArray[index].session_price }}</text></view>
 									</picker>
 								</view>
 							</view>
@@ -74,7 +74,7 @@
 								<view>
 									<radio :value="item.room_id" :checked="index === currentRoom" />
 								</view>
-								<view>{{item.room_name}}</view>
+								<view>{{item.room_name}} <text class="red uni-bold">￥{{item.room_price}}</text></view>
 							</label>
 						</radio-group>
 					</view>
@@ -96,8 +96,8 @@
 						<view class="uni-list-cell">
 							<view class="uni-list-cell-left">装备</view>
 							<view class="uni-list-cell-db">
-								<picker @change="pickerChangeEquipment" :value="equipmentArray[equipmentIndex].equipment_id" :range="equipmentArray" range-key="equipment_name">
-									<view class="tag-view"><uni-tag :text="equipmentArray[equipmentIndex].equipment_name" type="success" size="small"></uni-tag></view>
+								<picker @change="pickerChangeEquipment" :value="equipmentArray[equipmentIndex].equipment_id" :range="equipmentArray" range-key="equipment">
+									<view class="tag-view"><uni-tag :text="equipmentArray[equipmentIndex].equipment_name" type="success" size="small"></uni-tag> <text class="red uni-bold">￥{{ equipmentArray[equipmentIndex].equipment_price }}</text></view>
 								</picker>
 							</view>
 						</view>
@@ -105,13 +105,17 @@
 				</view>
 				<!-- 装备 e -->
 				<view v-show="current === 5">
-					选项卡6的内容
+					入场费<text class="red uni-bold">￥{{ price }}</text>，确认支付
 				</view>
 			</view>
+			
+		</view>
+		
+		<view class="example-title">
 			<uni-segmented-control :current="current" :values="items" :style-type="styleType" :active-color="activeColor" @clickItem="onClickItem" />
 		</view>
 		
-		<button type="primary" @click="change">{{ active === 5 ? '确定' : '下一步' }}</button>
+		<button type="primary" @click="change">{{ active === 5 ? '确 定' : '下一步' }}</button>
 		
 		<!-- 单独放在外面防止其他样式对其干扰 -->
 		<uni-calendar ref="calendar" :lunar="tags[0].checked" :disable-before="tags[3].checked" :range="tags[5].checked" :start-date="startDate" :end-date="endDate" :date="date" :selected="selected" @confirm="confirmDate" @change="changeDate()" />
@@ -302,9 +306,9 @@
 				
 				/* 场次 s */
 				sessionArray: [
-					{session_id: 1, session: '10:00~11:00'},
-					{session_id: 2, session: '11:00~12:00'}, 
-					{session_id: 3, session: '12:00~13:00'},
+					{session_id: 1, session_time: '10:00~11:00', session_price: 1.00, session: '10:00~11:00' + ' ￥1.00'},
+					{session_id: 2, session_time: '11:00~12:00', session_price: 2.00, session: '11:00~12:00' + ' ￥2.00'}, 
+					{session_id: 3, session_time: '12:00~13:00', session_price: 3.00, session: '12:00~13:00' + ' ￥3.00'},
 				],
 				index: 0,
 				/* 场次 e */
@@ -318,18 +322,21 @@
 						room_name: 'room1',
 						scene_id: '1',
 						thumb: '/static/img/home.png',
+						room_price: 1.00,
 					},
 					{
 						room_id: '2',
 						room_name: 'room2',
 						scene_id: '1',
 						thumb: '/static/img/home.png',
+						room_price: 2.00,
 					},
 					{
 						room_id: '5',
 						room_name: 'room3',
 						scene_id: '2',
 						thumb: '/static/img/home.png',
+						room_price: 3.00,
 					}
 				],
 				currentRoom: '',
@@ -345,23 +352,27 @@
 				/* 选择装备 e */
 				/* 装备 s */
 				equipmentArray: [
-					{equipment_id: 1, equipment_name: 'EQP001'},
-					{equipment_id: 2, equipment_name: 'EQP002'}, 
-					{equipment_id: 3, equipment_name: 'EQP003'},
+					{equipment_id: 1, equipment_name: 'EQP001', equipment_price: 1.00, equipment: 'EQP001' + ' ￥1.00'},
+					{equipment_id: 2, equipment_name: 'EQP002', equipment_price: 2.00, equipment: 'EQP002' + ' ￥2.00'}, 
+					{equipment_id: 3, equipment_name: 'EQP003', equipment_price: 3.00, equipment: 'EQP003' + ' ￥3.00'},
 				],
 				equipmentIndex: 0,
 				/* 装备 e */
 				
 				equipmentId: '', // 选中的装备ID
 				/* 选择装备 e */
+				
+				/* 确认支付 s */
+				price: '', // 入场费
+				/* 确认支付 e */
 			}
 		},
 		onLoad(event) {
 			// console.log(event)
 			this.venueData = JSON.parse(event.venueData);
 			
-			this.sessionId = this.sessionArray[this.index].session_id; // 选中的场次ID
-			console.log('选中的场次ID', this.sessionId)
+			/* this.sessionId = this.sessionArray[this.index].session_id; // 选中的场次ID
+			console.log('选中的场次ID', this.sessionId) */
 		},
 		methods: {
 			/* 步骤条 s */
@@ -410,6 +421,27 @@
 						icon: 'none'
 					});
 					this.current = this.active = 4;
+					return;
+				}
+				// 计算入场费
+				if (this.active >= 4) {
+					// 计算入场费
+					this.price = (this.sessionArray[this.index].session_price + this.roomList[this.currentRoom].room_price) * this.inputClearValue
+					+ this.equipmentArray[this.equipmentIndex].equipment_price;
+				}
+				// 发起支付
+				if (this.active == 5) {
+					let self = this;
+					uni.showModal({
+						title: '发起支付',
+						success:function(res){
+							if (res.confirm) {
+								uni.navigateTo({
+									url: '/pages/API/request-payment/request-payment?price=' + self.price
+								})
+							}
+						}
+					});
 					return;
 				}
 				
@@ -490,6 +522,7 @@
 				this.timeData = e
 				this.infoShow = true
 				
+				// TODO：根据日期显示场次
 				if (e.fulldate) {
 					
 				}
@@ -586,7 +619,7 @@
 		color: #031e3c
 	}
 
-	.example-title:after {
+	/* .example-title:after {
 		content: '';
 		position: absolute;
 		left: 0;
@@ -598,7 +631,7 @@
 		border-top-right-radius: 10upx;
 		border-bottom-right-radius: 10upx;
 		background-color: #031e3c
-	}
+	} */
 
 	.example .example-title {
 		margin: 40upx 0
