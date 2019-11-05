@@ -82,12 +82,13 @@
 				<!-- 房间 e -->
 				<!-- 人数 s -->
 				<view v-show="current === 3">
-					<view class="uni-form-item uni-column">
+					<!-- <view class="uni-form-item uni-column">
 						<view class="with-fun">
 							<input class="uni-input" type="number" placeholder="输入人数" :value="inputClearValue" @input="clearInput" />
 							<view class="uni-icon uni-icon-clear" v-if="showClearIcon" @click="clearIcon"></view>
 						</view>
-					</view>
+					</view> -->
+					<uni-number-box :min="0" :max="3" :value="inputClearValue" @change="changeNumber"></uni-number-box>
 				</view>
 				<!-- 人数 e -->
 				<!-- 装备 s -->
@@ -108,7 +109,6 @@
 					入场费<text class="red uni-bold">￥{{ price }}</text>，确认支付
 				</view>
 			</view>
-			
 		</view>
 		
 		<view class="example-title">
@@ -123,7 +123,7 @@
 </template>
 
 <script>
-	import {uniSteps, uniSegmentedControl, uniGrid, uniGridItem, uniCalendar, uniTag} from '@dcloudio/uni-ui'
+	import {uniSteps, uniSegmentedControl, uniGrid, uniGridItem, uniCalendar, uniTag, uniNumberBox} from '@dcloudio/uni-ui'
 
 	export default {
 		components: {
@@ -132,6 +132,7 @@
 			uniGrid, uniGridItem, // Grid 宫格
 			uniCalendar, // Calendar 日期
 			uniTag, // Tag 标签
+			uniNumberBox, // NumberBox 数字输入框
 		},
 		data() {
 			/* 日期 s */
@@ -556,7 +557,7 @@
 			/* 选择房间 e */
 			
 			/* 选择人数 s */
-			// 清除输入框的内容
+			/* // 清除输入框的内容
 			clearInput: function(event) {
 				this.inputClearValue = event.target.value;
 				if (event.target.value.length > 0) {
@@ -569,6 +570,10 @@
 			clearIcon: function() {
 				this.inputClearValue = '';
 				this.showClearIcon = false;
+			}, */
+			
+			changeNumber(value) {
+				this.inputClearValue = value
 			},
 			/* 选择人数 e */
 			

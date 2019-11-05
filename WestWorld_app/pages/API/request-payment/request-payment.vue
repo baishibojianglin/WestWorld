@@ -13,7 +13,7 @@
                 <!-- #ifdef MP-WEIXIN || MP-QQ || H5 -->
                 <button type="primary" @click="weixinPay" :loading="loading">微信支付</button>
                 <!-- #endif -->
-                <!-- #ifdef APP-PLUS || H5 -->
+                <!-- #ifdef APP-PLUS -->
                 <template v-if="providerList.length > 0">
                     <button v-for="(item,index) in providerList" :key="index" @click="requestPayment(item,index)"
                         :loading="item.loading">{{item.name}}支付</button>
@@ -35,9 +35,9 @@
             }
         },
         onLoad: function(event) {
-			 // 入场费
+			// 入场费
 			this.price = event.price;
-		
+			
             // #ifdef APP-PLUS
             uni.getProvider({
                 service: "payment",
