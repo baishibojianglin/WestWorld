@@ -27,6 +27,6 @@ class Venue extends Validate
 
     protected $scene = [
         'login' => ['venue_account' => 'require|max:20', 'venue_account.unique' => 'unique:venue, venue_account^venue_id', 'password'], // 忽略唯一(unique)类型字段venue_account对自身数据的唯一性验证
-        'update' => ['venue_account' => 'require|max:20', 'venue_account.unique' => 'unique:venue, venue_account^venue_id', 'password'],
+        'update' => ['venue_account' => 'require|max:20', 'venue_account.unique' => 'unique:venue, venue_account^venue_id'],
     ];
 }

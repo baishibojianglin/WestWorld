@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User:
+ * User: Yan
  * Date: 2019/7/18
  * Time: 15:22
  */
@@ -17,5 +17,5 @@ return [
     'app_sign_cache_time' => 20, // sign缓存失效时间
     'login_time_out_day' => 7, // 登录token的失效时间
 
-    'SERVER_NAME' => 'http://' . $_SERVER['SERVER_NAME'] . '/index.php/', // 当前域名
+    'I_SERVER_NAME' => 'http://' . $_SERVER['SERVER_NAME'] . '/index.php/', // 当前域名
 ];

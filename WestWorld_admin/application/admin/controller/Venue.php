@@ -119,6 +119,11 @@ class Venue extends Base
             // 数据需要校验：参照validate机制
             // venue_name唯一性,venue_account自动生成且唯一性…
 
+            // 处理数据
+            if (!empty($data['password'])) { // 密码
+                $data['password'] = IAuth::encrypt($data['password']);
+            }
+
             // 入库操作
             try {
                 $id = model('Venue')->add($data, $this->venue_id);
@@ -127,7 +132,8 @@ class Venue extends Base
                 //return $this->result('', 0, '新增失败');
             }
             if ($id) {
-                return show(1, 'ok', ['jump_url' => url('Venue/index')], 200);
+                return show(config('code.success'), '新增成功', ['url' => url('Venue/index')], 201);
+                //return show(config('code.success'), '新增成功', ['url' => config('app.I_SERVER_NAME') . $this->module . '/Venue/index'], 201);
                 //return $this->result(['jump_url' => url('Venue/index')], 1, 'ok');
             } else {
                 return show(0, '新增失败', [], 400);
@@ -171,12 +177,15 @@ class Venue extends Base
     /**
      * 显示编辑资源表单页.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \think\Response
      */
     public function edit($id)
     {
-        //
+        // 判断为GET请求
+        if (request()->isGet()) {
+            return $this->fetch();
+        }
     }
 
     /**
@@ -188,73 +197,160 @@ class Venue extends Base
      */
     public function update(Request $request, $id)
     {
-        // 传入的数据
-        $param = input('param.');
+        // 判断为PUT请求
+        if (request()->isPut()) {
+            // 传入的数据
+            $param = input('param.');
 
-        // validate验证
-        $validate = validate('Venue');
-        if (!$validate->check($param, [], 'update')) {
-            return show(config('code.error'), $validate->getError(), [], 403);
-        }
+            // 获取更新成功前的场馆缩略图thumb
+            $venue = model('Venue')->field('thumb')->find($id);
 
-        // 判断数据是否存在
-        $data = [];
-        if (!empty($param['venue_name'])) { // 场馆名称
-            $data['venue_name'] = trim($param['venue_name']);
-        }
-        if (!empty($param['venue_account'])) { // 场馆账号
-            $data['venue_account'] = trim($param['venue_account']);
-        }
-        if (!empty($param['password'])) { // 密码
-            $data['password'] = IAuth::encrypt($param['password']);
-        }
-        if (isset($param['grade_id'])) { // 场馆等级id
-            $data['grade_id'] = input('param.grade_id', null, 'intval');
-        }
-        if (!empty($param['venue_phone'])) { // 场馆电话
-            $data['venue_phone'] = trim($param['venue_phone']);
-        }
-        if (!empty($param['address'])) { // 详细地址
-            $data['address'] = trim($param['address']);
-        }
-        if (!empty($param['venue_description'])) { // 场馆介绍
-            $data['venue_description'] = $param['venue_description'];
-        }
-        if (!empty($param['venue_manager'])) { // 店长
-            $data['venue_manager'] = trim($param['venue_manager']);
-        }
-        if (!empty($param['manager_phone'])) { // 店长电话
-            $data['manager_phone'] = trim($param['manager_phone']);
-        }
-        if (isset($param['status'])) { // 状态 //不能用 !empty() ，否则 status = 0 时也判断为空
-            $data['status'] = input('param.status', null, 'intval');
-        }
+            // validate验证
+            $validate = validate('Venue');
+            if (!$validate->check($param, [], 'update')) {
+                return show(config('code.error'), $validate->getError(), [], 403);
+            }
 
-        if (empty($data)) {
-            return show(config('code.error'), '数据不合法', [], 404);
-        }
+            // 判断数据是否存在
+            $data = [];
+            if (!empty($param['venue_name'])) { // 场馆名称
+                $data['venue_name'] = trim($param['venue_name']);
+            }
+            if (!empty($param['venue_account'])) { // 场馆账号
+                $data['venue_account'] = trim($param['venue_account']);
+            }
+            if (!empty($param['password'])) { // 密码
+                $data['password'] = IAuth::encrypt($param['password']);
+            }
+            if (isset($param['grade_id'])) { // 场馆等级id
+                $data['grade_id'] = input('param.grade_id', null, 'intval');
+            }
+            if (!empty($param['venue_phone'])) { // 场馆电话
+                $data['venue_phone'] = trim($param['venue_phone']);
+            }
+            if (!empty($param['address'])) { // 详细地址
+                $data['address'] = trim($param['address']);
+            }
+            if (!empty($param['longitude'])) { // 场馆经度
+                $data['longitude'] = trim($param['longitude']);
+            }
+            if (!empty($param['latitude'])) { // 场馆纬度
+                $data['latitude'] = trim($param['latitude']);
+            }
+            if (!empty($param['thumb'])) { // 场馆缩略图
+                $data['thumb'] = trim($param['thumb']);
+            }
+            if (!empty($param['venue_description'])) { // 场馆介绍
+                $data['venue_description'] = $param['venue_description'];
+            }
+            if (!empty($param['venue_manager'])) { // 店长
+                $data['venue_manager'] = trim($param['venue_manager']);
+            }
+            if (!empty($param['manager_phone'])) { // 店长电话
+                $data['manager_phone'] = trim($param['manager_phone']);
+            }
+            if (isset($param['status'])) { // 状态 //不能用 !empty() ，否则 status = 0 时也判断为空
+                $data['status'] = input('param.status', null, 'intval');
 
-        // 更新
-        try {
-            $result = model('Venue')->save($data, ['venue_id' => $id]); // 更新
-        } catch (\Exception $e) {
-            throw new ApiException($e->getMessage(), 500, config('code.error'));
-        }
-        if ($result) {
-            return show(config('code.success'), '更新成功', [], 201);
+                if (0 == $param['status'] && isset($param['venue_close_info'])) { // 场馆关闭原因
+                    $data['venue_close_info'] = trim($param['venue_close_info']);
+                }
+                if (0 != $param['status']) {
+                    $data['venue_close_info'] = '';
+                }
+            }
+
+            if (empty($data)) {
+                return show(config('code.error'), '数据不合法', [], 404);
+            }
+
+            // 更新
+            try {
+                $result = model('Venue')->save($data, ['venue_id' => $id]); // 更新
+            } catch (\Exception $e) {
+                throw new ApiException($e->getMessage(), 500, config('code.error'));
+            }
+            if (false === $result) {
+                return show(config('code.error'), '更新失败', [], 403);
+            } else {
+
+                // 当为更新状态时，直接刷新当前页面
+                if (array_key_exists('status', $param) && count($param) == 2) { // 传入2个参数，其中一个是 status
+                    return $this->redirect('venue/index');
+                }
+
+                // 删除更新成功前的文章缩略图thumb文件
+                if (!empty($param['thumb']) && trim($param['thumb']) != $venue['thumb']) {
+                    // 删除文件
+                    @unlink(ROOT_PATH . 'public' . DS . $venue['thumb']);
+                }
+
+                return show(config('code.success'), '更新成功', ['url' => 'parent'], 201);
+            }
         } else {
-            return show(config('code.error'), '更新失败', [], 403);
+            return show(config('code.error'), '请求不合法', [], 400);
         }
     }
 
     /**
-     * 删除指定资源
+     * 删除指定场馆资源
      *
-     * @param  int  $id
+     * @param int $id
      * @return \think\Response
+     * @throws ApiException
      */
     public function delete($id)
     {
-        //
+        // 判断为DELETE请求
+        if (request()->isDelete()) {
+            // 获取指定的场馆
+            try {
+                $data = model('Venue')->find($id);
+                //return show(config('code.success'), 'ok', $data);
+            } catch (\Exception $e) {
+                throw new ApiException($e->getMessage(), 500, config('code.error'));
+            }
+
+            // 判断数据是否存在
+            if ($data['venue_id'] != $id) {
+                return show(config('code.error'), '数据不存在');
+            }
+
+            // 判断删除条件：场馆状态
+            if (in_array($data['status'], [1, 2])) {
+                return show(config('code.error'), '删除失败：场馆待审核、或已启用', ['url' => 'deleteFalse']);
+            }
+
+            // 软删除
+            if ($data['is_delete'] != config('code.is_delete')) {
+                // 捕获异常
+                try {
+                    $result = model('Venue')->softDelete('venue_id', $id);
+                } catch (\Exception $e) {
+                    throw new ApiException($e->getMessage(), 500, config('code.error'));
+                }
+
+                if (!$result) {
+                    return show(config('code.error'), '移除失败', ['url' => 'parent']);
+                } else {
+                    return show(config('code.success'), '移除成功', ['url' => 'delete']);
+                }
+            }
+
+            // 真删除
+            if ($data['is_delete'] == config('code.is_delete')) {
+                $result = model('Venue')->destroy($id);
+                if (!$result) {
+                    return show(config('code.error'), '删除失败', ['url' => 'parent']);
+                } else {
+                    // 删除文件
+                    @unlink(ROOT_PATH . 'public' . DS . $data['thumb']);
+
+                    return show(config('code.success'), '删除成功', ['url' => 'delete']);
+                }
+            }
+        } else {
+            return show(config('code.error'), '请求不合法', [], 400);
+        }
     }
 }

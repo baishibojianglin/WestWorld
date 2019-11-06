@@ -346,8 +346,8 @@
 				/* 选择房间 e */
 				
 				/* 选择人数 s */
-				showClearIcon: false,
-				inputClearValue: '',
+				showClearIcon: false, // 清除按钮标识
+				inputClearValue: '', // 人数
 				/* 选择人数 e */
 				
 				/* 选择装备 e */
@@ -557,7 +557,7 @@
 			/* 选择房间 e */
 			
 			/* 选择人数 s */
-			/* // 清除输入框的内容
+			/* // 输入内容并显示清除按钮
 			clearInput: function(event) {
 				this.inputClearValue = event.target.value;
 				if (event.target.value.length > 0) {
@@ -566,7 +566,7 @@
 					this.showClearIcon = false;
 				}
 			},
-			// 清除输入框的按钮
+			// 清除输入框的内容并隐藏清除按钮
 			clearIcon: function() {
 				this.inputClearValue = '';
 				this.showClearIcon = false;

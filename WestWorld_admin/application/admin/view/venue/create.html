@@ -3,7 +3,7 @@
 </head>
 <body class="layui-view-body">
 <div class="layui-content">
-    <div class="layui-page-header" >
+    <div class="layui-page-header layui-hide" >
         <div class="pagewrap">
             <span class="layui-breadcrumb">
                 <a href="">首页</a>
@@ -14,7 +14,7 @@
     </div>
     <div class="layui-row">
         <div class="layui-card">
-            <div class="layui-card-header">添加场馆</div>
+            <div class="layui-card-header">添加场馆 <a href="javascript:history.go(-1)" title="返回" class="layui-btn layui-btn-sm" style="float: right;margin-top: 5px"><i class="layui-icon layui-icon-return"></i> 返回</a></div>
             <div class="layui-card-body">
 
                 <form class="layui-form" lay-filter="layui_form">
@@ -55,13 +55,28 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">场馆电话</label>
                         <div class="layui-input-block">
-                            <input type="text" name="venue_phone" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+                            <input type="text" name="venue_phone" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required|phone">
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">详细地址</label>
                         <div class="layui-input-block">
                             <input type="text" name="address" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">场馆经纬度</label>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">经度EW</label>
+                            <div class="layui-input-inline" style="max-width: 50%">
+                                <input type="number" step="0.000001" name="longitude" placeholder="经度EW" autocomplete="off" class="layui-input" lay-verify="required|number">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">经纬度需精确到小数点后6位</div>
+                            <!--<div class="layui-form-mid">-</div>-->
+                            <label class="layui-form-label">纬度NS</label>
+                            <div class="layui-input-inline" style="max-width: 50%;">
+                                <input type="number" step="0.000001" name="latitude" placeholder="纬度NS" autocomplete="off" class="layui-input" lay-verify="required|number">
+                            </div>
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -72,15 +87,15 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">店长</label>
+                        <label class="layui-form-label">馆长</label>
                         <div class="layui-input-block">
                             <input type="text" name="venue_manager" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">店长电话</label>
+                        <label class="layui-form-label">馆长电话</label>
                         <div class="layui-input-block">
-                            <input type="text" name="manager_phone" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+                            <input type="text" name="manager_phone" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required|phone">
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -149,6 +164,13 @@
         form.on('submit(*)', function(data){
             //layer.msg(JSON.stringify(data.field));
 
+            // 判断场馆缩略图是否已上传
+            if(!thumb) {
+                layer.msg('请上传场馆缩略图', {icon: 7});
+                return false;
+            }
+            data.field.thumb = thumb; // 对 thumb 字段赋值
+
             /*ajax请求 s*/
             // TODO：在 /public/static/ 目录下新建 common.js 文件，封装公用 ajax 方法
             var _data = data.field;
@@ -170,7 +192,7 @@
         var uploadInst = upload.render({
             elem: '#thumb' //绑定元素
             ,url: '{:url("admin/upload/uploadThumb")}' //上传接口
-            ,data: {name: "thumb", dir: "member"}
+            ,data: {name: "thumb", dir: "venue"}
             ,field: 'thumb' // 设定文件域的字段名
             ,done: function(res){
                 //上传完毕回调
