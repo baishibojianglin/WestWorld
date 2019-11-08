@@ -1,0 +1,99 @@
+{include file="public/_meta" /}
+{load href="/static/layui_admin/css/login.css" /}<!--<link rel="stylesheet" href="__STATIC__/layui_admin/css/login.css">-->
+</head>
+<body class="login-wrap">
+
+<div class="login-container">
+    <form class="login-form layui-form">
+        <div class="input-group">
+            <input type="text" name="venue_account" id="username" class="input-field" required lay-verify="required|username" autocomplete="off">
+            <label for="username" class="input-label">
+                <span class="label-title"><i class="layui-icon">&#xe66f;</i> 用户名</span>
+            </label>
+        </div>
+
+        <div class="input-group">
+            <input type="password" name="password" id="password" class="input-field" required lay-verify="required|password" autocomplete="off">
+            <label for="password" class="input-label">
+                <span class="label-title"><i class="layui-icon">&#xe673;</i> 密码</span>
+            </label>
+        </div>
+
+        <div class="input-group">
+            <input type="text" name="captcha" id="captcha" class="input-field" required lay-verify="required|captcha" autocomplete="off">
+            <label for="captcha" class="input-label">
+                <span class="label-title"><i class="layui-icon layui-icon-vercode"><!--&#xe679;--></i> 验证码</span>
+            </label>
+
+        </div>
+        <div class="layui-col-md-offset5">
+            <img src="/index.php/captcha" alt="" title="点击刷新验证码" id="captcha_img" onclick="reloadcode(this)">
+        </div>
+
+        <button class="login-button" lay-submit lay-filter="formDemo">登 录<i class="ai ai-enter"></i></button>
+    </form>
+</div>
+
+{include file="public/_footer" /}
+<!--<script src="__STATIC__/layui_admin/js/index.js" data-main="login"></script>-->
+{load href="/static/layui_admin/js/login.js" /}<!--<script src="__STATIC__/layui_admin/js/login.js"></script>-->
+
+<script type="text/javascript">
+
+    /**
+     * 刷新验证码
+     * @param obj
+     */
+    function reloadcode(obj) {
+        obj.src = '/index.php/captcha?id=' + Math.random();
+    }
+
+    layui.use('form', function(){
+        var form = layui.form;
+
+        // 表单验证：自定义验证规则
+        form.verify({
+            username: function(value, item){ // value：表单的值、item：表单的DOM对象
+                if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
+                    return '用户名不能有特殊字符';
+                }
+                if(/(^\_)|(\__)|(\_+$)/.test(value)){
+                    return '用户名首尾不能出现下划线\'_\'';
+                }
+                if(/^\d+\d+\d$/.test(value)){
+                    return '用户名不能全为数字';
+                }
+            }
+
+            //我们既支持上述函数式的方式，也支持下述数组的形式
+            //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+            ,password: [
+                /^[\S]{6,12}$/
+                ,'密码必须6到12位，且不能出现空格'
+            ]
+
+            ,captcha: [
+                /^[\S]{4}$/
+                ,'验证码必须4位，且不能出现空格'
+            ]
+        });
+
+        // 监听提交
+        form.on('submit(formDemo)', function(data){
+            //layer.msg(JSON.stringify(data.field));
+
+            /*ajax请求 s*/
+            // TODO：在 /public/static/ 目录下新建 common.js 文件，封装公用 ajax 方法
+            var _data = data.field;
+            var url = "{:url('Login/check')}";
+            ajaxRequest(url, 'post', _data);
+            /*ajax请求 e*/
+
+            return false; // 阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+
+</script>
+
+</body>
+</html>

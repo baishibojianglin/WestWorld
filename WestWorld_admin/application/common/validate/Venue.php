@@ -13,16 +13,16 @@ use think\Validate;
 class Venue extends Validate
 {
     protected $rule = [
-        'venue_account' => 'require|unique:venue|max:20',
-        'password' => 'require|max:20',
+        'venue_account|场馆账号' => 'require|unique:venue|max:20',
+        'password|密码' => 'require|max:20',
     ];
 
     protected $message = [
-        'venue_account.require' => '场馆账号不能为空',
+        //'venue_account.require' => '场馆账号不能为空',
         'venue_account.unique' => '场馆已存在', // 唯一性
-        'venue_account.max'     => '场馆账号长度不能超过20',
-        'password.require' => '密码不能为空',
-        'password.max'     => '密码长度不能超过20',
+        //'venue_account.max'     => '场馆账号长度不能超过20',
+        //'password.require' => '密码不能为空',
+        //'password.max'     => '密码长度不能超过20',
     ];
 
     protected $scene = [

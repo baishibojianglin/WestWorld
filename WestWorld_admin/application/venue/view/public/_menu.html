@@ -3,10 +3,10 @@
 
         <div class="custom-logo">
             <!--<img src="__STATIC__/layui_admin/images/logo.png" alt=""/>-->
-            <h1>WestWorld Admin</h1>
+            <h1>WestWorld Venue</h1>
         </div>
 
-        <!--<ul id="Nav" class="layui-nav layui-nav-tree">
+        <ul id="Nav" class="layui-nav layui-nav-tree">
             <li class="layui-nav-item">
                 <a href="javascript:;">
                     <i class="layui-icon">&#xe68e;</i>
@@ -16,7 +16,7 @@
                     <dd><a href="console">控制台</a></dd>
                 </dl>
             </li>
-            <li class="layui-nav-item">
+            <!--<li class="layui-nav-item">
                 <a href="javascript:;">
                     <i class="layui-icon">&#xe857;</i>
                     <em>组件</em>
@@ -32,40 +32,41 @@
                         </dl>
                     </dd>
                 </dl>
+            </li>-->
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <i class="layui-icon">&#xe715;</i>
+                    <em>场馆</em>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="{:url('Venue/index')}">场馆信息</a></dd>
+                    <dd><a href="{:url('Scene/index')}">场景</a></dd>
+                    <dd><a href="{:url('Session/index')}">场次</a></dd>
+                    <dd><a href="{:url('SceneRoom/index')}">场次</a></dd>
+                    <dd><a href="{:url('Equipment/index')}">装备</a></dd>
+                </dl>
             </li>
             <li class="layui-nav-item">
                 <a href="javascript:;">
-                    <i class="layui-icon">&#xe770;</i>
-                    <em>用户</em>
+                    <i class="layui-icon">&#xe60a;</i>
+                    <em>比赛订单</em>
                 </a>
                 <dl class="layui-nav-child">
-                    <dd><a href="views/users.html">用户组</a></dd>
-                    <dd><a href="views/operaterule.html">权限配置</a></dd>
+                    <dd><a href="{:url('Order/index')}">已完成订单</a></dd>
+                    <dd><a href="{:url('Order/index')}">进行中订单</a></dd>
+                    <dd><a href="{:url('Order/index')}">预约订单</a></dd>
                 </dl>
             </li>
-        </ul>-->
-        <ul id="Nav" class="layui-nav layui-nav-tree">
-            <!--一级菜单 s-->
-            {volist name="menus" id="vo" empty="暂时没有数据" }
-            {if condition="$vo['level'] eq 0"}
             <li class="layui-nav-item">
                 <a href="javascript:;">
-                    <i class="layui-icon">{$vo.icon}</i>
-                    <em>{$vo.title}</em>
+                    <i class="layui-icon">&#xe67b;</i>
+                    <em>会员积分</em>
                 </a>
                 <dl class="layui-nav-child">
-                    <!--二级菜单 s-->
-                    {volist name="menus" id="v" empty="暂时没有数据" }
-                    {if condition="$v['pid'] eq $vo['id']"}
-                    <dd><a href="{:url($v.name)}">{$v.title}</a></dd>
-                    {/if}
-                    {/volist}
-                    <!--二级菜单 e-->
+                    <dd><a href="{:url('Order/index')}">已兑换积分</a></dd>
+                    <dd><a href="{:url('Order/index')}">未兑换积分</a></dd>
                 </dl>
             </li>
-            {/if}
-            {/volist}
-            <!--一级菜单 e-->
         </ul>
 
     </div>

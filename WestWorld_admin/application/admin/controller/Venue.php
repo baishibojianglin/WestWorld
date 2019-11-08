@@ -93,6 +93,16 @@ class Venue extends Base
     }
 
     /**
+     * 获取场馆资源列表（静态方法）
+     * @return false|\PDOStatement|string|\think\Collection
+     */
+    public static function venueList()
+    {
+        $data = db('venue')->field('venue_id, venue_name')->where('status', config('code.status_enable'))->select();
+        return $data;
+    }
+
+    /**
      * 显示创建资源表单页.
      *
      * @return \think\Response

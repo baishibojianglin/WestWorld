@@ -28,6 +28,7 @@ class Venue extends Common
 
             // 查询条件
             $map = [];
+            $map['status'] = config('code.status_enable'); // 启用状态
             if (!empty($param['grade_id'])) {
                 $map['grade_id'] = input('param.grade_id', 0, 'intval'); //intval($param['grade_id'])
             }

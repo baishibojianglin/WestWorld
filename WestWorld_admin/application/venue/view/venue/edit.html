@@ -14,7 +14,7 @@
     </div>
     <div class="layui-row">
         <div class="layui-card">
-            <div class="layui-card-header">编辑场馆</div>
+            <div class="layui-card-header">编辑场馆 <a href="javascript:history.go(-1)" title="返回" class="layui-btn layui-btn-sm" style="float: right;margin-top: 5px"><i class="layui-icon layui-icon-return"></i> 返回</a></div>
             <div class="layui-card-body">
 
                 <form class="layui-form" lay-filter="layui_form">
@@ -34,16 +34,6 @@
                         <label class="layui-form-label">密码</label>
                         <div class="layui-input-block">
                             <input type="password" name="password" placeholder="请输入" autocomplete="off" class="layui-input">
-                        </div>
-                    </div>
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">等级</label>
-                        <div class="layui-input-block">
-                            <select name="grade_id" lay-filter="grade_id" lay-verify="required">
-                                <option value="">请选择…</option>
-                                <option value="0">0</option>
-                                <option value="1">1</option>
-                            </select>
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -99,22 +89,9 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">状态</label>
-                        <div class="layui-input-block">
-                            <input type="radio" name="status" value="0" title="禁用" checked>
-                            <input type="radio" name="status" value="1" title="启用">
-                            <input type="radio" name="status" value="2" title="待审核">
-                        </div>
-                    </div>
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">场馆关闭原因</label>
-                        <div class="layui-input-block">
-                            <input type="text" name="venue_close_info" placeholder="请输入" autocomplete="off" class="layui-input">
-                        </div>
-                    </div>
-                    <div class="layui-form-item">
                         <div class="layui-input-block">
                             <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+                            <button type="button" class="layui-btn layui-btn-primary" onclick="history.go(-1)">返回</button>
                         </div>
                     </div>
                 </form>
@@ -152,9 +129,9 @@
         // 给表单赋值
         /*ajax GET请求 s*/
         $.ajax({
-            url: '{:url("admin/venue/read")}',
+            url: '{:url("venue/venue/read")}',
             type: 'get',
-            data: {id: '{$_GET["id"]}'}, // {$_GET["id"]} 为 admin/Venue 控制器 edit($id) 方法的 $id 参数值
+            data: {id: ''}, // id 为 venue/Venue 控制器 edit($id) 方法的 $id 参数值
             dataType: 'json',
             success: function (data, textStatus, jqXHR) {
 
@@ -163,15 +140,12 @@
                     "venue_id": data.data.venue_id // "name": "value"
                     ,"venue_name": data.data.venue_name
                     ,"venue_account": data.data.venue_account
-                    ,"grade_id": data.data.grade_id
                     ,"venue_phone": data.data.venue_phone
                     ,"address": data.data.address
                     ,"longitude": data.data.longitude
                     ,"latitude": data.data.latitude
                     ,"venue_manager": data.data.venue_manager
                     ,"manager_phone": data.data.manager_phone
-                    ,"status": data.data.status
-                    ,"venue_close_info": data.data.venue_close_info
                 });
 
                 // 显示场馆缩略图thumb并赋值
@@ -200,7 +174,7 @@
             /*ajax请求 s*/
             // TODO：在 /public/static/ 目录下新建 common.js 文件，封装公用 ajax 方法
             var _data = data.field;
-            var url = "{:url('admin/venue/update', array('id' => $_GET['id']))}";
+            var url = "{:url('venue/venue/update', array('id' => 0))}";
             ajaxRequest(url, 'put', _data);
             /*ajax请求 e*/
 

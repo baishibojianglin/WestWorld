@@ -36,7 +36,8 @@ class Login extends Base
         if($isLogin) {
             return $this->redirect('Index/index');
         } else {
-            return show(config('code.error'), '未登录', ['url' => $this->module . '/Login/index'], 401); //return $this->fetch();
+            //return show(config('code.error'), '未登录', ['url' => $this->module . '/Login/index'], 401);
+            return $this->fetch();
         }
     }
 

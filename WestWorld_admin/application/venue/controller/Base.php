@@ -66,6 +66,7 @@ class Base extends Controller
         /*// 获取session
         $venue_data = session(config('venue.session_venue'), '', config('venue.session_venue_scope'));*/
         if ($this->session_venue && $this->session_venue->venue_id) {
+            $this->assign('session_venue', $this->session_venue); // 模板变量赋值
             return true;
         }
         return false;
