@@ -1,0 +1,105 @@
+{include file="public/_meta" /}
+</head>
+<body class="layui-view-body">
+<div class="layui-content">
+    <div class="layui-row">
+        <div class="layui-card">
+            <div class="layui-card-header">添加场次 <a href="javascript:history.go(-1)" title="返回" class="layui-btn layui-btn-sm" style="float: right;margin-top: 5px"><i class="layui-icon layui-icon-return"></i> 返回</a></div>
+            <div class="layui-card-body">
+
+                <form class="layui-form" lay-filter="layui_form">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">场景</label>
+                        <div class="layui-input-block">
+                            <select name="scene_id" lay-filter="scene_id" lay-verify="required">
+                                <option value="">请选择…</option>
+                                {volist name="sceneList" id="vo"}
+                                <option value="{$vo.scene_id}">{$vo.scene_name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">场次名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="session_name" placeholder="请输入，如“第n场”" autocomplete="off" class="layui-input" lay-verify="required">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">场次价格/￥</label>
+                        <div class="layui-input-block">
+                            <input type="number" step="0.01" min="0" name="session_price" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" id="session_time_label">场次时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="session_time" placeholder="HH:mm:ss - HH:mm:ss" autocomplete="off" class="layui-input" id="session_time" lay-verify="required">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">停场日期</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="close_date" placeholder="请输入" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-input-block layui-form-mid layui-word-aux">可预订日期内指定的停场日期，格式为“yyyy-MM-dd”，多个日期以英文逗号“,”分隔，格式为“yyyy-MM-dd,yyyy-MM-dd”</div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-block">
+                            <input type="radio" name="status" value="0" title="禁用" checked>
+                            <input type="radio" name="status" value="1" title="启用">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<script src="__STATIC__/layui/layui.js"></script>-->
+{include file="public/_footer" /}
+
+<script>
+    /**
+     * 日期和时间组件 - layui.laydate
+     * 表单模块 - layui.form
+     */
+    layui.use(['laydate', 'form'], function(){
+        var laydate = layui.laydate, form = layui.form;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#session_time' //指定元素
+            ,type: 'time'
+            ,range: true //或 range: '~' 来自定义分割字符
+            ,min: '10:00:00'
+            ,max: '22:00:00'
+            ,eventElem: '#session_time_label'
+            ,trigger: 'click'
+        });
+
+        // 监听submit提交
+        form.on('submit(*)', function(data){
+            //layer.msg(JSON.stringify(data.field));
+
+            /*ajax请求 s*/
+            // TODO：在 /public/static/ 目录下新建 common.js 文件，封装公用 ajax 方法
+            var _data = data.field;
+            var url = "{:url('venue/session/save')}";
+            ajaxRequest(url, 'post', _data);
+            /*ajax请求 e*/
+
+            return false; // 阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+</body>
+</html>

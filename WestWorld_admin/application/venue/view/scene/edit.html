@@ -141,8 +141,8 @@
         //执行实例
         var uploadInst = upload.render({
             elem: '#thumb' //绑定元素
-            ,url: '{:url("admin/upload/uploadThumb")}' //上传接口
-            ,data: {name: "thumb", dir: "venue"}
+            ,url: '{:url("venue/upload/uploadThumb")}' //上传接口
+            ,data: {name: "thumb", dir: "scene"}
             ,field: 'thumb' // 设定文件域的字段名
             ,done: function(res){
                 //上传完毕回调

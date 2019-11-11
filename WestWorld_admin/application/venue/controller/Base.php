@@ -40,6 +40,7 @@ class Base extends Controller
      * @var mixed
      */
     public $session_venue;
+    public static $static_session_venue; // 静态属性
 
     /**
      * 初始化
@@ -49,6 +50,7 @@ class Base extends Controller
         // 初始化参数
         $this->module = request()->module();
         $this->session_venue = session(config('venue.session_venue'), '', config('venue.session_venue_scope'));
+        self::$static_session_venue = session(config('venue.session_venue'), '', config('venue.session_venue_scope'));
 
         // 判断是否登录
         $isLogin = $this->isLogin();

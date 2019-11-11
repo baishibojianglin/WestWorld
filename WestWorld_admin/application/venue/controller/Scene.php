@@ -60,6 +60,20 @@ class Scene extends Base
     }
 
     /**
+     * 获取场景资源列表（静态方法）
+     * @return false|\PDOStatement|string|\think\Collection
+     */
+    public static function sceneList()
+    {
+        $map = [
+            'venue_id'=> self::$static_session_venue->venue_id,
+            'status' => config('code.status_enable')
+        ];
+        $data = db('scene')->field('scene_id, scene_name')->where($map)->select();
+        return $data;
+    }
+
+    /**
      * 显示创建资源表单页.
      *
      * @return \think\Response

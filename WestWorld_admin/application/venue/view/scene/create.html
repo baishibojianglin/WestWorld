@@ -22,7 +22,7 @@
                         </button>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">场馆介绍</label>
+                        <label class="layui-form-label">场景描述</label>
                         <div class="layui-input-block" style="position: relative;z-index: 1">
                             <!-- UMeditor 加载编辑器的容器 -->
                             <script type="text/plain" id="container" name="scene_description" class="layui-textarea" style="height: 240px;"></script>
@@ -112,7 +112,7 @@
         //执行实例
         var uploadInst = upload.render({
             elem: '#thumb' //绑定元素
-            ,url: '{:url("admin/upload/uploadThumb")}' //上传接口
+            ,url: '{:url("venue/upload/uploadThumb")}' //上传接口
             ,data: {name: "thumb", dir: "scene"}
             ,field: 'thumb' // 设定文件域的字段名
             ,done: function(res){

@@ -6,8 +6,8 @@
     <div class="layui-page-header layui-hide">
         <div class="pagewrap">
             <span class="layui-breadcrumb">
-                <a href="">首页</a> |
-                <a href="">场馆</a> |
+                <a href="">首页</a>
+                <a href="">场馆</a>
                 <a href="javascript:;"><cite>场馆</cite></a>
             </span>
         </div>
@@ -149,8 +149,8 @@
                 });
 
                 // 显示场馆缩略图thumb并赋值
-                $('#thumb').after(' <img src="/' + data.data.thumb + '" alt="' + data.data.thumb + '" title="' + data.data.thumb + '" class="layui-upload-img" width="200">');
                 thumb = data.data.thumb;
+                $('#thumb').after(' <img src="/' + thumb + '" alt="' + thumb + '" title="' + thumb + '" class="layui-upload-img" width="200">');
 
                 // 给场馆介绍venue_description赋值
                 $('#container').html(data.data.venue_description);
@@ -191,7 +191,7 @@
         //执行实例
         var uploadInst = upload.render({
             elem: '#thumb' //绑定元素
-            ,url: '{:url("admin/upload/uploadThumb")}' //上传接口
+            ,url: '{:url("venue/upload/uploadThumb")}' //上传接口
             ,data: {name: "thumb", dir: "venue"}
             ,field: 'thumb' // 设定文件域的字段名
             ,done: function(res){

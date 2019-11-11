@@ -22,7 +22,7 @@ class Session extends Base
     {
         // 判断为GET请求
         if (request()->isGet()) {
-            return $this->fetch();
+            return $this->fetch('', ['sceneList' => Scene::sceneList()]);
         }
     }
 
@@ -40,16 +40,16 @@ class Session extends Base
 
             // 查询条件
             $map = [];
-            $map['s.venue_id'] = $this->session_venue->venue_id; // 场馆ID
-            if (!empty($param['scene_name'])) {
-                $map['s.scene_name'] = ['like', '%' . trim($param['scene_name']) . '%'];
+            $map['se.venue_id'] = $this->session_venue->venue_id; // 场馆ID
+            if (!empty($param['scene_id'])) {
+                $map['se.scene_id'] = intval($param['scene_id']);
             }
 
             // 获取分页page、size
             $this->getPageAndSize($param);
 
             // 获取分页列表数据 模式一：基于paginate()自动化分页
-            $data = model('Scene')->getScene($map, $this->size);
+            $data = model('Session')->getSession($map, $this->size);
             $status = config('code.status');
             foreach($data as $key => $value){
                 $data[$key]['status_msg'] = $status[$value['status']];
@@ -68,7 +68,7 @@ class Session extends Base
     {
         // 判断为GET请求
         if (request()->isGet()) {
-            return view();
+            return view('', ['sceneList' => Scene::sceneList()]);
         }
     }
 
@@ -84,15 +84,16 @@ class Session extends Base
         if(request()->isPost()){
             $data = input('post.');
             $data['venue_id'] = $this->session_venue->venue_id; // 场馆ID
+            list($data['start_time'], $data['end_time']) = explode('-', $data['session_time']);
 
             // 入库操作
             try {
-                $id = model('Scene')->add($data, 'scene_id');
+                $id = model('Session')->add($data, 'session_id');
             } catch (\Exception $e) {
                 return show(0, '新增失败 ' . $e->getMessage(), [], 400);
             }
             if ($id) {
-                return show(config('code.success'), '新增成功', ['url' => url('Scene/index')], 201);
+                return show(config('code.success'), '新增成功', ['url' => url('Session/index')], 201);
             } else {
                 return show(0, '新增失败', [], 400);
             }
@@ -111,7 +112,7 @@ class Session extends Base
         // 判断为GET请求
         if (request()->isGet()) {
             try {
-                $data = model('Scene')->find($id);
+                $data = model('Session')->find($id);
             } catch (\Exception $e) {
                 throw new ApiException($e->getMessage(), 500, config('code.error'));
             }
@@ -139,7 +140,7 @@ class Session extends Base
     {
         // 判断为GET请求
         if (request()->isGet()) {
-            return view();
+            return view('', ['sceneList' => Scene::sceneList()]);
         }
     }
 
@@ -160,17 +161,20 @@ class Session extends Base
 
             // 判断数据是否存在
             $data = [];
-            if (!empty($param['scene_name'])) { // 场景名称
-                $data['scene_name'] = trim($param['scene_name']);
+            $data['venue_id'] = $this->session_venue->venue_id; // 场馆ID
+            if (!empty($param['scene_id'])) { // 场景
+                $data['scene_id'] = trim($param['scene_id']);
+            }if (!empty($param['session_name'])) { // 场次名称
+                $data['session_name'] = trim($param['session_name']);
             }
-            if (!empty($param['thumb'])) { // 场景缩略图
-                $data['thumb'] = trim($param['thumb']);
+            if (isset($param['session_price'])) { // 场次价格
+                $data['session_price'] = trim($param['session_price']);
             }
-            if (!empty($param['scene_description'])) { // 场景介绍
-                $data['scene_description'] = $param['scene_description'];
+            if (!empty($param['session_time'])) { // 场次时间
+                list($data['start_time'], $data['end_time']) = explode('-', $param['session_time']);
             }
-            if (!empty($param['game_rules'])) { // 游戏规则
-                $data['game_rules'] = $param['game_rules'];
+            if (!empty($param['close_date'])) { // 可预订日期内指定的停场日期
+                $data['close_date'] = $param['close_date'];
             }
             if (isset($param['status'])) { // 状态
                 $data['status'] = input('param.status', null, 'intval');
@@ -182,7 +186,7 @@ class Session extends Base
 
             // 更新
             try {
-                $result = model('Scene')->save($data, ['scene_id' => $id]); // 更新
+                $result = model('Session')->save($data, ['session_id' => $id]); // 更新
             } catch (\Exception $e) {
                 throw new ApiException($e->getMessage(), 500, config('code.error'));
             }
