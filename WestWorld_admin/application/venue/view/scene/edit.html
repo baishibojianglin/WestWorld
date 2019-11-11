@@ -1,0 +1,164 @@
+{include file="public/_meta" /}
+<link href="/static/umeditor/umeditor1_2_2-utf8-php/themes/default/css/umeditor.css" type="text/css" rel="stylesheet"><!--UMeditor css部分-->
+</head>
+<body class="layui-view-body">
+<div class="layui-content">
+    <div class="layui-row">
+        <div class="layui-card">
+            <div class="layui-card-header">编辑场景</div>
+            <div class="layui-card-body">
+
+                <form class="layui-form" lay-filter="layui_form">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">场景名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="scene_name" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">场景缩略图</label>
+                        <button type="button" class="layui-btn" id="thumb">
+                            <i class="layui-icon">&#xe67c;</i>上传图片
+                        </button>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">场景描述</label>
+                        <div class="layui-input-block" style="position: relative;z-index: 1">
+                            <!-- UMeditor 加载编辑器的容器 -->
+                            <script type="text/plain" id="container" name="scene_description" class="layui-textarea" style="height: 240px;"></script>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">游戏规则</label>
+                        <div class="layui-input-block" style="position: relative;z-index: 1">
+                            <!-- UMeditor 加载编辑器的容器 -->
+                            <script type="text/plain" id="container1" name="game_rules" class="layui-textarea" style="height: 240px;"></script>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-block">
+                            <input type="radio" name="status" value="0" title="禁用" checked>
+                            <input type="radio" name="status" value="1" title="启用">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<script src="__STATIC__/layui/layui.js"></script>-->
+{include file="public/_footer" /}
+
+<!--UMeditor js部分 s-->
+<script type="text/javascript" src="/static/umeditor/umeditor1_2_2-utf8-php/third-party/jquery.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/umeditor/umeditor1_2_2-utf8-php/umeditor.config.js"></script><!-- 配置文件 -->
+<script type="text/javascript" charset="utf-8" src="/static/umeditor/umeditor1_2_2-utf8-php/umeditor.min.js"></script><!-- 编辑器源码文件 -->
+<script type="text/javascript" src="/static/umeditor/umeditor1_2_2-utf8-php/lang/zh-cn/zh-cn.js"></script>
+<!-- 实例化编辑器 -->
+<script type="text/javascript">
+    // 实例化编辑器
+    var um = UM.getEditor('container');
+    var um1 = UM.getEditor('container1');
+</script>
+<!--UMeditor js部分 e-->
+
+<script>
+    // 声明页面全局变量
+    var thumb; // 声明场景缩略图路径变量
+
+    /**
+     * 表单模块 - layui.form
+     */
+    layui.use('form', function(){
+        var form = layui.form;
+
+        // 给表单赋值
+        /*ajax GET请求 s*/
+        $.ajax({
+            url: '{:url("venue/scene/read")}',
+            type: 'get',
+            data: {id: '{$_GET["id"]}'}, // {$_GET["id"]} 为 venue/Scene 控制器 edit($id) 方法的 $id 参数值
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                // 给表单赋值
+                form.val("layui_form", { //layui_form 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                    "scene_id": data.data.scene_id // "name": "value"
+                    ,"scene_name": data.data.scene_name
+                    ,"status": data.data.status
+                });
+
+                // 显示场景缩略图thumb并赋值
+                thumb = data.data.thumb;
+                $('#thumb').after(' <img src="/' + thumb + '" alt="' + thumb + '" title="' + thumb + '" class="layui-upload-img" width="200">');
+
+                // 给场景描述scene_description、游戏规则game_rules赋值
+                $('#container').html(data.data.scene_description);
+                $('#container1').html(data.data.game_rules);
+
+            }
+        });
+        /*ajax GET请求 e*/
+
+        // 监听submit提交
+        form.on('submit(*)', function(data){
+            //layer.msg(JSON.stringify(data.field));
+
+            // 判断缩略图是否已上传
+            if(!thumb) {
+                layer.msg('请上传场景缩略图', {icon: 7});
+                return false;
+            }
+            data.field.thumb = thumb; // 对 thumb 字段赋值
+            data.field.scene_description = $('#container').html(); // 对 scene_description 字段赋值
+            data.field.game_rules = $('#container1').html(); // 对 game_rules 字段赋值
+
+            /*ajax请求 s*/
+            // TODO：在 /public/static/ 目录下新建 common.js 文件，封装公用 ajax 方法
+            var _data = data.field;
+            var url = "{:url('venue/scene/update', array('id' => $_GET['id']))}";
+            ajaxRequest(url, 'put', _data);
+            /*ajax请求 e*/
+
+            return false; // 阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+
+    /**
+     * 图片/文件上传 - layui.upload
+     */
+    layui.use('upload', function(){
+        var upload = layui.upload;
+
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#thumb' //绑定元素
+            ,url: '{:url("admin/upload/uploadThumb")}' //上传接口
+            ,data: {name: "thumb", dir: "venue"}
+            ,field: 'thumb' // 设定文件域的字段名
+            ,done: function(res){
+                //上传完毕回调
+                thumb = res.data; // 获取缩略图路径值
+                //console.log(thumb);
+                if (thumb) {
+                    //$('#thumb').hide();
+                    $('#thumb').next().remove('img');
+                    $('#thumb').after(' <img src="/' + thumb + '" alt="" title="' + thumb + '" class="layui-upload-img" width="200">');
+                }
+            }
+            ,error: function(){
+                //请求异常回调
+            }
+        });
+    });
+</script>
+</body>
+</html>
