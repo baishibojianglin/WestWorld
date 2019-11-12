@@ -121,6 +121,9 @@ class Venue extends Base
             }
             if (!empty($param['thumb'])) { // 场馆缩略图
                 $data['thumb'] = trim($param['thumb']);
+
+                // 获取更新成功前的缩略图thumb
+                $venue = model('Venue')->field('thumb')->find($id);
             }
             if (!empty($param['venue_description'])) { // 场馆介绍
                 $data['venue_description'] = $param['venue_description'];
@@ -143,6 +146,12 @@ class Venue extends Base
                 throw new ApiException($e->getMessage(), 500, config('code.error'));
             }
             if ($result) {
+                // 删除更新成功前的缩略图thumb文件
+                if (!empty($param['thumb']) && trim($param['thumb']) != $venue['thumb']) {
+                    // 删除文件
+                    @unlink(ROOT_PATH . 'public' . DS . $venue['thumb']);
+                }
+
                 return show(config('code.success'), '更新成功', ['url' => url('Venue/index')], 201);
             } else {
                 return show(config('code.error'), '更新失败', [], 403);

@@ -179,6 +179,9 @@ class Scene extends Base
             }
             if (!empty($param['thumb'])) { // 场景缩略图
                 $data['thumb'] = trim($param['thumb']);
+
+                // 获取更新成功前的缩略图thumb
+                $scene = model('Scene')->field('thumb')->find($id);
             }
             if (!empty($param['scene_description'])) { // 场景介绍
                 $data['scene_description'] = $param['scene_description'];
@@ -203,6 +206,12 @@ class Scene extends Base
             if (false === $result) {
                 return show(config('code.error'), '更新失败', [], 403);
             } else {
+                // 删除更新成功前的缩略图thumb文件
+                if (!empty($param['thumb']) && trim($param['thumb']) != $scene['thumb']) {
+                    // 删除文件
+                    @unlink(ROOT_PATH . 'public' . DS . $scene['thumb']);
+                }
+
                 return show(config('code.success'), '更新成功', ['url' => 'parent'], 201);
             }
         }
