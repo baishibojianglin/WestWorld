@@ -7,21 +7,25 @@
             <span class="layui-breadcrumb">
                 <a href="">首页</a>
                 <a href="">场馆</a>
-                <a><cite>场景房间</cite></a>
+                <a><cite>装备</cite></a>
             </span>
         </div>
     </div>
     <div class="layui-row">
         <div class="layui-card">
-            <div class="layui-card-header">场景房间列表</div>
+            <div class="layui-card-header">装备列表</div>
             <div class="layui-card-body">
                 <div type="text/html" id="toolbar">
                     <div class="form-box">
                         <div class="layui-form layui-form-item">
                             <div class="layui-inline">
-                                <button class="layui-btn layui-btn-blue"  onclick="location.href='{:url("venue/scene_room/create")}'" ><i class="layui-icon">&#xe654;</i>新增</button>
+                                <button class="layui-btn layui-btn-blue"  onclick="location.href='{:url("venue/equipment/create")}'" ><i class="layui-icon">&#xe654;</i>新增</button>
                             </div>
                             <div class="layui-inline">
+                                <div class="layui-form-mid">装备名称</div>
+                                <div class="layui-input-inline" style="width: 100px;">
+                                    <input type="text" name="equipment_name" value="" autocomplete="off" class="layui-input">
+                                </div>
                                 <div class="layui-form-mid">场景</div>
                                 <div class="layui-input-inline" style="width: 100px;">
                                     <select name="scene_id" lay-filter="scene_id">
@@ -56,7 +60,7 @@
      * layui.table 数据表格：初始化渲染方式为方法渲染
      */
     function layuiTable() {
-        layui.use('table', function () {
+        layui.use(['form', 'table'], function () {
 
             var table = layui.table;
             var form = layui.form;
@@ -71,20 +75,19 @@
             table.render({
                 elem: '#layui_table'
                 , cols: [[ //表头
-                    {field: 'room_id', title: 'ID', width: 80, sort: true, fixed: 'left'}
-                    , {field: 'room_name', title: '场景房间名称', cellMinWidth: 120}
+                    {field: 'equipment_id', title: 'ID', width: 80, sort: true, fixed: 'left'}
+                    , {field: 'thumb', title: '装备缩略图', width: 120, templet: '<div><img src="/{{d.thumb}}" alt="{{d.thumb}}" title="{{d.thumb}}" width="200"></div>'}
+                    , {field: 'equipment_name', title: '装备名称', cellMinWidth: 120}
                     , {field: 'scene_name', title: '场景', width: 120}
                     //, {field: 'venue_name', title: '场馆', width: 120}
-                    , {field: 'room_price', title: '房间价格/￥', width: 120}
-                    , {field: 'available_number', title: '可容纳人数', width: 120}
-                    , {field: 'join_number', title: '已参加人数', width: 120}
-                    , {field: 'booked_txt', title: '是否被预订', cellMinWidth: 120}
-                    , {field: 'status_msg', title: '状态', width: 80}
+                    , {field: 'use_fee', title: '使用费/￥', width: 120}
+                    , {field: 'use_number', title: '装备使用数量', width: 120}
+                    , {field: 'equipment_number', title: '装备数量', width: 120}
                     , {title: '操作', fixed: 'right', width: 120, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
                 ]]
-                , url: '{:url("venue/scene_room/getSceneRoom")}' //数据接口
+                , url: '{:url("venue/equipment/getEquipment")}' //数据接口
                 //,method: 'get' // 接口http请求类型，默认：get
-                ,where: {scene_id: scene_id} // 接口的其它参数，此处为搜索条件
+                ,where: {equipment_name: $('input[name="equipment_name"]').val(), scene_id: scene_id} // 接口的其它参数，此处为搜索条件
                 //,contentType: 'application/x-www-form-urlencoded'
                 , parseData: function (res) { //res 即为原始返回的数据
                     //console.log(this.limit); // 每页数据量
@@ -126,7 +129,7 @@
                         obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
                         layer.close(index);
                         //向服务端发送删除指令
-                        ajaxRequest('{:url("venue/scene_room/delete")}', 'delete', {id: data.room_id}); // ajax请求
+                        ajaxRequest('{:url("venue/equipment/delete")}', 'delete', {id: data.equipment_id}); // ajax请求
                     });
                 } else if(layEvent === 'edit'){ //编辑
                     //do something
@@ -135,15 +138,15 @@
                         title: '编辑',
                         //skin: 'layui-layer-rim', //加上边框
                         area: ['90%', '90%'], //宽高
-                        content: '{:url("venue/scene_room/edit")}?id=' + data.room_id,
+                        content: '{:url("venue/equipment/edit")}?id=' + data.equipment_id,
                         maxmin: true
                     });
 
-                    /*//同步更新缓存对应的值
+                    //同步更新缓存对应的值
                     obj.update({
                         name: '123'
                         ,title: 'xxx'
-                    });*/
+                    });
                 } else if(layEvent === 'LAYTABLE_TIPS'){
                     layer.alert('Hi，头部工具栏扩展的右侧图标。');
                 }

@@ -7,11 +7,11 @@ use think\Controller;
 use think\Request;
 
 /**
- * venue模块场景房间管理控制器类
- * Class SceneRoom
- * @package app\admin\controller
+ * venue模块装备管理控制器类
+ * Class Equipment
+ * @package app\venue\controller
  */
-class SceneRoom extends Base
+class Equipment extends Base
 {
     /**
      * 显示资源列表
@@ -27,10 +27,10 @@ class SceneRoom extends Base
     }
 
     /**
-     * 获取场景房间资源列表
+     * 获取装备资源列表
      * @return \think\response\Json
      */
-    public function getSceneRoom()
+    public function getEquipment()
     {
         // 判断为GET请求
         if (request()->isGet()) {
@@ -40,22 +40,19 @@ class SceneRoom extends Base
 
             // 查询条件
             $map = [];
-            $map['sr.venue_id'] = $this->session_venue->venue_id; // 场馆ID
-            if (!empty($param['scene_id'])) {
-                $map['sr.scene_id'] = intval($param['scene_id']);
+            $map['e.venue_id'] = $this->session_venue->venue_id; // 场馆ID
+            if (!empty($param['equipment_name'])) {
+                $map['e.equipment_name'] = ['like', '%' . trim($param['equipment_name']) . '%'];
+            }
+            if (!empty($param['scene_id'])) { // 场景ID
+                $map['e.scene_id'] = intval($param['scene_id']);
             }
 
             // 获取分页page、size
             $this->getPageAndSize($param);
 
             // 获取分页列表数据 模式一：基于paginate()自动化分页
-            $data = model('SceneRoom')->getSceneRoom($map, $this->size);
-            $status = config('code.status');
-            $is_booked = config('code.is_booked');
-            foreach($data as $key => $value){
-                $data[$key]['status_msg'] = $status[$value['status']];
-                $data[$key]['booked_txt'] = $is_booked[$value['is_booked']];
-            }
+            $data = model('Equipment')->getEquipment($map, $this->size);
 
             return show(config('code.success'), 'ok', $data);
         }
@@ -89,12 +86,12 @@ class SceneRoom extends Base
 
             // 入库操作
             try {
-                $id = model('SceneRoom')->add($data, 'room_id');
+                $id = model('Equipment')->add($data, 'equipment_id');
             } catch (\Exception $e) {
                 return show(0, '新增失败 ' . $e->getMessage(), [], 400);
             }
             if ($id) {
-                return show(config('code.success'), '新增成功', ['url' => url('SceneRoom/index')], 201);
+                return show(config('code.success'), '新增成功', ['url' => url('Equipment/index')], 201);
             } else {
                 return show(0, '新增失败', [], 400);
             }
@@ -113,17 +110,12 @@ class SceneRoom extends Base
         // 判断为GET请求
         if (request()->isGet()) {
             try {
-                $data = model('SceneRoom')->find($id);
+                $data = model('Equipment')->find($id);
             } catch (\Exception $e) {
                 throw new ApiException($e->getMessage(), 500, config('code.error'));
             }
 
             if ($data) {
-                // 处理数据
-                // 定义status_msg
-                $status = config('code.status');
-                $data['status_msg'] = $status[$data['status']];
-
                 return show(config('code.success'), 'ok', $data);
             } else {
                 return show(config('code.error'), 'Not Found', $data, 404);
@@ -165,23 +157,26 @@ class SceneRoom extends Base
             if (!empty($param['scene_id'])) { // 场景
                 $data['scene_id'] = trim($param['scene_id']);
             }
-            if (!empty($param['room_name'])) { // 场景房间名称
-                $data['room_name'] = trim($param['room_name']);
+            if (!empty($param['equipment_name'])) { // 装备名称
+                $data['equipment_name'] = trim($param['equipment_name']);
             }
-            if (isset($param['room_price'])) { // 房间价格
-                $data['room_price'] = trim($param['room_price']);
+            if (!empty($param['thumb'])) { // 装备缩略图
+                $data['thumb'] = trim($param['thumb']);
+
+                // 获取更新成功前的缩略图thumb
+                $equipment = model('Equipment')->field('thumb')->find($id);
             }
-            if (isset($param['available_number'])) { // 可容纳人数
-                $data['available_number'] = trim($param['available_number']);
+            if (isset($param['use_fee'])) { // 装备使用费
+                $data['use_fee'] = trim($param['use_fee']);
             }
-            if (isset($param['join_number'])) { // 已参加人数
-                $data['join_number'] = trim($param['join_number']);
+            if (isset($param['use_number'])) { // 装备使用数量
+                $data['use_number'] = trim($param['use_number']);
             }
-            if (isset($param['is_booked'])) { // 是否被预订
-                $data['is_booked'] = input('param.is_booked', null, 'intval');
+            if (isset($param['equipment_number'])) { // 装备数量
+                $data['equipment_number'] = trim($param['equipment_number']);
             }
-            if (isset($param['status'])) { // 状态
-                $data['status'] = input('param.status', null, 'intval');
+            if (!empty($param['equipment_description'])) { // 装备描述
+                $data['equipment_description'] = $param['equipment_description'];
             }
 
             if (empty($data)) {
@@ -190,13 +185,19 @@ class SceneRoom extends Base
 
             // 更新
             try {
-                $result = model('SceneRoom')->save($data, ['room_id' => $id]); // 更新
+                $result = model('Equipment')->save($data, ['equipment_id' => $id]); // 更新
             } catch (\Exception $e) {
                 throw new ApiException($e->getMessage(), 500, config('code.error'));
             }
             if (false === $result) {
                 return show(config('code.error'), '更新失败', [], 403);
             } else {
+                // 删除更新成功前的缩略图thumb文件
+                if (!empty($param['thumb']) && trim($param['thumb']) != $equipment['thumb']) {
+                    // 删除文件
+                    @unlink(ROOT_PATH . 'public' . DS . $equipment['thumb']);
+                }
+
                 return show(config('code.success'), '更新成功', ['url' => 'parent'], 201);
             }
         }
