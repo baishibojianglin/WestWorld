@@ -4,7 +4,7 @@
 <div class="layui-content">
     <div class="layui-row">
         <div class="layui-card">
-            <div class="layui-card-header">编辑场次</div>
+            <div class="layui-card-header">编辑场景房间</div>
             <div class="layui-card-body">
 
                 <form class="layui-form" lay-filter="layui_form">
@@ -20,29 +20,36 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">场次名称</label>
+                        <label class="layui-form-label">房间名称</label>
                         <div class="layui-input-block">
-                            <input type="text" name="session_name" placeholder="请输入，如“第n场”" autocomplete="off" class="layui-input" lay-verify="required">
+                            <input type="text" name="room_name" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">场次价格/￥</label>
+                        <label class="layui-form-label">房间价格/￥</label>
                         <div class="layui-input-block">
-                            <input type="number" step="0.01" min="0" name="session_price" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+                            <input type="number" step="0.01" min="0" name="room_price" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label" id="session_time_label">场次时间</label>
+                        <label class="layui-form-label">可容纳人数</label>
                         <div class="layui-input-block">
-                            <input type="text" name="session_time" placeholder="HH:mm:ss - HH:mm:ss" autocomplete="off" class="layui-input" id="session_time" lay-verify="required">
+                            <input type="number" step="1" min="0" name="available_number" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">停场日期</label>
+                        <label class="layui-form-label">已参加人数</label>
                         <div class="layui-input-block">
-                            <input type="text" name="close_date" placeholder="请输入" autocomplete="off" class="layui-input">
+                            <input type="number" step="1" min="0" name="join_number" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
                         </div>
-                        <div class="layui-input-block layui-form-mid layui-word-aux">可预订日期内指定的停场日期，格式为“yyyy-MM-dd”，多个日期以英文逗号“,”分隔，格式为“yyyy-MM-dd,yyyy-MM-dd”</div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">是否被预订</label>
+                        <div class="layui-input-block">
+                            <input type="radio" name="is_booked" value="0" title="未预订" checked>
+                            <input type="radio" name="is_booked" value="1" title="已预订">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">房间已被预订时说明在使用中</div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">状态</label>
@@ -70,24 +77,13 @@
     /**
      * 表单模块 - layui.form
      */
-    layui.use(['laydate', 'form'], function(){
-        var laydate = layui.laydate, form = layui.form;
-
-        //执行一个laydate实例
-        laydate.render({
-            elem: '#session_time' //指定元素
-            ,type: 'time'
-            ,range: true //或 range: '~' 来自定义分割字符
-            ,min: '10:00:00'
-            ,max: '22:00:00'
-            ,eventElem: '#session_time_label'
-            ,trigger: 'click'
-        });
+    layui.use('form', function(){
+        var form = layui.form;
 
         // 给表单赋值
         /*ajax GET请求 s*/
         $.ajax({
-            url: '{:url("venue/session/read")}',
+            url: '{:url("venue/scene_room/read")}',
             type: 'get',
             data: {id: '{$_GET["id"]}'}, // {$_GET["id"]} 为 venue/Session 控制器 edit($id) 方法的 $id 参数值
             dataType: 'json',
@@ -95,12 +91,13 @@
 
                 // 给表单赋值
                 form.val("layui_form", { //layui_form 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
-                    "session_id": data.data.session_id // "name": "value"
+                    "room_id": data.data.room_id // "name": "value"
                     ,"scene_id": data.data.scene_id
-                    ,"session_name": data.data.session_name
-                    ,"session_price": data.data.session_price
-                    ,"session_time": data.data.start_time + ' - ' + data.data.end_time
-                    ,"close_date": data.data.close_date
+                    ,"room_name": data.data.room_name
+                    ,"room_price": data.data.room_price
+                    ,"available_number": data.data.available_number
+                    ,"join_number": data.data.join_number
+                    ,"is_booked": data.data.is_booked
                     ,"status": data.data.status
                 });
 
@@ -115,7 +112,7 @@
             /*ajax请求 s*/
             // TODO：在 /public/static/ 目录下新建 common.js 文件，封装公用 ajax 方法
             var _data = data.field;
-            var url = "{:url('venue/session/update', array('id' => $_GET['id']))}";
+            var url = "{:url('venue/scene_room/update', array('id' => $_GET['id']))}";
             ajaxRequest(url, 'put', _data);
             /*ajax请求 e*/
 

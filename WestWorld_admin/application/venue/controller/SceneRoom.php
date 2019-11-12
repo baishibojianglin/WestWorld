@@ -7,11 +7,11 @@ use think\Controller;
 use think\Request;
 
 /**
- * venue模块场次管理控制器类
- * Class Session
+ * venue模块场景房间管理控制器类
+ * Class SceneRoom
  * @package app\admin\controller
  */
-class Session extends Base
+class SceneRoom extends Base
 {
     /**
      * 显示资源列表
@@ -27,10 +27,10 @@ class Session extends Base
     }
 
     /**
-     * 获取场景资源列表
+     * 获取场景房间资源列表
      * @return \think\response\Json
      */
-    public function getSession()
+    public function getSceneRoom()
     {
         // 判断为GET请求
         if (request()->isGet()) {
@@ -40,19 +40,21 @@ class Session extends Base
 
             // 查询条件
             $map = [];
-            $map['se.venue_id'] = $this->session_venue->venue_id; // 场馆ID
+            $map['sr.venue_id'] = $this->session_venue->venue_id; // 场馆ID
             if (!empty($param['scene_id'])) {
-                $map['se.scene_id'] = intval($param['scene_id']);
+                $map['sr.scene_id'] = intval($param['scene_id']);
             }
 
             // 获取分页page、size
             $this->getPageAndSize($param);
 
             // 获取分页列表数据 模式一：基于paginate()自动化分页
-            $data = model('Session')->getSession($map, $this->size);
+            $data = model('SceneRoom')->getSceneRoom($map, $this->size);
             $status = config('code.status');
+            $is_booked = config('code.is_booked');
             foreach($data as $key => $value){
                 $data[$key]['status_msg'] = $status[$value['status']];
+                $data[$key]['booked_txt'] = $is_booked[$value['is_booked']];
             }
 
             return show(config('code.success'), 'ok', $data);
@@ -84,16 +86,15 @@ class Session extends Base
         if(request()->isPost()){
             $data = input('post.');
             $data['venue_id'] = $this->session_venue->venue_id; // 场馆ID
-            list($data['start_time'], $data['end_time']) = explode('-', $data['session_time']);
 
             // 入库操作
             try {
-                $id = model('Session')->add($data, 'session_id');
+                $id = model('SceneRoom')->add($data, 'room_id');
             } catch (\Exception $e) {
                 return show(0, '新增失败 ' . $e->getMessage(), [], 400);
             }
             if ($id) {
-                return show(config('code.success'), '新增成功', ['url' => url('Session/index')], 201);
+                return show(config('code.success'), '新增成功', ['url' => url('SceneRoom/index')], 201);
             } else {
                 return show(0, '新增失败', [], 400);
             }
@@ -112,7 +113,7 @@ class Session extends Base
         // 判断为GET请求
         if (request()->isGet()) {
             try {
-                $data = model('Session')->find($id);
+                $data = model('SceneRoom')->find($id);
             } catch (\Exception $e) {
                 throw new ApiException($e->getMessage(), 500, config('code.error'));
             }
@@ -163,17 +164,20 @@ class Session extends Base
             $data = [];
             if (!empty($param['scene_id'])) { // 场景
                 $data['scene_id'] = trim($param['scene_id']);
-            }if (!empty($param['session_name'])) { // 场次名称
-                $data['session_name'] = trim($param['session_name']);
+            }if (!empty($param['room_name'])) { // 场景房间名称
+                $data['room_name'] = trim($param['room_name']);
             }
-            if (isset($param['session_price'])) { // 场次价格
-                $data['session_price'] = trim($param['session_price']);
+            if (isset($param['room_price'])) { // 房间价格
+                $data['room_price'] = trim($param['room_price']);
             }
-            if (!empty($param['session_time'])) { // 场次时间
-                list($data['start_time'], $data['end_time']) = explode('-', $param['session_time']);
+            if (isset($param['available_number'])) { // 可容纳人数
+                $data['available_number'] = trim($param['available_number']);
             }
-            if (!empty($param['close_date'])) { // 可预订日期内指定的停场日期
-                $data['close_date'] = $param['close_date'];
+            if (isset($param['join_number'])) { // 已参加人数
+                $data['join_number'] = trim($param['join_number']);
+            }
+            if (isset($param['is_booked'])) { // 是否被预订
+                $data['is_booked'] = input('param.is_booked', null, 'intval');
             }
             if (isset($param['status'])) { // 状态
                 $data['status'] = input('param.status', null, 'intval');
@@ -185,7 +189,7 @@ class Session extends Base
 
             // 更新
             try {
-                $result = model('Session')->save($data, ['session_id' => $id]); // 更新
+                $result = model('SceneRoom')->save($data, ['room_id' => $id]); // 更新
             } catch (\Exception $e) {
                 throw new ApiException($e->getMessage(), 500, config('code.error'));
             }
