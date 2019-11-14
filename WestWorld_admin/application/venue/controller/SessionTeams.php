@@ -2,6 +2,8 @@
 
 namespace app\venue\controller;
 
+use app\common\lib\exception\ApiException;
+
 /**
  * venue模块比赛场次组队管理控制器类
  * Class SessionTeams
@@ -57,6 +59,44 @@ class SessionTeams extends Base
             $data = model('SessionTeams')->getSessionTeams($map, $this->size);
 
             return show(config('code.success'), 'ok', $data);
+        }
+    }
+
+    /**
+     * 显示指定的比赛场次组队资源
+     * @param int $id
+     * @return \think\response\Json
+     * @throws ApiException
+     */
+    public function read($id)
+    {
+        // 判断为GET请求
+        if (request()->isGet()) {
+            try {
+                $data = model('SessionTeams')->getSessionTeamsDetail($id);
+            } catch (\Exception $e) {
+                throw new ApiException($e->getMessage(), 500, config('code.error'));
+            }
+
+            if ($data) {
+                return show(config('code.success'), 'ok', $data);
+            } else {
+                return show(config('code.error'), 'Not Found', $data, 404);
+            }
+        }
+    }
+
+    /**
+     * 显示比赛场次组队资源详情页
+     *
+     * @param  int  $id
+     * @return \think\Response
+     */
+    public function detail($id)
+    {
+        // 判断为GET请求
+        if (request()->isGet()) {
+            return $this->fetch();
         }
     }
 }
