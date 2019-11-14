@@ -62,6 +62,20 @@ class SceneRoom extends Base
     }
 
     /**
+     * 获取场景房间资源列表（静态方法）
+     * @return false|\PDOStatement|string|\think\Collection
+     */
+    public static function sceneRoomList()
+    {
+        $map = [
+            'venue_id' => self::$static_session_venue->venue_id,
+            'status' => config('code.status_enable')
+        ];
+        $data = db('scene_room')->field('room_id, room_name, scene_id')->where($map)->select();
+        return $data;
+    }
+
+    /**
      * 显示创建资源表单页.
      *
      * @return \think\Response
