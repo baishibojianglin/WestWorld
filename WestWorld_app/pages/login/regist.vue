@@ -91,7 +91,7 @@
 						'version': getApp().globalData.version, // 应用大版本号
 						'model': getApp().globalData.systemInfo.model, // 手机型号
 						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
-						'did': '12345dg', // 设备号
+						'did': getApp().globalData.did, // 设备号
 					},
 					method: 'POST',
 					success:function(res){

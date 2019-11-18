@@ -6,6 +6,7 @@
 		globalData: {
 			systemInfo: '', // 设备系统信息
 			version: 1, // 应用大版本号
+			did: '12345dg', // 设备号
 		},
 		
 		onLaunch: function() {

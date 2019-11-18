@@ -5,7 +5,7 @@
 			<uni-steps :options="stepsList" :active="active" />
 		</view>
 		
-		<view class="example-title">{{active === 5 ? '' : '选择'}}{{ items[active] }}</view>
+		<view class="example-title">{{active === 6 ? '' : '选择'}}{{ items[active] }}</view>
 		<view class="example-body">
 			<view class="content uni-common-mb">
 				<!-- 场景 s -->
@@ -14,12 +14,12 @@
 					<radio-group @change="changeRadio">
 					
 						<uni-grid :column="3" :highlight="true"><!-- @change="scene" -->
-							<uni-grid-item v-for="(item, index) in sceneList" :key="index">
-								<image :src="item.thumb" class="image" mode="aspectFill" />
-								<text class="text">{{ item.text }}</text>
-								
-								<radio :id="item.scene_id" :value="item.scene_id" :checked="item.checked"></radio>
-								
+							<uni-grid-item v-for="(item, index) in sceneList" :key="index" :style="{background: 'url(' + item.thumb +')'}">
+								<!-- <image :src="item.thumb" class="image" mode="aspectFill" /> -->
+								<view class="scene_name">
+									<radio :id="'scene' + item.scene_id" :value="item.scene_id" :checked="item.checked"></radio>
+									<label :for="'scene' + item.scene_id"><text class="text uni-bold">{{ item.scene_name }}</text></label>
+								</view>
 							</uni-grid-item>
 						</uni-grid>
 						
@@ -81,7 +81,7 @@
 				</view>
 				<!-- 房间 e -->
 				<!-- 人数 s -->
-				<view v-show="current === 3">
+				<view v-show="current === 4">
 					<!-- <view class="uni-form-item uni-column">
 						<view class="with-fun">
 							<input class="uni-input" type="number" placeholder="输入人数" :value="inputClearValue" @input="clearInput" />
@@ -92,7 +92,7 @@
 				</view>
 				<!-- 人数 e -->
 				<!-- 装备 s -->
-				<view v-show="current === 4">
+				<view v-show="current === 5">
 					<view class="uni-list">
 						<view class="uni-list-cell">
 							<view class="uni-list-cell-left">装备</view>
@@ -105,7 +105,7 @@
 					</view>
 				</view>
 				<!-- 装备 e -->
-				<view v-show="current === 5">
+				<view v-show="current === 6">
 					入场费<text class="red uni-bold">￥{{ price }}</text>，确认支付
 				</view>
 			</view>
@@ -115,7 +115,7 @@
 			<uni-segmented-control :current="current" :values="items" :style-type="styleType" :active-color="activeColor" @clickItem="onClickItem" />
 		</view>
 		
-		<button type="primary" @click="change">{{ active === 5 ? '确 定' : '下一步' }}</button>
+		<button type="primary" @click="change">{{ active === 6 ? '确 定' : '下一步' }}</button>
 		
 		<!-- 单独放在外面防止其他样式对其干扰 -->
 		<uni-calendar ref="calendar" :lunar="tags[0].checked" :disable-before="tags[3].checked" :range="tags[5].checked" :start-date="startDate" :end-date="endDate" :date="date" :selected="selected" @confirm="confirmDate" @change="changeDate()" />
@@ -123,7 +123,8 @@
 </template>
 
 <script>
-	import {uniSteps, uniSegmentedControl, uniGrid, uniGridItem, uniCalendar, uniTag, uniNumberBox} from '@dcloudio/uni-ui'
+	import {uniSteps, uniSegmentedControl, uniGrid, uniGridItem, uniCalendar, uniTag, uniNumberBox} from '@dcloudio/uni-ui';
+	import common from '@/common/common.js';
 
 	export default {
 		components: {
@@ -217,6 +218,7 @@
 			/* 日期 s */
 			
 			return {
+				venueId: '', // 场馆ID
 				venueData: {}, // 场馆信息
 				
 				/* 步骤条 s */
@@ -225,14 +227,15 @@
 					{title: '1', desc: '场景'}, 
 					{title: '2', desc: '场次'}, 
 					{title: '3', desc: '房间'}, 
-					{title: '4', desc: '人数'}, 
-					{title: '5', desc: '装备'}, 
-					{title: '6', desc: '确定'},
+					{title: '4', desc: '组队'}, 
+					{title: '5', desc: '人数'}, 
+					{title: '6', desc: '装备'}, 
+					{title: '7', desc: '确定'},
 				],
 				/* 步骤条 e */
 				
 				/* 分段器 s */
-				items: ['场景', '场次', '房间', '人数', '装备', '确定'],
+				items: ['场景', '场次', '房间', '组队', '人数', '装备', '确定'],
 				colors: ['#007aff', '#4cd964', '#dd524d'],
 				current: 0,
 				colorIndex: 0,
@@ -241,46 +244,7 @@
 				/* 分段器 e */
 				
 				/* 选择场景 s */
-				sceneList: [{
-						scene_id: '1',
-						scene_name: 'city',
-						thumb: '/static/img/home.png',
-						text: '城市',
-						value: '值'
-					},
-					{
-						scene_id: '2',
-						scene_name: 'country',
-						thumb: '/static/img/home.png',
-						text: '乡村',
-						value: '值',
-						// checked: ''
-					},
-					{
-						scene_id: '3',
-						scene_name: '3',
-						thumb: '/static/img/home.png',
-						text: '草原'
-					},
-					{
-						scene_id: '4',
-						scene_name: '4',
-						thumb: '/static/img/home.png',
-						text: '森林'
-					},
-					{
-						scene_id: '5',
-						scene_name: '5',
-						thumb: '/static/img/home.png',
-						text: '沙漠'
-					},
-					{
-						scene_id: '6',
-						scene_name: '6',
-						thumb: '/static/img/home.png',
-						text: '雪地'
-					}
-				],
+				sceneList: [], // 场景列表，如：[{scene_id: '1', scene_name: '城市city', thumb: '/static/img/home.png'}, {scene_id: '2', scene_name: '乡村country', thumb: '/static/img/home.png'}]
 				
 				sceneId: '', // 选中的场景ID
 				/* 选择场景 e */
@@ -306,11 +270,7 @@
 				/* 可预订日期 e */
 				
 				/* 场次 s */
-				sessionArray: [
-					{session_id: 1, session_time: '10:00~11:00', session_price: 1.00, session: '10:00~11:00' + ' ￥1.00'},
-					{session_id: 2, session_time: '11:00~12:00', session_price: 2.00, session: '11:00~12:00' + ' ￥2.00'}, 
-					{session_id: 3, session_time: '12:00~13:00', session_price: 3.00, session: '12:00~13:00' + ' ￥3.00'},
-				],
+				sessionArray: [{}], //场景列表，如：[{session_id: 1, session_time: '10:00~11:00', session_price: 1.00, session: '10:00~11:00' + ' ￥1.00'}, {session_id: 2, session_time: '11:00~12:00', session_price: 2.00, session: '11:00~12:00' + ' ￥2.00'}]
 				index: 0,
 				/* 场次 e */
 				
@@ -318,28 +278,7 @@
 				/* 选择场次 e */
 				
 				/* 选择房间 s */
-				roomList: [{
-						room_id: '1',
-						room_name: 'room1',
-						scene_id: '1',
-						thumb: '/static/img/home.png',
-						room_price: 1.00,
-					},
-					{
-						room_id: '2',
-						room_name: 'room2',
-						scene_id: '1',
-						thumb: '/static/img/home.png',
-						room_price: 2.00,
-					},
-					{
-						room_id: '5',
-						room_name: 'room3',
-						scene_id: '2',
-						thumb: '/static/img/home.png',
-						room_price: 3.00,
-					}
-				],
+				roomList: [], // 场景房间列表，如：[{room_id: '1', room_name: 'room1', scene_id: '1', room_price: 1.00}, {room_id: '2', room_name: 'room2', scene_id: '1', room_price: 2.00}, {room_id: '5', room_name: 'room3', scene_id: '2', room_price: 3.00}]
 				currentRoom: '',
 				
 				roomId: '', // 选中的房间ID
@@ -370,10 +309,10 @@
 		},
 		onLoad(event) {
 			// console.log(event)
+			this.venueId = event.id;
 			this.venueData = JSON.parse(event.venueData);
 			
-			/* this.sessionId = this.sessionArray[this.index].session_id; // 选中的场次ID
-			console.log('选中的场次ID', this.sessionId) */
+			this.getSceneList(this.venueId); // 获取场景列表
 		},
 		methods: {
 			/* 步骤条 s */
@@ -406,32 +345,32 @@
 					this.current = this.active = 2;
 					return;
 				}
-				// 选好第1、2、3步外，其他步骤必须判断是否选择人数
-				if ((this.inputClearValue < 1 || this.inputClearValue > 3) && this.active > 2) {
+				// 选好第1~4步外，其他步骤必须判断是否选择人数
+				if ((this.inputClearValue < 1 || this.inputClearValue > 3) && this.active > 3) {
 					uni.showToast({
 						title: '请输入1~3人',
-						icon: 'none'
-					});
-					this.current = this.active = 3;
-					return;
-				}
-				// 选好第1、2、3、4步外，其他步骤必须判断是否选择装备
-				if (!this.equipmentId && this.active > 3) {
-					uni.showToast({
-						title: '请选择装备',
 						icon: 'none'
 					});
 					this.current = this.active = 4;
 					return;
 				}
+				// 选好第1~5步外，其他步骤必须判断是否选择装备
+				if (!this.equipmentId && this.active > 4) {
+					uni.showToast({
+						title: '请选择装备',
+						icon: 'none'
+					});
+					this.current = this.active = 5;
+					return;
+				}
 				// 计算入场费
-				if (this.active >= 4) {
+				if (this.active >= 5) {
 					// 计算入场费
 					this.price = (this.sessionArray[this.index].session_price + this.roomList[this.currentRoom].room_price) * this.inputClearValue
 					+ this.equipmentArray[this.equipmentIndex].equipment_price;
 				}
 				// 发起支付
-				if (this.active == 5) {
+				if (this.active == 6) {
 					let self = this;
 					uni.showModal({
 						title: '发起支付',
@@ -471,12 +410,48 @@
 			/* 分段器 e */
 			
 			/* 选择场景 s */
-			// 选择场景
+			/**
+			 * 获取场景列表
+			 * @param {Object} venueId
+			 */
+			getSceneList(venueId) {
+				let self = this;
+				uni.request({
+				    url: this.$serverUrl + 'scene',
+				    data: {
+				        venue_id: venueId
+				    },
+				    header: {
+				    	'sign': common.sign(), // 签名
+				    	'version': getApp().globalData.version, // 应用大版本号
+				    	'model': getApp().globalData.systemInfo.model, // 手机型号
+				    	'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
+				    	'did': getApp().globalData.did, // 设备号
+				    },
+				    success: (res) => {
+				        // console.log(res.data);
+						// 场景列表
+						let sceneList = res.data.data.data;
+						sceneList.forEach ((item, index) => {
+							// 场景缩略图
+							item.thumb = item.thumb ? self.$imgServerUrl + item.thumb.replace(/\\/g, "/") : '/static/img/home.png';
+							item.scene_id = String(item.scene_id);
+						})
+						self.sceneList = sceneList;
+				    }
+				});
+			},
+			
+			/**
+			 * 选择场景
+			 * @param {Object} e
+			 */
 			changeRadio: function(e) {
-				var checked = e.target.value
-				// console.log(checked)
-				
+				var checked = e.target.value; // console.log(checked)
 				this.sceneId = checked; // 选中的场景ID
+				
+				this.getSessionList(this.venueId, this.sceneId); // 获取场次列表
+				this.getSceneRoomList(this.venueId, this.sceneId); // 获取房间列表
 			},
 			/* 选择场景 e */
 			
@@ -534,6 +509,45 @@
 			/* 日期 e */
 			
 			/* 场次 s */
+			/**
+			 * 获取场次列表
+			 * @param {Object} venueId
+			 * @param {Object} sceneId
+			 */
+			getSessionList(venueId, sceneId) {
+				let self = this;
+				uni.request({
+				    url: this.$serverUrl + 'session',
+				    data: {
+				        venue_id: venueId,
+						scene_id: sceneId
+				    },
+				    header: {
+				    	'sign': common.sign(), // 签名
+				    	'version': getApp().globalData.version, // 应用大版本号
+				    	'model': getApp().globalData.systemInfo.model, // 手机型号
+				    	'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
+				    	'did': getApp().globalData.did, // 设备号
+				    },
+				    success: (res) => {
+				        // console.log(res.data);
+						// 场次列表
+						let sessionArray = res.data.data.data;
+						sessionArray.forEach ((item, index) => {
+							// 场次时间
+							item.session_time = item.start_time + '~' + item.end_time;
+							// 场次时间、价格
+							item.session = item.start_time + '~' + item.end_time + ' ￥' + item.session_price;
+						})
+						self.sessionArray = sessionArray;
+				    }
+				});
+			},
+			
+			/**
+			 * 选择场次
+			 * @param {Object} e
+			 */
 			bindPickerChange: function(e) {
 				console.log('picker发送选择改变，携带值为：' + e.target.value)
 				this.index = e.target.value
@@ -545,6 +559,42 @@
 			/* 选择场次 e */
 			
 			/* 选择房间 s */
+			/**
+			 * 获取房间列表
+			 * @param {Object} venueId
+			 * @param {Object} sceneId
+			 */
+			getSceneRoomList(venueId, sceneId) {
+				let self = this;
+				uni.request({
+				    url: this.$serverUrl + 'scene_room',
+				    data: {
+				        venue_id: venueId,
+						scene_id: sceneId
+				    },
+				    header: {
+				    	'sign': common.sign(), // 签名
+				    	'version': getApp().globalData.version, // 应用大版本号
+				    	'model': getApp().globalData.systemInfo.model, // 手机型号
+				    	'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
+				    	'did': getApp().globalData.did, // 设备号
+				    },
+				    success: (res) => {
+				        // console.log(res.data);
+						// 房间列表
+						let roomList = res.data.data.data;
+						roomList.forEach ((item, index) => {
+							item.room_id = String(item.room_id);
+						})
+						self.roomList = roomList;console.log(self.roomList)
+				    }
+				});
+			},
+			
+			/**
+			 * 选择房间
+			 * @param {Object} evt
+			 */
 			radioChangeRoom(evt) {
 				for (let i = 0; i < this.roomList.length; i++) {
 					if (this.roomList[i].room_id === evt.target.value) {
@@ -666,6 +716,11 @@
 	.text {
 		font-size: 26upx;
 		margin-top: 10upx;
+	}
+	.scene_name {
+		background-color: rgba(255, 255, 255, 0.6);
+		padding: 10upx;
+		border-radius: 10upx;
 	}
 	
 	.tag-view {

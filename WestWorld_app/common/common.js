@@ -47,7 +47,7 @@ const common = class{
 	sign() {
 		/* 生成签名 sign s */
 		let get13Timestamp = (new Date()).getTime(); // 获取13位的时间戳
-		let tempJson = {"did": "12345dg", "version": 1, 'time': get13Timestamp}; // 注意：此处为json对象，不是json字符串
+		let tempJson = {"did": getApp().globalData.did, "version": getApp().globalData.version, 'time': get13Timestamp}; // 注意：此处为json对象，不是json字符串
 		let sign = this.setSign(tempJson); //console.log('sign', sign);
 		return sign;
 		/* 生成签名 sign e */
