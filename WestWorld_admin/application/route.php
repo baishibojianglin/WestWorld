@@ -34,24 +34,25 @@ Route::delete('test/:id', 'api/test/delete'); // 删除：删除指定资源
 Route::resource('test', 'api/test'); // 资源路由：设置后会自动注册7个路由规则
 
 // 客户端路由
-// 首页
-Route::get('api/:ver/index', 'api/:ver.index/index');
-// 登录
-Route::put('api/:ver/login', 'api/:ver.login/login');
-// 注册
-Route::post('api/:ver/register', 'api/:ver.login/register');
-// 找回密码
-Route::put('api/:ver/pwd', 'api/:ver.login/pwd');
-// 退出登录
-Route::put('api/:ver/logout', 'api/:ver.login/logout');
+// 登录与注册路由
+Route::put('api/:ver/login', 'api/:ver.login/login'); // 登录
+Route::post('api/:ver/register', 'api/:ver.login/register'); // 注册
+Route::put('api/:ver/pwd', 'api/:ver.login/pwd'); // 找回密码
+Route::put('api/:ver/logout', 'api/:ver.login/logout'); // 退出登录
 // 用户
 Route::resource('api/:ver/user', 'api/:ver.user');
 // 图片上传
 Route::post('api/:ver/image', 'api/:ver.image/save');
-// 比赛场次订单
-Route::resource('api/:ver/session_order', 'api/:ver.session_order');
 // 场馆
 Route::resource('api/:ver/venue', 'api/:ver.venue');
+// 场景
+Route::resource('api/:ver/scene', 'api/:ver.scene');
+// 场次
+Route::resource('api/:ver/session', 'api/:ver.session');
+// 场景房间
+Route::resource('api/:ver/scene_room', 'api/:ver.scene_room');
+// 比赛场次订单
+Route::resource('api/:ver/session_order', 'api/:ver.session_order');
 // 店鋪比赛场次模板
 Route::resource('api/:ver/session_template', 'api/:ver.session_template');
 

@@ -27,7 +27,7 @@ class Session extends Base
     }
 
     /**
-     * 获取场景资源列表
+     * 获取场次资源列表
      * @return \think\response\Json
      */
     public function getSession()
