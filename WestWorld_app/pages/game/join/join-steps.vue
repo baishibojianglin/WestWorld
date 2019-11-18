@@ -11,7 +11,7 @@
 				<!-- 场景 s -->
 				<view v-show="current === 0">
 					
-					<radio-group @change="changeRadio">
+					<radio-group @change="radioChangeScene">
 					
 						<uni-grid :column="3" :highlight="true"><!-- @change="scene" -->
 							<uni-grid-item v-for="(item, index) in sceneList" :key="index" :style="{background: 'url(' + item.thumb +')'}">
@@ -98,7 +98,7 @@
 							<view class="uni-list-cell-left">装备</view>
 							<view class="uni-list-cell-db">
 								<picker @change="pickerChangeEquipment" :value="equipmentArray[equipmentIndex].equipment_id" :range="equipmentArray" range-key="equipment">
-									<view class="tag-view"><uni-tag :text="equipmentArray[equipmentIndex].equipment_name" type="success" size="small"></uni-tag> <text class="red uni-bold">￥{{ equipmentArray[equipmentIndex].equipment_price }}</text></view>
+									<view class="tag-view"><uni-tag :text="equipmentArray[equipmentIndex].equipment_name" type="success" size="small"></uni-tag> <text class="red uni-bold">￥{{ equipmentArray[equipmentIndex].use_fee }}</text></view>
 								</picker>
 							</view>
 						</view>
@@ -270,7 +270,7 @@
 				/* 可预订日期 e */
 				
 				/* 场次 s */
-				sessionArray: [{}], //场景列表，如：[{session_id: 1, session_time: '10:00~11:00', session_price: 1.00, session: '10:00~11:00' + ' ￥1.00'}, {session_id: 2, session_time: '11:00~12:00', session_price: 2.00, session: '11:00~12:00' + ' ￥2.00'}]
+				sessionArray: [{}], //场景列表，如：[{session_id: 1, session_time: '10:00~11:00', session_price: 1.00, session: '10:00~11:00' + ' ￥1.00'}, {…}]
 				index: 0,
 				/* 场次 e */
 				
@@ -278,7 +278,7 @@
 				/* 选择场次 e */
 				
 				/* 选择房间 s */
-				roomList: [], // 场景房间列表，如：[{room_id: '1', room_name: 'room1', scene_id: '1', room_price: 1.00}, {room_id: '2', room_name: 'room2', scene_id: '1', room_price: 2.00}, {room_id: '5', room_name: 'room3', scene_id: '2', room_price: 3.00}]
+				roomList: [], // 场景房间列表，如：[{room_id: '1', room_name: 'room1', scene_id: '1', room_price: 1.00}, {…}]
 				currentRoom: '',
 				
 				roomId: '', // 选中的房间ID
@@ -291,11 +291,7 @@
 				
 				/* 选择装备 e */
 				/* 装备 s */
-				equipmentArray: [
-					{equipment_id: 1, equipment_name: 'EQP001', equipment_price: 1.00, equipment: 'EQP001' + ' ￥1.00'},
-					{equipment_id: 2, equipment_name: 'EQP002', equipment_price: 2.00, equipment: 'EQP002' + ' ￥2.00'}, 
-					{equipment_id: 3, equipment_name: 'EQP003', equipment_price: 3.00, equipment: 'EQP003' + ' ￥3.00'},
-				],
+				equipmentArray: [{}], // 装备列表，如：[{equipment_id: 1, equipment_name: 'EQP001', use_fee: 1.00, equipment: 'EQP001' + ' ￥1.00'}, {…}]
 				equipmentIndex: 0,
 				/* 装备 e */
 				
@@ -366,8 +362,11 @@
 				// 计算入场费
 				if (this.active >= 5) {
 					// 计算入场费
-					this.price = (this.sessionArray[this.index].session_price + this.roomList[this.currentRoom].room_price) * this.inputClearValue
-					+ this.equipmentArray[this.equipmentIndex].equipment_price;
+					var session_price = parseFloat(this.sessionArray[this.index].session_price);
+					var room_price = parseFloat(this.roomList[this.currentRoom].room_price);
+					var number = parseInt(this.inputClearValue);
+					var use_fee = parseFloat(this.equipmentArray[this.equipmentIndex].use_fee);
+					this.price = ((session_price + room_price) * number + use_fee).toFixed(2);
 				}
 				// 发起支付
 				if (this.active == 6) {
@@ -446,12 +445,13 @@
 			 * 选择场景
 			 * @param {Object} e
 			 */
-			changeRadio: function(e) {
+			radioChangeScene: function(e) {
 				var checked = e.target.value; // console.log(checked)
 				this.sceneId = checked; // 选中的场景ID
 				
 				this.getSessionList(this.venueId, this.sceneId); // 获取场次列表
 				this.getSceneRoomList(this.venueId, this.sceneId); // 获取房间列表
+				this.getEquipmentList(this.venueId, this.sceneId); // 获取装备列表
 			},
 			/* 选择场景 e */
 			
@@ -586,7 +586,7 @@
 						roomList.forEach ((item, index) => {
 							item.room_id = String(item.room_id);
 						})
-						self.roomList = roomList;console.log(self.roomList)
+						self.roomList = roomList;
 				    }
 				});
 			},
@@ -628,6 +628,42 @@
 			/* 选择人数 e */
 			
 			/* 选择装备 s */
+			/**
+			 * 获取场次列表
+			 * @param {Object} venueId
+			 * @param {Object} sceneId
+			 */
+			getEquipmentList(venueId, sceneId) {
+				let self = this;
+				uni.request({
+				    url: this.$serverUrl + 'equipment',
+				    data: {
+				        venue_id: venueId,
+						scene_id: sceneId
+				    },
+				    header: {
+				    	'sign': common.sign(), // 签名
+				    	'version': getApp().globalData.version, // 应用大版本号
+				    	'model': getApp().globalData.systemInfo.model, // 手机型号
+				    	'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
+				    	'did': getApp().globalData.did, // 设备号
+				    },
+				    success: (res) => {
+				        // console.log(res.data);
+						// 装备列表
+						let equipmentArray = res.data.data.data;
+						equipmentArray.forEach ((item, index) => {
+							item.equipment = item.equipment_name + ' ￥' + item.use_fee;
+						})
+						self.equipmentArray = equipmentArray;
+				    }
+				});
+			},
+			
+			/**
+			 * 选择装备
+			 * @param {Object} e
+			 */
 			pickerChangeEquipment: function(e) {
 				console.log('picker发送选择改变，携带值为：' + e.target.value)
 				this.equipmentIndex = e.target.value
