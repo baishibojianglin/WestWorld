@@ -1,6 +1,10 @@
 <template>
 	<view>
-		<view class="example-title">报名步骤 <image :src="venueData.thumb" style="width: 80upx; height: 80upx; border-radius: 10upx;"></image></view>
+		<view class="example-title"><!-- 报名步骤 --> 
+			<image :src="venueData.thumb" style="width: 80upx; height: 80upx; border-radius: 10upx;"></image>
+			<view>{{venueData.venue_name}}</view>
+			<view><text class="uni-icon uni-icon-location"></text>{{venueData.address}}</view>
+		</view>
 		<view class="example-body">
 			<uni-steps :options="stepsList" :active="active" />
 		</view>
@@ -42,7 +46,7 @@
 					<view class="uni-common-mt">
 						<!-- <view class="example-title">选择日期</view> -->
 						<view class="uni-list">
-							<view class="uni-list-cell">
+							<view class="uni-list-cell uni-list-cell-pd">
 								<view class="uni-list-cell-left">日期</view>
 								<view class="uni-list-cell-db" @click="openCalendar">
 									<view class="tag-view"><uni-tag :text="timeData.fulldate" type="success" size="small"></uni-tag></view>
@@ -53,12 +57,12 @@
 					<view class="uni-common-mt">
 						<!-- <view class="example-title">选择场次</view> -->
 						<view class="uni-list">
-							<view class="uni-list-cell">
+							<view class="uni-list-cell uni-list-cell-pd">
 								<view class="uni-list-cell-left">场次</view>
 								<view class="uni-list-cell-db">
-									<picker @change="bindPickerChange" :value="sessionArray[index].session_id" :range="sessionArray" range-key="session">
-										<!-- <view class="uni-input">{{sessionArray[index].session}}</view> -->
-										<view class="tag-view"><uni-tag :text="sessionArray[index].session_time" type="success" size="small"></uni-tag> <text class="red uni-bold">￥{{ sessionArray[index].session_price }}</text></view>
+									<picker @change="bindPickerChange" :value="sessionArray[sessionIndex].session_id" :range="sessionArray" range-key="session">
+										<!-- <view class="uni-input">{{sessionArray[sessionIndex].session}}</view> -->
+										<view class="tag-view"><uni-tag :text="sessionArray[sessionIndex].session_time" type="success" size="small"></uni-tag> <text class="red uni-bold">￥{{ sessionArray[sessionIndex].session_price }}</text></view>
 									</picker>
 								</view>
 							</view>
@@ -81,20 +85,32 @@
 				</view>
 				<!-- 房间 e -->
 				<!-- 人数 s -->
-				<view v-show="current === 4">
-					<!-- <view class="uni-form-item uni-column">
-						<view class="with-fun">
-							<input class="uni-input" type="number" placeholder="输入人数" :value="inputClearValue" @input="clearInput" />
-							<view class="uni-icon uni-icon-clear" v-if="showClearIcon" @click="clearIcon"></view>
-						</view>
-					</view> -->
-					<uni-number-box :min="0" :max="3" :value="inputClearValue" @change="changeNumber"></uni-number-box>
+				<view v-show="current === 3">
+					<uni-number-box :min="0" :max="3" :value="number" @change="changeNumber"></uni-number-box>
 				</view>
 				<!-- 人数 e -->
+				<!-- 组队 s -->
+				<view v-show="current === 4">
+					<view class="uni-list">
+						<view class="uni-list-cell uni-list-cell-pd">
+							<view class="uni-list-cell-left">创建团队</view>
+							<view><text class="uni-icon uni-icon-plus-filled red" @click="createTeam()"></text></view>
+						</view>
+						<view class="uni-list-cell uni-list-cell-pd" v-if="teamArray.length > 1">
+							<view class="uni-list-cell-left">加入团队</view>
+							<view class="uni-list-cell-db">
+								<picker @change="pickerChangeTeam" :value="teamArray[teamIndex].team_id" :range="teamArray" range-key="team">
+									<view class="tag-view"><uni-tag :text="teamArray[teamIndex].team" type="success" size="small"></uni-tag></view>
+								</picker>
+							</view>
+						</view>
+					</view>
+				</view>
+				<!-- 组队 e -->
 				<!-- 装备 s -->
 				<view v-show="current === 5">
 					<view class="uni-list">
-						<view class="uni-list-cell">
+						<view class="uni-list-cell uni-list-cell-pd">
 							<view class="uni-list-cell-left">装备</view>
 							<view class="uni-list-cell-db">
 								<picker @change="pickerChangeEquipment" :value="equipmentArray[equipmentIndex].equipment_id" :range="equipmentArray" range-key="equipment">
@@ -115,7 +131,7 @@
 			<uni-segmented-control :current="current" :values="items" :style-type="styleType" :active-color="activeColor" @clickItem="onClickItem" />
 		</view>
 		
-		<button type="primary" @click="change">{{ active === 6 ? '确 定' : '下一步' }}</button>
+		<button type="default" @click="change">{{ active === 6 ? '确 定' : '下一步' }}</button>
 		
 		<!-- 单独放在外面防止其他样式对其干扰 -->
 		<uni-calendar ref="calendar" :lunar="tags[0].checked" :disable-before="tags[3].checked" :range="tags[5].checked" :start-date="startDate" :end-date="endDate" :date="date" :selected="selected" @confirm="confirmDate" @change="changeDate()" />
@@ -124,7 +140,9 @@
 
 <script>
 	import {uniSteps, uniSegmentedControl, uniGrid, uniGridItem, uniCalendar, uniTag, uniNumberBox} from '@dcloudio/uni-ui';
+	import {mapState} from 'vuex';
 	import common from '@/common/common.js';
+	import Aes from '@/common/Aes.js';
 
 	export default {
 		components: {
@@ -218,6 +236,8 @@
 			/* 日期 s */
 			
 			return {
+				userData: [], // 用户信息
+				
 				venueId: '', // 场馆ID
 				venueData: {}, // 场馆信息
 				
@@ -226,8 +246,8 @@
 				stepsList: [
 					{title: '1', desc: '场景'}, 
 					{title: '2', desc: '场次'}, 
-					{title: '3', desc: '房间'}, 
-					{title: '4', desc: '组队'}, 
+					{title: '3', desc: '组队'}, 
+					{title: '4', desc: '房间'}, 
 					{title: '5', desc: '人数'}, 
 					{title: '6', desc: '装备'}, 
 					{title: '7', desc: '确定'},
@@ -235,7 +255,7 @@
 				/* 步骤条 e */
 				
 				/* 分段器 s */
-				items: ['场景', '场次', '房间', '组队', '人数', '装备', '确定'],
+				items: ['场景', '场次', '房间', '人数', '组队', '装备', '确定'],
 				colors: ['#007aff', '#4cd964', '#dd524d'],
 				current: 0,
 				colorIndex: 0,
@@ -271,7 +291,7 @@
 				
 				/* 场次 s */
 				sessionArray: [{}], //场景列表，如：[{session_id: 1, session_time: '10:00~11:00', session_price: 1.00, session: '10:00~11:00' + ' ￥1.00'}, {…}]
-				index: 0,
+				sessionIndex: 0,
 				/* 场次 e */
 				
 				sessionId: '', // 选中的场次ID
@@ -285,9 +305,19 @@
 				/* 选择房间 e */
 				
 				/* 选择人数 s */
-				showClearIcon: false, // 清除按钮标识
-				inputClearValue: '', // 人数
+				number: '', // 人数
 				/* 选择人数 e */
+				
+				/* 选择比赛场次组队 e */
+				/* 比赛场次组队 s */
+				teamArray: [{}], // 比赛场次组队列表，如：[{team_id: 1, team: '1'}, {team_id: 2, team: '2'}, {…}]
+				teamIndex: 0,
+				/* 比赛场次组队 e */
+				
+				teamId: '', // 选中的比赛场次组队ID
+				
+				teams: [], // 不同于teamArray
+				/* 选择比赛场次组队 e */
 				
 				/* 选择装备 e */
 				/* 装备 s */
@@ -305,12 +335,40 @@
 		},
 		onLoad(event) {
 			// console.log(event)
-			this.venueId = event.id;
-			this.venueData = JSON.parse(event.venueData);
-			
+			this.venueId = event.id; // 场馆ID
+			this.venueData = JSON.parse(event.venueData); // 场馆数据
 			this.getSceneList(this.venueId); // 获取场景列表
+			
+			this.getUserInfo(); // 获取用户信息
 		},
+		computed: mapState(['hasLogin', 'userInfo']), // 对全局变量 hasLogin、userInfo 进行监控
 		methods: {
+			/**
+			 * 获取用户信息
+			 */
+			getUserInfo () {
+				let self = this;
+				if (this.hasLogin) {
+					uni.request({
+						url: this.$serverUrl + 'user/1',
+						header: {
+							'sign': common.sign(), // 签名
+							'version': getApp().globalData.version, // 应用大版本号
+							'model': getApp().globalData.systemInfo.model, // 手机型号
+							'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
+							'did': getApp().globalData.did, // 设备号
+							'access-user-token': this.userInfo.token
+						},
+						method: 'GET',
+						success:function(res){
+							let userData = JSON.parse(Aes.decode(res.data.data)); // 用户信息
+							// console.log('用户信息：', userData);
+							self.userData = userData;
+						}
+					})
+				}
+			},
+			
 			/* 步骤条 s */
 			change() {
 				// console.log(this.active)
@@ -341,10 +399,19 @@
 					this.current = this.active = 2;
 					return;
 				}
-				// 选好第1~4步外，其他步骤必须判断是否选择人数
-				if ((this.inputClearValue < 1 || this.inputClearValue > 3) && this.active > 3) {
+				// 选好第1~3步外，其他步骤必须判断是否选择人数
+				if ((this.number < 1 || this.number > 3) && this.active > 2) {
 					uni.showToast({
 						title: '请输入1~3人',
+						icon: 'none'
+					});
+					this.current = this.active = 3;
+					return;
+				}
+				// 选好第1~4步外，其他步骤必须判断是否选择组队
+				if (!this.teamId && this.active > 3) {
+					uni.showToast({
+						title: '请创建或加入团队',
 						icon: 'none'
 					});
 					this.current = this.active = 4;
@@ -362,9 +429,9 @@
 				// 计算入场费
 				if (this.active >= 5) {
 					// 计算入场费
-					var session_price = parseFloat(this.sessionArray[this.index].session_price);
+					var session_price = parseFloat(this.sessionArray[this.sessionIndex].session_price);
 					var room_price = parseFloat(this.roomList[this.currentRoom].room_price);
-					var number = parseInt(this.inputClearValue);
+					var number = parseInt(this.number);
 					var use_fee = parseFloat(this.equipmentArray[this.equipmentIndex].use_fee);
 					this.price = ((session_price + room_price) * number + use_fee).toFixed(2);
 				}
@@ -446,8 +513,16 @@
 			 * @param {Object} e
 			 */
 			radioChangeScene: function(e) {
-				var checked = e.target.value; // console.log(checked)
+				var checked = e.target.value;
 				this.sceneId = checked; // 选中的场景ID
+				console.log('场景sceneId = ', checked);
+				
+				// 初始化选中的场次ID、房间ID、组队ID、装备ID、入场费
+				this.sessionId = ''; this.sessionIndex = 0;
+				this.roomId = ''; this.currentRoom = '';
+				this.teams = []; this.teamArray = [{}]; this.teamIndex = 0; this.teamId = '';
+				this.equipmentId = ''; this.equipmentIndex = 0;
+				this.price = '';
 				
 				this.getSessionList(this.venueId, this.sceneId); // 获取场次列表
 				this.getSceneRoomList(this.venueId, this.sceneId); // 获取房间列表
@@ -549,11 +624,11 @@
 			 * @param {Object} e
 			 */
 			bindPickerChange: function(e) {
-				console.log('picker发送选择改变，携带值为：' + e.target.value)
-				this.index = e.target.value
+				// console.log('picker发送选择改变，携带值为：' + e.target.value)
+				this.sessionIndex = e.target.value
 				
-				this.sessionId = this.sessionArray[this.index].session_id; // 选中的场次ID
-				console.log('选中的场次ID', this.sessionId)
+				this.sessionId = this.sessionArray[this.sessionIndex].session_id; // 选中的场次ID
+				console.log('比赛场次：sessionDate=' + this.timeData.fulldate, 'sessionId=' + this.sessionId)
 			},
 			/* 场次 e */
 			/* 选择场次 e */
@@ -600,6 +675,12 @@
 					if (this.roomList[i].room_id === evt.target.value) {
 						this.currentRoom = i;
 						this.roomId = evt.target.value;
+						console.log('房间roomId = ', this.roomId);
+						
+						// 先初始化比赛场次组队，再获取比赛场次组队列表
+						this.teams = []; this.teamArray = [{}]; this.teamIndex = 0; this.teamId = '';
+						this.getTeamList(this.venueId, this.sceneId, this.timeData.fulldate, this.sessionId, this.roomId);
+						
 						break;
 					}
 				}
@@ -607,25 +688,144 @@
 			/* 选择房间 e */
 			
 			/* 选择人数 s */
-			/* // 输入内容并显示清除按钮
-			clearInput: function(event) {
-				this.inputClearValue = event.target.value;
-				if (event.target.value.length > 0) {
-					this.showClearIcon = true;
-				} else {
-					this.showClearIcon = false;
-				}
-			},
-			// 清除输入框的内容并隐藏清除按钮
-			clearIcon: function() {
-				this.inputClearValue = '';
-				this.showClearIcon = false;
-			}, */
-			
+			/**
+			 * 选择人数
+			 * @param {Object} value
+			 */
 			changeNumber(value) {
-				this.inputClearValue = value
+				this.number = value
 			},
 			/* 选择人数 e */
+			
+			/* 选择组队 s */
+			/**
+			 * 获取比赛场次组队列表
+			 * @param {Object} venueId
+			 * @param {Object} sceneId
+			 * @param {Object} sessionDate
+			 * @param {Object} sessionId
+			 * @param {Object} roomId
+			 */
+			getTeamList(venueId, sceneId, sessionDate, sessionId, roomId) {
+				let self = this;
+				uni.request({
+					url: this.$serverUrl + 'session_teams',
+					data: {
+						venue_id: venueId,
+						scene_id: sceneId,
+						session_date: sessionDate,
+						session_id: sessionId,
+						room_id: roomId
+					},
+					header: {
+						'sign': common.sign(), // 签名
+						'version': getApp().globalData.version, // 应用大版本号
+						'model': getApp().globalData.systemInfo.model, // 手机型号
+						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
+						'did': getApp().globalData.did, // 设备号
+					},
+					success: (res) => {
+						// console.log(res.data);
+						// 比赛场次组队列表
+						let teams = self.teams = res.data.data;
+						let teamArray = JSON.parse(teams.session_teams_detail);
+						teamArray.forEach ((item, index) => {
+							item.team = String('team-' + item.team_id + ' （已加入' + item.players_number + '人）');
+						})
+						self.teamArray = teamArray;
+					}
+				});
+			},
+			
+			/**
+			 * 选择组队
+			 * @param {Object} e
+			 */
+			pickerChangeTeam: function(e) {
+				// console.log('picker发送选择改变，携带值为：' + e.target.value)
+				this.teamIndex = e.target.value
+				
+				this.teamId = this.teamArray[this.teamIndex].team_id; // 选中的比赛场次组队ID
+				// console.log('组队teamId=' + this.teamId)
+				
+				// 加入团队
+				this.joinTeam();
+			},
+			
+			/**
+			 * 加入团队
+			 */
+			joinTeam () {
+				uni.request({
+					url: this.$serverUrl + 'session_teams/' + this.teams.session_teams_id,
+					data: {
+						session_teams_id: this.teams.session_teams_id,
+						team_id: this.teamId,
+						user_id: this.userData.user_id,
+						number: this.number
+					},
+					header: {
+						'sign': common.sign(), // 签名
+						'version': getApp().globalData.version, // 应用大版本号
+						'model': getApp().globalData.systemInfo.model, // 手机型号
+						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
+						'did': getApp().globalData.did, // 设备号
+					},
+					method: 'PUT',
+					success: (res) => {
+						console.log('joinTeam返回', res.data);
+						uni.showToast({
+							title: res.data.message,
+							icon: 'none'
+						});
+						// TODO：从数据库获取已加入比赛场次的相关信息，如人数、团队ID
+					}
+				});
+			},
+			
+			/**
+			 * 创建团队
+			 */
+			createTeam () {
+				let self = this;
+				uni.showModal({
+					title: '创建团队',
+					content: '创建新的比赛团队',
+					success: function (res) {
+						if (res.confirm) {
+							uni.request({
+								url: self.$serverUrl + 'session_teams',
+								data: {
+									venue_id: self.venueId,
+									scene_id: self.sceneId,
+									session_date: self.timeData.fulldate,
+									session_id: self.sessionId,
+									room_id: self.roomId,
+									user_id: self.userData.user_id,
+									number: self.number
+								},
+								header: {
+									'sign': common.sign(), // 签名
+									'version': getApp().globalData.version, // 应用大版本号
+									'model': getApp().globalData.systemInfo.model, // 手机型号
+									'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
+									'did': getApp().globalData.did, // 设备号
+								},
+								method: 'POST',
+								success: (res) => {
+									console.log('joinTeam返回', res.data);
+									uni.showToast({
+										title: res.data.message,
+										icon: 'none'
+									});
+									// TODO：从数据库获取已加入比赛场次的相关信息，如人数、团队ID
+								}
+							});
+						}
+					}
+				});
+			},
+			/* 选择组队 e */
 			
 			/* 选择装备 s */
 			/**
@@ -665,11 +865,11 @@
 			 * @param {Object} e
 			 */
 			pickerChangeEquipment: function(e) {
-				console.log('picker发送选择改变，携带值为：' + e.target.value)
+				// console.log('picker发送选择改变，携带值为：' + e.target.value)
 				this.equipmentIndex = e.target.value
 				
 				this.equipmentId = this.equipmentArray[this.equipmentIndex].equipment_id; // 选中的装备ID
-				console.log('选中的装备ID', this.equipmentId)
+				console.log('装备equipmentId = ', this.equipmentId)
 			},
 			/* 选择装备 e */
 		}

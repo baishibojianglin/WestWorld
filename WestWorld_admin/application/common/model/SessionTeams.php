@@ -54,7 +54,7 @@ class SessionTeams extends Base
      */
     private function _getListField()
     {
-        return 'st.session_teams_id, st.venue_id, st.scene_id, st.session_date, st.session_id, st.room_id, v.venue_name, sc.scene_name, se.session_name, se.start_time, se.end_time, sr.room_name';
+        return 'st.session_teams_id, st.venue_id, st.scene_id, st.session_date, st.session_id, st.room_id, st.players_number, v.venue_name, sc.scene_name, se.session_name, se.start_time, se.end_time, sr.room_name';
     }
 
     /**

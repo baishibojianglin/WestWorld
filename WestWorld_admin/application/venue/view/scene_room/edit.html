@@ -38,12 +38,6 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="layui-form-label">已参加人数</label>
-                        <div class="layui-input-block">
-                            <input type="number" step="1" min="0" name="join_number" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
-                        </div>
-                    </div>
-                    <div class="layui-form-item">
                         <label class="layui-form-label">是否被预订</label>
                         <div class="layui-input-block">
                             <input type="radio" name="is_booked" value="0" title="未预订" checked>
@@ -96,7 +90,6 @@
                     ,"room_name": data.data.room_name
                     ,"room_price": data.data.room_price
                     ,"available_number": data.data.available_number
-                    ,"join_number": data.data.join_number
                     ,"is_booked": data.data.is_booked
                     ,"status": data.data.status
                 });

@@ -52,7 +52,7 @@
 			});
 			this.getDetail();
 		},
-		computed: mapState(['userInfo']), // 对全局变量 userInfo 进行监控
+		computed: mapState(['hasLogin', 'userInfo']), // 对全局变量 hasLogin、userInfo 进行监控
 		methods: {
 			/**
 			 * 获取场馆详情数据
@@ -104,6 +104,23 @@
 			 * 跳转比赛选择页
 			 */
 			toGame() {
+				// 判断是否登录
+				if (false == this.hasLogin) {
+					uni.showModal({
+						title: '登录',
+						content: '请登录账号',
+						success: function (res) {
+							if (res.confirm) {
+								uni.navigateTo({
+									url: '/pages/login/login'
+								});
+							}
+						}
+					});
+					return false;
+				}
+				
+				// 跳转比赛选择页
 				uni.navigateTo({
 				    url: '/pages/game/join/join-steps?id=' + this.banner.venue_id + '&venueData=' + JSON.stringify(this.banner)
 				});

@@ -26,7 +26,7 @@ class SceneRoom extends Base
         $order = ['sr.room_id' => 'asc'];
 
         $result = $this->alias('sr')
-            ->field('sr.room_id, sr.room_name, sr.scene_id, sr.venue_id, sr.room_price, sr.available_number, sr.join_number, sr.is_booked, sr.status, s.scene_name, v.venue_name')
+            ->field('sr.room_id, sr.room_name, sr.scene_id, sr.venue_id, sr.room_price, sr.available_number, sr.is_booked, sr.status, s.scene_name, v.venue_name')
             ->join('__SCENE__ s', 'sr.scene_id = s.scene_id', 'LEFT')
             ->join('__VENUE__ v', 'sr.venue_id = v.venue_id', 'LEFT')
             ->where($map)

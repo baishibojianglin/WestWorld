@@ -51,6 +51,8 @@ Route::resource('api/:ver/scene', 'api/:ver.scene');
 Route::resource('api/:ver/session', 'api/:ver.session');
 // 场景房间
 Route::resource('api/:ver/scene_room', 'api/:ver.scene_room');
+// 比赛场次组队
+Route::resource('api/:ver/session_teams', 'api/:ver.session_teams');
 // 装备
 Route::resource('api/:ver/equipment', 'api/:ver.equipment');
 // 比赛场次订单

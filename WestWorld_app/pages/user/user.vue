@@ -122,8 +122,8 @@
 			}
 		},
 		onLoad:function(){
+			// 获取用户信息
 			let self = this
-			
 			if (this.hasLogin) {
 				uni.request({
 					url: this.$serverUrl + 'user/1',

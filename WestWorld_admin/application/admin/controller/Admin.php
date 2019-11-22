@@ -92,7 +92,7 @@ class Admin extends Base
 
             // 验证不需要validate验证的其他参数
             if (!isset($data['group_id'])) { // 所属用户组id
-                return show(config('code.error'), '用户组不能为空', [], 412);
+                return show(config('code.error'), '用户组不能为空', [], 403);
             }
 
             // validate验证
@@ -189,7 +189,7 @@ class Admin extends Base
 
             // 验证不需要validate验证的其他参数
             if (!isset($param['group_id'])) { // 所属用户组id
-                return show(config('code.error'), '用户组不能为空', [], 412);
+                return show(config('code.error'), '用户组不能为空', [], 403);
             }
 
             // validate验证

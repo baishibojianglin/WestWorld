@@ -188,9 +188,6 @@ class SceneRoom extends Base
             if (isset($param['available_number'])) { // 可容纳人数
                 $data['available_number'] = trim($param['available_number']);
             }
-            if (isset($param['join_number'])) { // 已参加人数
-                $data['join_number'] = trim($param['join_number']);
-            }
             if (isset($param['is_booked'])) { // 是否被预订
                 $data['is_booked'] = input('param.is_booked', null, 'intval');
             }

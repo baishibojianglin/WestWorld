@@ -100,6 +100,7 @@
                     , {field: 'room_name', title: '房间', width: 120}
                     , {field: 'session_date', title: '比赛日期', width: 120}
                     , {field: 'session_name', title: '场次', cellMinWidth: 120, templet: '<div>{{d.session_name}} {{d.start_time}} - {{d.end_time}}</div>'}
+                    , {field: 'players_number', title: '比赛人数', width: 120}
                     , {title: '操作', fixed: 'right', width: 120, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
                 ]]
                 , url: '{:url("venue/session_teams/getSessionTeams")}' //数据接口
