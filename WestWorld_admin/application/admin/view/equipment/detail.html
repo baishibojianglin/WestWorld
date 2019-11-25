@@ -1,0 +1,112 @@
+{include file="public/_meta" /}
+</head>
+<body class="layui-view-body">
+<div class="layui-content">
+    <div class="layui-row">
+        <div class="layui-card">
+            <div class="layui-card-header">装备信息</div>
+            <div class="layui-card-body">
+
+                <form class="layui-form" lay-filter="layui_form">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">场馆</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="venue_name" autocomplete="off" class="layui-input" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">场景</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="scene_name" autocomplete="off" class="layui-input" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">装备名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="equipment_name" placeholder="请输入" autocomplete="off" class="layui-input" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">装备缩略图</label>
+                        <div id="thumb"></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">装备使用费/￥</label>
+                        <div class="layui-input-block">
+                            <input type="number" step="0.01" min="0" name="use_fee" placeholder="请输入" autocomplete="off" class="layui-input" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">装备使用数量/件</label>
+                        <div class="layui-input-block">
+                            <input type="number" step="1" min="0" name="use_number" placeholder="请输入" autocomplete="off" class="layui-input" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">装备数量/件</label>
+                        <div class="layui-input-block">
+                            <input type="number" step="1" min="0" name="equipment_number" placeholder="请输入" autocomplete="off" class="layui-input" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">装备描述</label>
+                        <div class="layui-input-block">
+                            <div class="layui-collapse">
+                                <div class="layui-colla-item">
+                                    <h2 class="layui-colla-title"></h2>
+                                    <div class="layui-colla-content layui-show" id="equipment_description"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<script src="__STATIC__/layui/layui.js"></script>-->
+{include file="public/_footer" /}
+
+<script>
+    /**
+     * 表单模块 - layui.form
+     */
+    layui.use('form', function(){
+        var form = layui.form;
+
+        // 给表单赋值
+        /*ajax GET请求 s*/
+        $.ajax({
+            url: '{:url("admin/equipment/read")}',
+            type: 'get',
+            data: {id: '{$_GET["id"]}'}, // {$_GET["id"]} 为 venue/Equipment 控制器 edit($id) 方法的 $id 参数值
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {console.log(data);
+
+                // 给表单赋值
+                form.val("layui_form", { //layui_form 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                    "equipment_id": data.data.equipment_id // "name": "value"
+                    ,"venue_name": data.data.venue_name
+                    ,"scene_name": data.data.scene_name
+                    ,"equipment_name": data.data.equipment_name
+                    ,"use_fee": data.data.use_fee
+                    ,"use_number": data.data.use_number
+                    ,"equipment_number": data.data.equipment_number
+                });
+
+                // 显示场景缩略图thumb并赋值
+                thumb = data.data.thumb;
+                $('#thumb').append(' <img src="/' + thumb + '" alt="' + thumb + '" title="' + thumb + '" class="layui-upload-img" width="200">');
+
+                // 给场景描述equipment_description赋值
+                $('#equipment_description').html(data.data.equipment_description);
+
+            }
+        });
+        /*ajax GET请求 e*/
+    });
+</script>
+</body>
+</html>

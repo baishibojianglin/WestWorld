@@ -9,7 +9,7 @@ use think\Request;
 /**
  * venue模块场景管理控制器类
  * Class Scene
- * @package app\admin\controller
+ * @package app\venue\controller
  */
 class Scene extends Base
 {

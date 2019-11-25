@@ -9,7 +9,7 @@ use think\Request;
 /**
  * 后台文件上传控制器类
  * Class Upload
- * @package app\admin\controller
+ * @package app\venue\controller
  */
 class Upload extends Base
 {

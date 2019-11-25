@@ -155,7 +155,7 @@
 
                 // 显示场馆缩略图thumb并赋值
                 var thumb = data.data.thumb;
-                $('#thumb').after(' <img src="/' + thumb + '" alt="' + thumb + '" title="' + thumb + '" class="layui-upload-img" width="200">');
+                $('#thumb').append(' <img src="/' + thumb + '" alt="' + thumb + '" title="' + thumb + '" class="layui-upload-img" width="200">');
 
                 // 给场馆介绍venue_description赋值
                 $('#venue_description').html(data.data.venue_description);

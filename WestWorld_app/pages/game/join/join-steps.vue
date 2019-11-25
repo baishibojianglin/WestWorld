@@ -96,7 +96,7 @@
 							<view class="uni-list-cell-left">创建团队</view>
 							<view><text class="uni-icon uni-icon-plus-filled red" @click="createTeam()"></text></view>
 						</view>
-						<view class="uni-list-cell uni-list-cell-pd" v-if="teamArray.length > 1">
+						<view class="uni-list-cell uni-list-cell-pd" v-if="teamArray">
 							<view class="uni-list-cell-left">加入团队</view>
 							<view class="uni-list-cell-db">
 								<picker @change="pickerChangeTeam" :value="teamArray[teamIndex].team_id" :range="teamArray" range-key="team">
@@ -575,7 +575,16 @@
 				
 				// TODO：根据日期显示场次
 				if (e.fulldate) {
-					
+					// 判断比赛场次日期是否在允许预订范围内
+					if (e.fulldate < this.startDate || e.fulldate > this.endDate) {
+						uni.showToast({
+							title: '比赛场次日期不在允许预订范围内',
+							icon: 'none'
+						});
+						e.fulldate = getDate(new Date()); // 初始化比赛日期
+						console.log('confirm 返回1:', e);
+						return;
+					}
 				}
 			},
 			retract() {
@@ -756,9 +765,11 @@
 			 * 加入团队
 			 */
 			joinTeam () {
+				let self = this;
 				uni.request({
 					url: this.$serverUrl + 'session_teams/' + this.teams.session_teams_id,
 					data: {
+						session_date: self.timeData.fulldate,
 						session_teams_id: this.teams.session_teams_id,
 						team_id: this.teamId,
 						user_id: this.userData.user_id,
@@ -773,12 +784,13 @@
 					},
 					method: 'PUT',
 					success: (res) => {
-						console.log('joinTeam返回', res.data);
+						// console.log('joinTeam返回', res.data);
+						// TODO：从数据库获取已加入比赛场次的相关信息，如人数、团队ID
+						self.teamId = res.data.data.team_id;
 						uni.showToast({
 							title: res.data.message,
 							icon: 'none'
 						});
-						// TODO：从数据库获取已加入比赛场次的相关信息，如人数、团队ID
 					}
 				});
 			},
@@ -813,12 +825,13 @@
 								},
 								method: 'POST',
 								success: (res) => {
-									console.log('joinTeam返回', res.data);
+									// console.log('createTeam返回', res.data);
+									// TODO：从数据库获取已加入比赛场次的相关信息，如人数、团队ID
+									self.teamId = res.data.data.team_id;
 									uni.showToast({
 										title: res.data.message,
 										icon: 'none'
 									});
-									// TODO：从数据库获取已加入比赛场次的相关信息，如人数、团队ID
 								}
 							});
 						}

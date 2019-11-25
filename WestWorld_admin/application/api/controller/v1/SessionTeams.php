@@ -61,8 +61,9 @@ class SessionTeams extends Common
      * 1.（通过 input('post.') 查询）数据库已存在该场比赛，进行更新操作；
      * 2.数据库不存在该场比赛，进行新增操作。
      *
-     * @param  \think\Request  $request
+     * @param  \think\Request $request
      * @return \think\Response
+     * @throws ApiException
      */
     public function save(Request $request)
     {
@@ -84,6 +85,9 @@ class SessionTeams extends Common
             if (empty($data['number'])) { // 人数
                 return show(config('code.error'), '人数不能为空', [], 403);
             }
+            if ($data['session_date'] < date('Y-m-d', time())) { // 比赛场次日期
+                return show(config('code.error'), '不在比赛场次日期范围内', [], 403);
+            }
 
             // 查询条件（上述已经判断数据存在）
             $map = [];
@@ -95,23 +99,62 @@ class SessionTeams extends Common
 
             // 查询数据
             $sessionTeams = model('SessionTeams')->where($map)->find();
+            // 获取场景房间可容纳人数
+            $sceneRoom = model('SceneRoom')->field('available_number')->find($data['user_id']);
 
-            // 判断是否存在该场比赛
+            // 判断是否存在该场比赛的团队
             if ($sessionTeams) { // 更新数据
-                // TODO：处理数据并进行更新操作
-                $id = 1;
-            } else { // 新增数据
-                // TODO：处理数据
+                // 处理数据
+                // 获取比赛场次组队详情
+                $sessionTeamsDetail = $sessionTeams['session_teams_detail'] = json_decode($sessionTeams['session_teams_detail'], true);
+
+                // 判断用户是否加入该场比赛
+                foreach ($sessionTeamsDetail as $key => $value) {
+                    if (in_array($data['user_id'], $value['players'])) {
+                        return show(config('code.error'), '已加入比赛团队', $value, 403);
+                    }
+                }
+
+                // 处理比赛场次组队详情
+                $teamId = $sessionTeamsDetail[count($sessionTeamsDetail) - 1]['team_id'] + 1; // 新创建团队的team_id
+                $_sessionTeamsDetail = [['team_id' => $teamId, 'players' => [$data['user_id']], 'players_number' => $data['number']]]; // 新创建的比赛场次组队详情，注意：此处为二维数组
+                $sessionTeamsDetail = array_merge($sessionTeamsDetail, $_sessionTeamsDetail); // 比赛场次组队详情Array
+                $data['session_teams_detail'] = json_encode($sessionTeamsDetail); // 定义比赛场次组队详情JSON
+
+                // 处理该场比赛总人数
+                $data['players_number'] = array_sum(array_column($sessionTeamsDetail, 'players_number'));// 定义该场比赛总人数
+                // 比较 players_number 与房间可容纳人数
+                if ($data['players_number'] > $sceneRoom['available_number']) {
+                    return show(config('code.error'), '已超出房间可容纳人数', [], 403);
+                }
+
+                // 更新
                 try {
-                    $id = model('SessionTeams')->add($data, 'session_teams_id'); // 新增
+                    $result = model('SessionTeams')->save($data, ['session_teams_id' => $sessionTeams['session_teams_id']]); // 更新
+                } catch (\Exception $e) {
+                    throw new ApiException($e->getMessage(), 500, config('code.error'));
+                }
+            } else { // 新增数据
+                // 处理数据
+                // 比较 players_number 与房间可容纳人数
+                if ($data['number'] > $sceneRoom['available_number']) {
+                    return show(config('code.error'), '已超出房间可容纳人数', [], 403);
+                }
+
+                $data['players_number'] = $data['number']; // 该场比赛总人数
+                $data['session_teams_detail'] = json_encode([['team_id' => 1, 'players' => [$data['user_id']], 'players_number' => $data['number']]]); // 比赛场次组队详情，注意：是对二维数组进行JSON编码
+
+                // 新增
+                try {
+                    $result = model('SessionTeams')->add($data, 'session_teams_id'); // 新增
                 } catch (\Exception $e) {
                     return show(0, '创建比赛团队失败 ' . $e->getMessage(), [], 403);
                 }
             }
-            if ($id) {
-                return show(config('code.success'), '创建比赛团队成功', $id, 201);
-            } else {
+            if (false === $result) {
                 return show(0, '创建比赛团队失败', [], 403);
+            } else {
+                return show(config('code.success'), '创建比赛团队成功', $result, 201);
             }
         }
     }
@@ -156,6 +199,11 @@ class SessionTeams extends Common
             // 传入的参数
             $param = input('param.');
 
+            // 判断比赛场次日期
+            if (!empty($param['session_date']) && $param['session_date'] < date('Y-m-d', time())) { // 比赛场次日期
+                return show(config('code.error'), '不在比赛场次日期范围内', [], 403);
+            }
+
             // 判断数据是否存在
             $data = [];
             if (!empty($param['team_id']) && !empty($param['user_id']) && !empty($param['number'])) { // 组队ID、用户ID、加入人数
@@ -168,9 +216,6 @@ class SessionTeams extends Common
                     $teamIds[] = $value['team_id'];
                     $players[] = $value['players'];
                 }
-                $players = array_reduce($players, 'array_merge', array());
-                // array_walk_recursive()可以把任意维度的数组转换成一维数组
-                //$result = []; array_walk_recursive($players, function($value) use (&$result) { array_push($result, $value); });
 
                 // 判断团队ID是否已存在于该场比赛
                 if (!in_array($param['team_id'], $teamIds)) {
@@ -178,9 +223,10 @@ class SessionTeams extends Common
                 }
 
                 // 判断用户是否加入该场比赛
-                if (in_array($param['user_id'], $players)) {
-                    return show(config('code.error'), '已加入比赛团队', [$sessionTeams, 'team_id' => $param['team_id']], 403);
-                } else {
+                $players = array_reduce($players, 'array_merge', array()); // 将多个二维数组合并成一维数组
+                // array_walk_recursive()可以把任意维度的数组转换成一维数组
+                //$result = []; array_walk_recursive($players, function($value) use (&$result) { array_push($result, $value); });
+                if (!in_array($param['user_id'], $players)) { // 未加入该场比赛
                     $sumPlayersNumber = 0; // 定义该场比赛总人数
                     foreach ($sessionTeamsDetail as $key => $value) {
                         // 处理数据
@@ -197,11 +243,17 @@ class SessionTeams extends Common
                     $data['players_number'] = $sumPlayersNumber + $param['number']; // 该场比赛总人数
                     $data['session_teams_detail'] = json_encode($sessionTeamsDetail); // 比赛场次组队详情
 
-                    // 比较 players_number 与房间容纳人数
                     // 获取场景房间可容纳人数
                     $sceneRoom = model('SceneRoom')->field('available_number')->find($sessionTeams['room_id']);
+                    // 比较 players_number 与房间可容纳人数
                     if ($data['players_number'] > $sceneRoom['available_number']) {
                         return show(config('code.error'), '已超出房间可容纳人数', [], 403);
+                    }
+                } else { // 已加入该场比赛，TODO：此判断做相应改动后可以写在上个`foreach ($sessionTeamsDetail as $key => $value){}`循环（第207行）中
+                    foreach ($sessionTeamsDetail as $key => $value) {
+                        if (in_array($param['user_id'], $value['players'])) {
+                            return show(config('code.error'), '已加入比赛团队', $value, 403);
+                        }
                     }
                 }
             }

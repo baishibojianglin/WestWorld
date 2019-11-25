@@ -9,7 +9,7 @@ use think\Request;
 /**
  * venue模块场次管理控制器类
  * Class Session
- * @package app\admin\controller
+ * @package app\venue\controller
  */
 class Session extends Base
 {
