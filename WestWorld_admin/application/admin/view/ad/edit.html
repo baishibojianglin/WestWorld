@@ -1,0 +1,202 @@
+{include file="public/_meta" /}
+</head>
+<body class="layui-view-body">
+<div class="layui-content">
+    <div class="layui-row">
+        <div class="layui-card">
+            <div class="layui-card-header">编辑广告</div>
+            <div class="layui-card-body">
+
+                <form class="layui-form" lay-filter="layui_form">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">广告名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="ad_name" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">广告位置</label>
+                        <div class="layui-input-block">
+                            <select name="position_id" lay-filter="position_id" lay-verify="required">
+                                <option value="">请选择…</option>
+                                {volist name="adPositionList" id="vo"}
+                                <option value="{$vo.position_id}">{$vo.position_name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" id="start_time_label">开始时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="start_time" placeholder="请输入" autocomplete="off" class="layui-input" id="start_time" lay-verify="required">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" id="end_time_label">结束时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="end_time" placeholder="请输入" autocomplete="off" class="layui-input" id="end_time" lay-verify="required">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">广告链接</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="ad_link" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">广告图片</label>
+                        <button type="button" class="layui-btn" id="ad_pic">
+                            <i class="layui-icon">&#xe67c;</i>上传图片
+                        </button>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">背景颜色</label>
+                        <div class="layui-input-block">
+                            <input type="color" name="bgcolor" placeholder="请输入" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">新窗口</label>
+                        <div class="layui-input-block">
+                            <input type="radio" name="target" value="1" title="是">
+                            <input type="radio" name="target" value="0" title="否" checked>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">是否显示</label>
+                        <div class="layui-input-block">
+                            <input type="radio" name="is_show" value="1" title="显示" checked>
+                            <input type="radio" name="is_show" value="0" title="不显示">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">广告排序</label>
+                        <div class="layui-input-block">
+                            <input type="number" step="1" min="0" name="sort" placeholder="请输入" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<script src="__STATIC__/layui/layui.js"></script>-->
+{include file="public/_footer" /}
+
+<script>
+    // 声明页面全局变量
+    var ad_pic; // 声明广告图片路径变量
+
+    /**
+     * 日期和时间组件 - layui.laydate
+     * 表单模块 - layui.form
+     */
+    layui.use(['laydate', 'form'], function(){
+        var laydate = layui.laydate, form = layui.form;
+
+        //执行一个laydate实例
+        laydate.render({ // 开始时间
+            elem: '#start_time' //指定元素
+            //,type: 'date'
+            //,range: false
+            //,min: '1900-1-1'
+            //,max: '2099-12-31'
+            ,eventElem: '#start_time_label'
+            ,trigger: 'click'
+        });
+        laydate.render({ // 结束时间
+            elem: '#end_time' //指定元素
+            ,eventElem: '#end_time_label'
+            ,trigger: 'click'
+        });
+
+        // 给表单赋值
+        /*ajax GET请求 s*/
+        $.ajax({
+            url: '{:url("admin/ad/read")}',
+            type: 'get',
+            data: {id: '{$_GET["id"]}'}, // {$_GET["id"]} 为 admin/Ad 控制器 edit($id) 方法的 $id 参数值
+            dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+
+                // 给表单赋值
+                form.val("layui_form", { //layui_form 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                    "ad_id": data.data.ad_id // "name": "value"
+                    ,"position_id": data.data.position_id
+                    ,"ad_name": data.data.ad_name
+                    ,"start_time": data.data.start_time
+                    ,"end_time": data.data.end_time
+                    ,"ad_link": data.data.ad_link
+                    ,"bgcolor": data.data.bgcolor
+                    ,"target": data.data.target
+                    ,"is_show": data.data.is_show
+                    ,"sort": data.data.sort
+                });
+
+                // 显示广告图片ad_pic并赋值
+                ad_pic = data.data.ad_pic;
+                $('#ad_pic').after(' <img src="/' + ad_pic + '" alt="' + ad_pic + '" title="' + ad_pic + '" class="layui-upload-img" width="200">');
+
+            }
+        });
+        /*ajax GET请求 e*/
+
+        // 监听submit提交
+        form.on('submit(*)', function(data){
+            //layer.msg(JSON.stringify(data.field));
+
+            // 判断广告图片是否已上传
+            if(!ad_pic) {
+                layer.msg('请上传广告图片', {icon: 7});
+                return false;
+            }
+            data.field.ad_pic = ad_pic; // 对 ad_pic 字段赋值
+
+            /*ajax请求 s*/
+            // TODO：在 /public/static/ 目录下新建 common.js 文件，封装公用 ajax 方法
+            var _data = data.field;
+            var url = "{:url('admin/ad/update', array('id' => $_GET['id']))}";
+            ajaxRequest(url, 'put', _data);
+            /*ajax请求 e*/
+
+            return false; // 阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+
+    /**
+     * 图片/文件上传 - layui.upload
+     */
+    layui.use('upload', function(){
+        var upload = layui.upload;
+
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#ad_pic' //绑定元素
+            ,url: '{:url("admin/upload/uploadThumb")}' //上传接口
+            ,data: {name: "ad_pic", dir: "ad", width: "500", height: "360"}
+            ,field: 'ad_pic' // 设定文件域的字段名
+            ,done: function(res){
+                //上传完毕回调
+                ad_pic = res.data; // 获取广告图片路径值
+                //console.log(ad_pic);
+                if (ad_pic) {
+                    //$('#ad_pic').hide();
+                    $('#ad_pic').next().remove('img');
+                    $('#ad_pic').after(' <img src="/' + ad_pic + '" alt="" title="' + ad_pic + '" class="layui-upload-img" width="200">');
+                }
+            }
+            ,error: function(){
+                //请求异常回调
+            }
+        });
+    });
+</script>
+</body>
+</html>
