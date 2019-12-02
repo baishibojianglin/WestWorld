@@ -13,12 +13,12 @@
 			<text class="iconfont iconmima"></text>
 		    <input password="true" v-model="repassword" placeholder="确认密码" />
 		</view>
-		<view class="text-area">
-			<text class="iconfont iconmima"></text>
-			<input v-model="notecode" placeholder="短信验证码" />
-		</view>
-		<view class="text-area">
-			<text class="getnotecode">获取验证码</text>
+		<view class="text-area uni-flex uni-row">
+			<view class="flex-item">
+				<text class="iconfont iconmima"></text>
+				<input v-model="notecode" placeholder="短信验证码" />
+			</view>
+			<view class="flex-item getnotecode">获取验证码</view>
 		</view>
 		<button class="buttonwidth white" v-on:click="register()">注 册</button>
 		<view class="loginbottom">
@@ -127,7 +127,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		color:$uni-color-error;
+		color: $uni-color-error;
 	}
 	.logo{
 		height: 200upx;
@@ -144,33 +144,39 @@
 	}
     .text-area input{
 		width: 100%;
+		margin-bottom: 20upx;
 		font-size: 28upx;
-		text-align:center;
+		text-align: center;
 	}
 	.text-area text{
 		position: absolute;
-		left:12%;
-		bottom:2upx;
+		left: 15upx;
+		bottom: 15upx;
 		font-size: 28upx;
-		text-align:center;
+		text-align: center;
+	}
+	.getnotecode{
+		position: absolute;
+		right: 15upx;
+		bottom: 15upx;
+		font-weight: bold;
+		color: gray;
 	}
 	.buttonwidth{
-		width:80%;
-		margin-top:50upx;
+		width: 80%;
+		margin-top: 50upx;
 		font-size: 28upx;
-		text-align:center;
-		background-color:#2B9939;
+		text-align: center;
+		background-color: #2B9939;
 	}
 	.loginbottom{
-		margin-top:30upx;
+		margin-top: 30upx;
 	}
 	.loginbottom navigator{
 		font-size: 24upx;
+		color: gray;
 	}
 	.popupstyle{
 		font-size: 24upx;
-	}
-	.getnotecode{
-		right: -300upx;
 	}
 </style>

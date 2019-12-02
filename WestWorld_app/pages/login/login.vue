@@ -12,7 +12,7 @@
 		<button class="buttonwidth white" @click="bindLogin">登 录</button>
 		<view class="loginbottom">
 			<navigator url="./regist">注册用户</navigator>
-			<text>|</text>
+			<!-- <text>|</text> -->
 			<navigator url="../pwd/pwd">忘记密码？</navigator>
 		</view>
 	</view>
@@ -133,15 +133,16 @@
 	}
     .text-area input{
 		width: 100%;
+		margin-bottom: 20upx;
 		font-size: 28upx;
-		text-align:center;
+		text-align: center;
 	}
 	.text-area text{
 		position: absolute;
-		left:12%;
-		bottom:2upx;
+		left: 15upx;
+		bottom: 15upx;
 		font-size: 28upx;
-		text-align:center;
+		text-align: center;
 	}
 	.buttonwidth{
 		width:80%;
@@ -158,7 +159,7 @@
 	}
 	.loginbottom navigator, .loginbottom text{
 		font-size: 24upx;
-		color: #007aff;
+		color: gray;/* #007aff */
 		padding: 0 20upx;
 	}
 </style>
