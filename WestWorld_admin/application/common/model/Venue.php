@@ -44,7 +44,7 @@ class Venue extends Base
             $map['is_delete'] = ['neq', config('code.is_delete')];
         }
 
-        $order = ['venue_id' => 'desc'];
+        $order = ['venue_id' => 'asc'];
 
         $result = $this->where($map)
             ->field($this->_getListField())

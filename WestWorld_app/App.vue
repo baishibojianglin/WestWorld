@@ -11,11 +11,12 @@
 		
 		onLaunch: function() {
 			// console.log('App Launch')
+			let self = this;
 			
 			// 获取设备系统信息
 			uni.getSystemInfo({
 				success: function (res) {
-					getApp().globalData.systemInfo = res
+					self.globalData.systemInfo = res; // getApp().globalData.systemInfo = res
 				}
 			});
 			
@@ -23,7 +24,7 @@
 			uni.getStorage({
 				key: 'userInfo',
 				success:(res) => {
-					this.login(res.data);
+					self.login(res.data);
 					// 如果还需要重新校验或是想要刷新token的有效时间 就再联网请求一次
 					/* uni.request({
 						url: `${this.$serverUrl}/auth.php`,

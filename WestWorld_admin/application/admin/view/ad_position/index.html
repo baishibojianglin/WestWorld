@@ -142,8 +142,12 @@
     {{#  if(d.status == {:config('code.status_enable')}){ }}
     <a class="layui-btn layui-btn-xs" lay-event="getAdList" href="{:url('admin/ad/index')}?position_id={{d.position_id}}">查看广告</a>
     {{#  } }}
+
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+
+    {{#  if(d.position_id != 1){ }}<!--客户端首页顶部轮播图广告位不能删除-->
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    {{#  } }}
 </script>
 <!--toolbar - 绑定工具条模板 e-->
 

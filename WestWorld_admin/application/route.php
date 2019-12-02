@@ -43,6 +43,8 @@ Route::put('api/:ver/logout', 'api/:ver.login/logout'); // 退出登录
 Route::resource('api/:ver/user', 'api/:ver.user');
 // 图片上传
 Route::post('api/:ver/image', 'api/:ver.image/save');
+// 广告
+Route::resource('api/:ver/ad', 'api/:ver.ad');
 // 场馆
 Route::resource('api/:ver/venue', 'api/:ver.venue');
 // 场景

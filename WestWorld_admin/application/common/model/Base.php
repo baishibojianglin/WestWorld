@@ -39,4 +39,19 @@ class Base extends Model
     {
         return $this->save(['is_delete' => config('code.is_delete')], [$id_key => $id_value]);
     }
+
+    /**
+     * 获取最大值
+     * @param array $map
+     * @param string $field
+     * @return mixed
+     */
+    public function getMax($map = [], $field = 'id')
+    {
+        if(!isset($map['is_delete'])) {
+            $map['is_delete'] = ['neq', config('code.is_delete')];
+        }
+        $max = $this->where($map)->max($field);
+        return $max;
+    }
 }

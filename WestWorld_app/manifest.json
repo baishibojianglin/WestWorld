@@ -55,9 +55,12 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "",
+        "appid" : "wx426ceaccc7988276",
         "setting" : {
-            "urlCheck" : false
+            "urlCheck" : false,
+            "es6" : true,
+            "postcss" : true,
+            "minified" : true
         },
         "usingComponents" : true
     },
@@ -86,6 +89,17 @@
                 }
             }
         },
-        "domain" : "h5.westworld.com"
+        "domain" : "westworld.com",
+        "router" : {
+            "mode" : "history",
+            "base" : "/h5/"
+        },
+        "sdkConfigs" : {
+            "maps" : {
+                "qqmap" : {
+                    "key" : ""
+                }
+            }
+        }
     }
 }

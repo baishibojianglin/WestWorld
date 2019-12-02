@@ -29,13 +29,13 @@ class Venue extends Common
             // 查询条件
             $map = [];
             $map['status'] = config('code.status_enable'); // 启用状态
-            if (!empty($param['grade_id'])) {
+            if (!empty($param['grade_id'])) { // 场馆等级
                 $map['grade_id'] = input('param.grade_id', 0, 'intval'); //intval($param['grade_id'])
             }
-            if (!empty($param['venue_name'])) {
+            if (!empty($param['venue_name'])) { // 场馆名称
                 $map['venue_name'] = ['like', '%' . $param['venue_name'] . '%'];
             }
-            if (!empty($param['create_time'])) {
+            if (!empty($param['create_time'])) { // 创建时间
                 $map['create_time'] = $param['create_time'];
             }
 
@@ -51,29 +51,44 @@ class Venue extends Common
             //$param['size'] = 1; // 定义每页条数
             $this->getPageAndSize($param); // 获取分页page、size
 
-            // 判断列表的标识 listFlag （1附近，0所有场馆）
-            if (1 == $param['listFlag']) {
-                // 获取所有列表数据
-                $list = model('Venue')->getVenueByCondition($map, $this->from, $this->size);
+            // 判断列表的标识 listFlag （0全部场馆，1附近）
+            if (1 == $param['listFlag']) { // 附近场馆
+                // 判断经纬度存在
+                if (isset($param['longitude']) && isset($param['latitude'])) {
+                    // 获取全部（注意是全部）列表数据
+                    $list = model('Venue')->where($map)->select();
 
-                // 定义经纬度范围值
-                $mapLongitude = [];
-                $mapLatitude = [];
+                    // 定义经纬度集合
+                    $mapLongitude = [];
+                    $mapLatitude = [];
 
-                foreach ($list as $key => $value) {
-                    // 判断经纬度存在
-                    if (!empty($param['longitude']) && !empty($param['latitude'])) {
+                    foreach ($list as $key => $value) {
+                        // 根据两点的经纬度计算距离，此处用于获取指定距离的经纬度集合
                         $list[$key]['distance'] = round(distance($param['latitude'], $param['longitude'], $value['latitude'], $value['longitude']), 3);
 
-                        // 获取指定距离（如距定位 2km 内的）经纬度
+                        // 获取指定距离（如距定位 2km 内）的经纬度集合
                         if ($list[$key]['distance'] <= 2) {
                             $mapLongitude[] = $value['longitude'];
                             $mapLatitude[] = $value['latitude'];
                         }
                     }
+                    $map['longitude'] = ['in', $mapLongitude]; // 经度集合
+                    $map['latitude'] = ['in', $mapLatitude]; // 纬度集合
                 }
-                $map['longitude'] = ['in', $mapLongitude];
-                $map['latitude'] = ['in', $mapLatitude];
+            }
+
+            // 根据传入的场馆ID加载更多（此处判断对于全部或附近场馆通用）
+            if (!empty($param['minId'])) {
+                // 获取场馆最大ID（除 $map['venue_id'] 外的其他 $map 条件必须带上，注意区分 listFlag 为1或0的 $map 不同）
+                $maxVenueId = model('Venue')->getMax($map, 'venue_id');
+
+                // 判断传入的场馆ID是否为最大ID，即数据是否全部加载
+                if ($param['minId'] == $maxVenueId) {
+                    return show(config('code.error'), '加载完成', ['maxId' => $maxVenueId], 404);
+                }
+
+                // 大于传入的场馆ID的集合
+                $map['venue_id'] = ['gt', $param['minId']];
             }
 
             // 获取（指定距离）列表数据
@@ -88,13 +103,13 @@ class Venue extends Common
             foreach ($list as $key => $value) {
                 $list[$key]['status_msg'] = $status[$value['status']];
 
-                // 经纬度
+                // 根据两点的经纬度计算距离
                 if (isset($param['longitude']) && isset($param['latitude'])) {
                     $list[$key]['distance'] = round(distance($param['latitude'], $param['longitude'], $value['latitude'], $value['longitude']), 3);
                 }
             }
 
-            $data = ['total' => $total, 'pages' => $pages, 'list' => $list,];
+            $data = ['total' => $total, 'pages' => $pages, 'list' => $list];
             return show(config('code.success'), 'ok', $data); // http://serverName/admin_venue?page=2&size=1
         }
     }
