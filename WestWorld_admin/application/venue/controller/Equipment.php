@@ -47,6 +47,9 @@ class Equipment extends Base
             if (!empty($param['scene_id'])) { // 场景ID
                 $map['e.scene_id'] = intval($param['scene_id']);
             }
+            if (isset($param['equipment_type']) && ($param['equipment_type'] != null)) { // 装备类型
+                $map['e.equipment_type'] = intval($param['equipment_type']);
+            }
 
             // 获取分页page、size
             $this->getPageAndSize($param);
@@ -83,6 +86,11 @@ class Equipment extends Base
         if(request()->isPost()){
             $data = input('post.');
             $data['venue_id'] = $this->session_venue->venue_id; // 场馆ID
+
+            // 装备类型：基本装备
+            if (isset($data['equipment_type']) && ($data['equipment_type'] == 0)) {
+                $data['use_fee'] = 0;
+            }
 
             // 入库操作
             try {
@@ -155,7 +163,10 @@ class Equipment extends Base
             // 判断数据是否存在
             $data = [];
             if (!empty($param['scene_id'])) { // 场景
-                $data['scene_id'] = trim($param['scene_id']);
+                $data['scene_id'] = intval($param['scene_id']);
+            }
+            if (isset($param['equipment_type']) && ($param['equipment_type'] != null)) { // 装备类型
+                $data['equipment_type'] = intval($param['equipment_type']);
             }
             if (!empty($param['equipment_name'])) { // 装备名称
                 $data['equipment_name'] = trim($param['equipment_name']);
@@ -168,6 +179,11 @@ class Equipment extends Base
             }
             if (isset($param['use_fee'])) { // 装备使用费
                 $data['use_fee'] = trim($param['use_fee']);
+
+                // 装备类型：基本装备
+                if (isset($param['equipment_type']) && ($param['equipment_type'] == 0)) {
+                    $data['use_fee'] = 0;
+                }
             }
             if (isset($param['use_number'])) { // 装备使用数量
                 $data['use_number'] = trim($param['use_number']);

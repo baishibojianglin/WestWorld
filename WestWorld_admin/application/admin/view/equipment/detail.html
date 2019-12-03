@@ -21,6 +21,12 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
+                        <label class="layui-form-label">装备类型</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="equipment_type" autocomplete="off" class="layui-input" readonly>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
                         <label class="layui-form-label">装备名称</label>
                         <div class="layui-input-block">
                             <input type="text" name="equipment_name" placeholder="请输入" autocomplete="off" class="layui-input" readonly>
@@ -90,6 +96,7 @@
                     "equipment_id": data.data.equipment_id // "name": "value"
                     ,"venue_name": data.data.venue_name
                     ,"scene_name": data.data.scene_name
+                    ,"equipment_type": data.data.equipment_type == 1 ? '付费装备' : '基本装备'
                     ,"equipment_name": data.data.equipment_name
                     ,"use_fee": data.data.use_fee
                     ,"use_number": data.data.use_number

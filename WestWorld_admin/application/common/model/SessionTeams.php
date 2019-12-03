@@ -19,9 +19,9 @@ class SessionTeams extends Base
      */
     public function getSessionTeams($map = [], $size = 5)
     {
-        if(!isset($map['st.session_date'])) { // 默认获取今天的比赛场次
+        /*if(!isset($map['st.session_date'])) { // 默认获取今天的比赛场次
             $map['st.session_date'] = date('Y-m-d', time());
-        }
+        }*/
 
         $order = ['st.session_date' => 'desc']; // 比赛场次日期
 

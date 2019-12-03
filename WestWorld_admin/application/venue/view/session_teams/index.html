@@ -61,12 +61,12 @@
     var room_id; // 房间ID
 
     // 页面加载时执行
-    layuiTable();
+    layuiTable(new Date());
 
     /**
      * layui.table 数据表格：初始化渲染方式为方法渲染
      */
-    function layuiTable() {
+    function layuiTable(session_date) {
         layui.use(['table', 'laydate'], function () {
 
             var table = layui.table;
@@ -86,7 +86,7 @@
             //执行一个laydate实例
             laydate.render({
                 elem: '#session_date' //指定元素
-                ,value: $('input[name="session_date"]').val() ? $('input[name="session_date"]').val() : new Date()
+                ,value: session_date ? session_date : $('input[name="session_date"]').val()
                 ,trigger: 'click'
             });
 

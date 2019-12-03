@@ -48,7 +48,7 @@ class SessionTeams extends Base
             if (!empty($param['room_id'])) { // 房间
                 $map['st.room_id'] = intval($param['room_id']);
             }
-            if (isset($param['session_date'])) { // 比赛场次日期
+            if (!empty($param['session_date'])) { // 比赛场次日期
                 $map['st.session_date'] = $param['session_date'];
             }
 
@@ -79,6 +79,19 @@ class SessionTeams extends Base
             }
 
             if ($data) {
+                // 处理数据：比赛场次组队详情
+                $sessionTeamsDetail = json_decode($data['session_teams_detail'], true);
+                $user = [];
+                foreach ($sessionTeamsDetail as $key => $value) {
+                    // 根据报名会员ID获取对应会员列表
+                    $userList = model('User')->where(['user_id' => ['in', $value['players']]])->select();
+                    foreach ($userList as $k => $v) {
+                        $user[$key][] = '<img src="/' . $v['avatar'] . '" width="20" />' . $v['user_name']; // 会员名称与头像，注意：$user[$key][] 必须这样写
+                    }
+                    $sessionTeamsDetail[$key]['players'] = $user[$key];
+                }
+                $data['session_teams_detail'] = json_encode($sessionTeamsDetail);
+
                 return show(config('code.success'), 'ok', $data);
             } else {
                 return show(config('code.error'), 'Not Found', $data, 404);

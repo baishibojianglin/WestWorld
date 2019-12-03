@@ -57,6 +57,9 @@ class User extends Base
             if (!empty($param['create_time'])) {
                 $map['create_time'] = $param['create_time'];
             }
+            if (isset($param['is_delete'])) { // 是否删除
+                $map['is_delete'] = $param['is_delete'];
+            }
 
             // 获取分页page、size
             $this->getPageAndSize($param);
@@ -223,43 +226,53 @@ class User extends Base
      */
     public function delete($id)
     {
-        // 显示指定的用户
-        try {
-            $data = model('User')->find($id);
-            //return show(config('code.success'), 'ok', $data);
-        } catch (\Exception $e) {
-            throw new ApiException($e->getMessage(), 500, config('code.error'));
-        }
-
-        // 判断数据是否存在
-        if ($data['user_id'] != $id) {
-            return show(config('code.error'), '数据不存在');
-        }
-
-        // 软删除
-        if ($data['is_delete'] != config('code.is_delete')) {
-            // 捕获异常
+        // 判断为DELETE请求
+        if (request()->isDelete()) {
+            // 显示指定的用户
             try {
-                $result = model('User')->softDelete($this->user_id, $id);
+                $data = model('User')->find($id);
+                //return show(config('code.success'), 'ok', $data);
             } catch (\Exception $e) {
                 throw new ApiException($e->getMessage(), 500, config('code.error'));
             }
 
-            if (!$result) {
-                return show(config('code.error'), '软删除失败');
-            } else {
-                return show(config('code.success'), '软删除成功');
+            // 判断数据是否存在
+            if ($data['user_id'] != $id) {
+                return show(config('code.error'), '数据不存在');
             }
-        }
 
-        // 真删除
-        if ($data['is_delete'] == config('code.is_delete')) {
-            $result = model('User')->destroy($id);
-            if (!$result) {
-                return show(config('code.error'), '删除失败');
-            } else {
-                return show(config('code.success'), '删除成功');
+            // 判断删除条件：用户是否启用
+            if (config('code.status_enable') == $data['status']) {
+                return show(config('code.error'), '删除失败：用户已启用', ['url' => 'deleteFalse']/*, 403*/);
             }
+
+            // 软删除
+            if ($data['is_delete'] != config('code.is_delete')) {
+                // 捕获异常
+                try {
+                    $result = model('User')->softDelete($this->user_id, $id);
+                } catch (\Exception $e) {
+                    throw new ApiException($e->getMessage(), 500, config('code.error'));
+                }
+
+                if (!$result) {
+                    return show(config('code.error'), '移除失败', ['url' => 'parent']/*, 403*/);
+                } else {
+                    return show(config('code.success'), '移除成功', ['url' => 'delete']);
+                }
+            }
+
+            // 真删除
+            if ($data['is_delete'] == config('code.is_delete')) {
+                $result = model('User')->destroy($id);
+                if (!$result) {
+                    return show(config('code.error'), '删除失败', ['url' => 'parent']/*, 403*/);
+                } else {
+                    return show(config('code.success'), '删除成功', ['url' => 'delete']);
+                }
+            }
+        } else {
+            return show(config('code.error'), '请求不合法', [], 400);
         }
     }
 }

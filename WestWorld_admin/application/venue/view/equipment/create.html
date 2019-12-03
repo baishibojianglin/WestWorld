@@ -21,6 +21,16 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
+                        <label class="layui-form-label">装备类型</label>
+                        <div class="layui-input-block">
+                            <select name="equipment_type" lay-filter="equipment_type" lay-verify="required">
+                                <option value="">请选择…</option>
+                                <option value="0">基本装备</option>
+                                <option value="1">付费装备</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
                         <label class="layui-form-label">装备名称</label>
                         <div class="layui-input-block">
                             <input type="text" name="equipment_name" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
@@ -38,12 +48,12 @@
                             <input type="number" step="0.01" min="0" name="use_fee" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
                         </div>
                     </div>
-                    <div class="layui-form-item">
+                    <!--<div class="layui-form-item">
                         <label class="layui-form-label">装备使用数量/件</label>
                         <div class="layui-input-block">
                             <input type="number" step="1" min="0" name="use_number" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
                         </div>
-                    </div>
+                    </div>-->
                     <div class="layui-form-item">
                         <label class="layui-form-label">装备数量/件</label>
                         <div class="layui-input-block">

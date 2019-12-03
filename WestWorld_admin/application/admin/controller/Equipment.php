@@ -49,6 +49,9 @@ class Equipment extends Base
             if (!empty($param['scene_id'])) { // 场景ID
                 $map['e.scene_id'] = intval($param['scene_id']);
             }
+            if (isset($param['equipment_type']) && ($param['equipment_type'] != null)) { // 装备类型
+                $map['e.equipment_type'] = intval($param['equipment_type']);
+            }
 
             // 获取分页page、size
             $this->getPageAndSize($param);

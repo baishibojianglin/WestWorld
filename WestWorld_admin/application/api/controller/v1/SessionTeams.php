@@ -100,7 +100,7 @@ class SessionTeams extends Common
             // 查询数据
             $sessionTeams = model('SessionTeams')->where($map)->find();
             // 获取场景房间可容纳人数
-            $sceneRoom = model('SceneRoom')->field('available_number')->find($data['user_id']);
+            $sceneRoom = model('SceneRoom')->field('available_number')->find($data['room_id']);
 
             // 判断是否存在该场比赛的团队
             if ($sessionTeams) { // 更新数据

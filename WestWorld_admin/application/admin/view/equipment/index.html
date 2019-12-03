@@ -44,6 +44,14 @@
                                         {/volist}
                                     </select>
                                 </div>
+                                <div class="layui-form-mid">装备类型</div>
+                                <div class="layui-input-inline" style="width: 100px;">
+                                    <select name="equipment_type" lay-filter="equipment_type">
+                                        <option value="" selected>请选择…</option>
+                                        <option value="0">基本装备</option>
+                                        <option value="1">付费装备</option>
+                                    </select>
+                                </div>
                                 <button class="layui-btn layui-btn-blue" onclick="layuiTable()">查询</button>
                             </div>
                         </div>
@@ -62,6 +70,7 @@
     // 声明页面全局变量
     var venue_id; // 场馆ID
     var scene_id; // 场景ID
+    var equipment_type; // 装备类型
 
     // 页面加载时执行
     layuiTable();
@@ -81,8 +90,10 @@
                 venue_id = data.value;
             });
             form.on('select(scene_id)', function(data){
-                //console.log(data.value); //得到被选中的值
                 scene_id = data.value;
+            });
+            form.on('select(equipment_type)', function(data){
+                equipment_type = data.value;
             });
 
             // 方法级渲染
@@ -94,6 +105,7 @@
                     , {field: 'equipment_name', title: '装备名称', cellMinWidth: 120}
                     , {field: 'scene_name', title: '场景', width: 120}
                     , {field: 'venue_name', title: '场馆', width: 120}
+                    , {field: 'equipment_type', title: '装备类型', width: 120, templet: '<div>{{#  if(1 === d.equipment_type){ }}付费装备{{#  }else{ }}基本装备{{#  } }}</div>'}
                     , {field: 'use_fee', title: '使用费/￥', width: 120}
                     , {field: 'use_number', title: '装备使用数量', width: 120}
                     , {field: 'equipment_number', title: '装备数量', width: 120}
@@ -101,7 +113,7 @@
                 ]]
                 , url: '{:url("admin/equipment/getEquipment")}' //数据接口
                 //,method: 'get' // 接口http请求类型，默认：get
-                ,where: {equipment_name: $('input[name="equipment_name"]').val(), venue_id: venue_id, scene_id: scene_id} // 接口的其它参数，此处为搜索条件
+                ,where: {equipment_name: $('input[name="equipment_name"]').val(), venue_id: venue_id, scene_id: scene_id, equipment_type: equipment_type} // 接口的其它参数，此处为搜索条件
                 //,contentType: 'application/x-www-form-urlencoded'
                 , parseData: function (res) { //res 即为原始返回的数据
                     //console.log(this.limit); // 每页数据量

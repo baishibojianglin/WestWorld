@@ -26,7 +26,7 @@ class Equipment extends Base
         $order = ['e.equipment_id' => 'asc'];
 
         $result = $this->alias('e')
-            ->field('e.equipment_id, e.equipment_name, e.scene_id, e.venue_id, e.thumb, e.use_fee, e.use_number, e.equipment_number, s.scene_name, v.venue_name')
+            ->field('e.equipment_id, e.equipment_name, e.scene_id, e.venue_id, e.thumb, e.equipment_type, e.use_fee, e.use_number, e.equipment_number, s.scene_name, v.venue_name')
             ->join('__SCENE__ s', 'e.scene_id = s.scene_id', 'LEFT')
             ->join('__VENUE__ v', 'e.venue_id = v.venue_id', 'LEFT')
             ->where($map)
