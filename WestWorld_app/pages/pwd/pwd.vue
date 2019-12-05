@@ -99,7 +99,7 @@
 							    icon: 'none',
 							    title: res.data.message
 							});
-							// return;
+							return;
 						}else{ // 验证成功跳转
 							uni.navigateTo({
 								url: '../login/login'

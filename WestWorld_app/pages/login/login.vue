@@ -1,6 +1,7 @@
 <template>
 	<view class="content">
 		<image class="logo" src="/static/logo.png"></image>
+		
 		<view class="text-area">
 			<text class="iconfont iconyonghu"></text>
             <input type="text" v-model="username" placeholder="手机号" />
@@ -15,6 +16,12 @@
 			<!-- <text>|</text> -->
 			<navigator url="../pwd/pwd">忘记密码？</navigator>
 		</view>
+		
+		<view class="uni-btn-v uni-common-mt">
+			<!-- #ifndef H5 -->
+			<button type="primary" class="page-body-button" v-for="(value,key) in providerList" @click="tologin(value)" :key="key">{{value.name}}</button>
+			<!-- #endif -->
+		</view>
 	</view>
 </template>
 
@@ -26,17 +33,59 @@
 		data() {
 			return {
 				username: '18765432101',
-				password: 'abc123'
+				password: 'abc123',
+				providerList: []
 			}
 		},
 		computed: {
 			...mapState(['hasLogin']), // 对全局变量 hasLogin 进行监控
 		},
+		onLoad() {
+			uni.getProvider({
+				service: 'oauth',
+				success: (result) => {
+					this.providerList = result.provider.map((value) => {
+						let providerName = '';
+						switch (value) {
+							case 'weixin':
+								providerName = '微信登录'
+								break;
+							case 'qq':
+								providerName = 'QQ登录'
+								break;
+							case 'sinaweibo':
+								providerName = '新浪微博登录'
+								break;
+							case 'xiaomi':
+								providerName = '小米登录'
+								break;
+							case 'alipay':
+								providerName = '支付宝登录'
+								break;
+							case 'baidu':
+								providerName = '百度登录'
+								break;
+							case 'toutiao':
+								providerName = '头条登录'
+								break;
+						}
+						return {
+							name: providerName,
+							id: value
+						}
+					});
+		
+				},
+				fail: (error) => {
+					console.log('获取登录通道失败', error);
+				}
+			});
+		},
 		methods: {
 			...mapMutations(['login']), // 对全局方法 login 进行监控
 			
 			/**
-			 * 登录
+			 * 账号密码登录
 			 */
 			bindLogin() {
 				let self = this;
@@ -104,6 +153,35 @@
 				this.login(provider);
 				uni.reLaunch({
 					url: '../index/index', // 跳转到首页
+				});
+			},
+			
+			/**
+			 * 第三方登录
+			 * @param {Object} provider
+			 */
+			tologin(provider) {
+				uni.login({
+					provider: provider.id,
+					success: (res) => {
+						console.log('login success:', res);
+						// 更新保存在 store 中的登录状态
+						this.login(provider.id);
+						
+						// 获取用户信息
+						uni.getUserInfo({
+							provider: provider.id,
+							success: function (infoRes) {
+								console.log('用户昵称为：' + infoRes.userInfo.nickName);
+							},
+							fail: (err) => {
+								console.log('getUserInfo fail:', err);
+							}
+						});
+					},
+					fail: (err) => {
+						console.log('login fail:', err);
+					}
 				});
 			}
 		}

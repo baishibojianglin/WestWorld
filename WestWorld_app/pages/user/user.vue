@@ -81,6 +81,42 @@
 			}
 		},
 		computed: mapState(['hasLogin', 'userInfo']), // 对全局变量 hasLogin、userInfo 进行监控
+		onLoad:function(){
+			// 获取用户信息
+			let self = this
+			if (this.hasLogin) {
+				uni.request({
+					url: this.$serverUrl + 'user/1',
+					header: {
+						'sign': common.sign(), // 签名
+						'version': getApp().globalData.version, // 应用大版本号
+						'model': getApp().globalData.systemInfo.model, // 手机型号
+						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
+						'did': getApp().globalData.did, // 设备号
+						'access-user-token': this.userInfo.token
+					},
+					method: 'GET',
+					success:function(res){
+						let userData = JSON.parse(Aes.decode(res.data.data)); // 用户信息
+						userData.avatar = userData.avatar ? self.$imgServerUrl + userData.avatar.replace(/\\/g, "/") : '../../static/img/user.png'; // 用户头像
+						
+						// 用户创建时间
+						let create_time = new Date(userData.create_time);
+						userData.create_time = create_time.getFullYear() + '.' + create_time.getMonth() + '.' + create_time.getDate();
+						
+						self.userData = userData;
+					}
+				})
+			}
+		},
+		onShow() {
+			// 当未登录时，直接跳转到登录页面
+			if (!this.hasLogin) {
+				uni.reLaunch({
+					url: '/pages/login/login'
+				})
+			}
+		},
 		methods: {
 			...mapMutations(['logout']), // 对全局方法 logout 进行监控
 			bindLogin() {
@@ -119,34 +155,6 @@
 			        this.navigateFlag = false;
 			    }, 200)
 				return false;
-			}
-		},
-		onLoad:function(){
-			// 获取用户信息
-			let self = this
-			if (this.hasLogin) {
-				uni.request({
-					url: this.$serverUrl + 'user/1',
-					header: {
-						'sign': common.sign(), // 签名
-						'version': getApp().globalData.version, // 应用大版本号
-						'model': getApp().globalData.systemInfo.model, // 手机型号
-						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
-						'did': getApp().globalData.did, // 设备号
-						'access-user-token': this.userInfo.token
-					},
-					method: 'GET',
-					success:function(res){
-						let userData = JSON.parse(Aes.decode(res.data.data)); // 用户信息
-						userData.avatar = userData.avatar ? self.$imgServerUrl + userData.avatar.replace(/\\/g, "/") : '../../static/img/user.png'; // 用户头像
-						
-						// 用户创建时间
-						let create_time = new Date(userData.create_time);
-						userData.create_time = create_time.getFullYear() + '.' + create_time.getMonth() + '.' + create_time.getDate();
-						
-						self.userData = userData;
-					}
-				})
 			}
 		}
 	}
