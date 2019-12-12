@@ -83,8 +83,12 @@ class SessionTeams extends Base
                 $sessionTeamsDetail = json_decode($data['session_teams_detail'], true);
                 $user = [];
                 foreach ($sessionTeamsDetail as $key => $value) {
-                    // 根据报名会员ID获取对应会员列表
-                    $userList = model('User')->where(['user_id' => ['in', $value['players']]])->select();
+                    // 获取队长信息
+                    $teamLeader = model('User')->field('user_id, user_name, avatar')->find($value['team_leader']);
+                    $sessionTeamsDetail[$key]['team_leader'] =  '<img src="/' . $teamLeader['avatar'] . '" width="20" />' . $teamLeader['user_name'];
+
+                    // 根据比赛队员user_id获取对应会员列表
+                    $userList = model('User')->field('user_id, user_name, avatar')->where(['user_id' => ['in', $value['players']]])->select();
                     foreach ($userList as $k => $v) {
                         $user[$key][] = '<img src="/' . $v['avatar'] . '" width="20" />' . $v['user_name']; // 会员名称与头像，注意：$user[$key][] 必须这样写
                     }

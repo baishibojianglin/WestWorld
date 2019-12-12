@@ -126,6 +126,7 @@ class Venue extends Common
         if (request()->isGet()) {
             // 查询条件
             $map = [];
+            $map['status'] = config('code.status_enable'); // 启用状态
             $map['is_delete'] = ['neq', config('code.is_delete')];
 
             try {

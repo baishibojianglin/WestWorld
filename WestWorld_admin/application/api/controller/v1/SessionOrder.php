@@ -69,24 +69,54 @@ class SessionOrder extends AuthBase
     }
 
     /**
-     * 显示创建资源表单页.
-     *
-     * @return \think\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * 保存新建的资源
+     * 保存新建的资源（生成订单）
      *
      * @param  \think\Request  $request
      * @return \think\Response
      */
     public function save(Request $request)
     {
-        //
+        // 判断为POST请求
+        if(request()->isPost()){
+            $data = input('post.');
+
+            // 生成唯一订单编号 order_sn
+            $data['order_sn'] = $this->_getOrderSn();
+
+            // validate验证，包括判断订单是否重复提交
+            $validate = validate('SessionOrder');
+            if (!$validate->check($data)) {
+                return show(config('code.error'), $validate->getError(), [], 403);
+            }
+
+            // 入库操作
+            try {
+                $id = model('SessionOrder')->add($data, 'session_order_id');
+            } catch (\Exception $e) {
+                return show(config('code.error'), '新增失败 ' . $e->getMessage(), [], 400);
+            }
+            if ($id) {
+                return show(config('code.success'), '新增成功', ['order_sn' => $data['order_sn']], 201);
+            } else {
+                return show(config('code.error'), '新增失败', [], 400);
+            }
+        }
+    }
+
+    /**
+     * 生成唯一订单编号 order_sn
+     * @return string
+     */
+    private function _getOrderSn()
+    {
+        // 保证不会有重复订单号存在
+        while(true){
+            $order_sn = date('YmdHis').rand(1000,9999); // 订单编号
+            $order_sn_count = model('SessionOrder')->where("order_sn = '$order_sn'")->count();
+            if($order_sn_count == 0)
+                break;
+        }
+        return $order_sn;
     }
 
     /**
@@ -120,17 +150,6 @@ class SessionOrder extends AuthBase
                 return show(config('code.error'), '数据不存在', [], 404);
             }
         }
-    }
-
-    /**
-     * 显示编辑资源表单页.
-     *
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function edit($id)
-    {
-        //
     }
 
     /**

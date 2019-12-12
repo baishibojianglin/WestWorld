@@ -32,6 +32,9 @@ class Equipment extends Common
             if (!empty($param['scene_id'])) { // 场景ID
                 $map['e.scene_id'] = intval($param['scene_id']);
             }
+            if (isset($param['equipment_type'])) { // 装备类型：0基本装备，1付费装备
+                $map['e.equipment_type'] = intval($param['equipment_type']);
+            }
 
             // 获取分页page、size
             $this->getPageAndSize($param);

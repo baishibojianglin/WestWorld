@@ -5,8 +5,11 @@
 			<view>{{venueData.venue_name}}</view>
 			<view><text class="uni-icon uni-icon-location"></text>{{venueData.address}}</view>
 		</view>
-		<view class="example-body">
+		<!-- <view class="example-body">
 			<uni-steps :options="stepsList" :active="active" />
+		</view> -->
+		<view class="example-title" :style="stylePosition">
+			<uni-segmented-control :current="current" :values="items" :style-type="styleType" :active-color="activeColor" @clickItem="onClickItem" />
 		</view>
 		
 		<view class="example-title">{{active === 6 ? '' : '选择'}}{{ items[active] }}</view>
@@ -17,15 +20,26 @@
 					
 					<radio-group @change="radioChangeScene">
 					
-						<uni-grid :column="3" :highlight="true"><!-- @change="scene" -->
+						<!-- <uni-grid :column="3" :highlight="true" @change="scene" >
 							<uni-grid-item v-for="(item, index) in sceneList" :key="index" :style="{background: 'url(' + item.thumb +')'}">
-								<!-- <image :src="item.thumb" class="image" mode="aspectFill" /> -->
+								<image :src="item.thumb" class="image" mode="aspectFill" />
 								<view class="scene_name">
 									<radio :id="'scene' + item.scene_id" :value="item.scene_id" :checked="item.checked"></radio>
 									<label :for="'scene' + item.scene_id"><text class="text uni-bold">{{ item.scene_name }}</text></label>
 								</view>
 							</uni-grid-item>
-						</uni-grid>
+						</uni-grid> -->
+						
+						<uni-card v-for="(item, index) in sceneList" :key="index" :is-shadow="true" :title="item.scene_name" mode="style" :thumbnail="item.thumb" :extra="item.scene_name" note="true" click="">
+							<!-- <text class="content-box-text">{{ item.scene_name }}</text> -->
+							<block slot="footer">
+								<view class="footer-box">
+									<view class="" click.stop=""><radio :id="'scene' + item.scene_id" :value="item.scene_id" :checked="item.checked"></radio><label :for="'scene' + item.scene_id"><text class="footer-box__item"> 选择</text></label></view>
+									<view class="" @click.stop="footerClick('场景描述', item.scene_id)"><text class="footer-box__item"> 场景描述</text></view>
+									<view class="" @click.stop="footerClick('比赛规则', item.scene_id)"><text class="footer-box__item"> 比赛规则</text></view>
+								</view>
+							</block>
+						</uni-card>
 						
 					</radio-group>
 					
@@ -62,7 +76,7 @@
 								<view class="uni-list-cell-db">
 									<picker @change="bindPickerChange" :value="sessionArray[sessionIndex].session_id" :range="sessionArray" range-key="session">
 										<!-- <view class="uni-input">{{sessionArray[sessionIndex].session}}</view> -->
-										<view class="tag-view"><uni-tag :text="sessionArray[sessionIndex].session_time" type="success" size="small"></uni-tag> <text class="red uni-bold">￥{{ sessionArray[sessionIndex].session_price }}</text></view>
+										<view class="tag-view"><uni-tag :text="sessionArray[sessionIndex].session_time" type="success" size="small"></uni-tag> <text class="red uni-bold">￥{{ sessionArray[sessionIndex].session_price || 0 }}</text></view>
 									</picker>
 								</view>
 							</view>
@@ -85,18 +99,18 @@
 				</view>
 				<!-- 房间 e -->
 				<!-- 人数 s -->
-				<view v-show="current === 3">
-					<uni-number-box :min="0" :max="3" :value="number" @change="changeNumber"></uni-number-box>
-				</view>
+				<!-- <view v-show="current === 3">
+					<uni-number-box :min="0" :value="number" @change="changeNumber"></uni-number-box>
+				</view> -->
 				<!-- 人数 e -->
 				<!-- 组队 s -->
-				<view v-show="current === 4">
+				<view v-show="current === 3">
 					<view class="uni-list">
 						<view class="uni-list-cell uni-list-cell-pd">
 							<view class="uni-list-cell-left">创建团队</view>
 							<view><text class="uni-icon uni-icon-plus-filled red" @click="createTeam()"></text></view>
 						</view>
-						<view class="uni-list-cell uni-list-cell-pd" v-if="teamArray">
+						<view class="uni-list-cell uni-list-cell-pd" v-if="teams">
 							<view class="uni-list-cell-left">加入团队</view>
 							<view class="uni-list-cell-db">
 								<picker @change="pickerChangeTeam" :value="teamArray[teamIndex].team_id" :range="teamArray" range-key="team">
@@ -108,38 +122,37 @@
 				</view>
 				<!-- 组队 e -->
 				<!-- 装备 s -->
-				<view v-show="current === 5">
+				<view v-show="current === 4">
 					<view class="uni-list">
 						<view class="uni-list-cell uni-list-cell-pd">
 							<view class="uni-list-cell-left">装备</view>
 							<view class="uni-list-cell-db">
 								<picker @change="pickerChangeEquipment" :value="equipmentArray[equipmentIndex].equipment_id" :range="equipmentArray" range-key="equipment">
-									<view class="tag-view"><uni-tag :text="equipmentArray[equipmentIndex].equipment_name" type="success" size="small"></uni-tag> <text class="red uni-bold">￥{{ equipmentArray[equipmentIndex].use_fee }}</text></view>
+									<view class="tag-view"><uni-tag :text="equipmentArray[equipmentIndex].equipment_name" type="success" size="small"></uni-tag> <text class="red uni-bold">￥{{ equipmentArray[equipmentIndex].use_fee ? equipmentArray[equipmentIndex].use_fee : 0 }}</text></view>
 								</picker>
 							</view>
 						</view>
 					</view>
 				</view>
 				<!-- 装备 e -->
-				<view v-show="current === 6">
-					入场费<text class="red uni-bold">￥{{ price }}</text>，确认支付
+				<view v-show="current === 5">
+					比赛费用<text class="red uni-bold">￥{{ price }}</text>，确认支付
 				</view>
 			</view>
 		</view>
 		
-		<view class="example-title">
-			<uni-segmented-control :current="current" :values="items" :style-type="styleType" :active-color="activeColor" @clickItem="onClickItem" />
+		<view class="next_step">
+			<button type="default" @click="change">{{ active === 5 ? '确 定' : '下一步' }}</button>
 		</view>
 		
-		<button type="default" @click="change">{{ active === 6 ? '确 定' : '下一步' }}</button>
-		
-		<!-- 单独放在外面防止其他样式对其干扰 -->
+		<!-- Calendar 日期组件 s，单独放在外面防止其他样式对其干扰 -->
 		<uni-calendar ref="calendar" :lunar="tags[0].checked" :disable-before="tags[3].checked" :range="tags[5].checked" :start-date="startDate" :end-date="endDate" :date="date" :selected="selected" @confirm="confirmDate" @change="changeDate()" />
+		<!-- Calendar 日期组件 e -->
 	</view>
 </template>
 
 <script>
-	import {uniSteps, uniSegmentedControl, uniGrid, uniGridItem, uniCalendar, uniTag, uniNumberBox} from '@dcloudio/uni-ui';
+	import {uniSteps, uniSegmentedControl, uniGrid, uniCard, uniGridItem, uniCalendar, uniTag, uniNumberBox} from '@dcloudio/uni-ui';
 	import {mapState} from 'vuex';
 	import common from '@/common/common.js';
 	import Aes from '@/common/Aes.js';
@@ -149,6 +162,7 @@
 			uniSteps, // Steps 步骤条
 			uniSegmentedControl, // SegmentedControl 分段器
 			uniGrid, uniGridItem, // Grid 宫格
+			uniCard, // Card 卡片
 			uniCalendar, // Calendar 日期
 			uniTag, // Tag 标签
 			uniNumberBox, // NumberBox 数字输入框
@@ -248,19 +262,20 @@
 					{title: '2', desc: '场次'}, 
 					{title: '3', desc: '组队'}, 
 					{title: '4', desc: '房间'}, 
-					{title: '5', desc: '人数'}, 
+					// {title: '5', desc: '人数'}, 
 					{title: '6', desc: '装备'}, 
 					{title: '7', desc: '确定'},
 				],
 				/* 步骤条 e */
 				
 				/* 分段器 s */
-				items: ['场景', '场次', '房间', '人数', '组队', '装备', '确定'],
+				items: ['场景', '场次', '房间', '组队', '装备', '确定'],
 				colors: ['#007aff', '#4cd964', '#dd524d'],
 				current: 0,
 				colorIndex: 0,
 				activeColor: '#4cd964',
 				styleType: 'text',
+				stylePosition: '',
 				/* 分段器 e */
 				
 				/* 选择场景 s */
@@ -305,7 +320,7 @@
 				/* 选择房间 e */
 				
 				/* 选择人数 s */
-				number: '', // 人数
+				number: 1, // 人数
 				/* 选择人数 e */
 				
 				/* 选择比赛场次组队 e */
@@ -329,7 +344,7 @@
 				/* 选择装备 e */
 				
 				/* 确认支付 s */
-				price: '', // 入场费
+				price: 0, // 比赛费用
 				/* 确认支付 e */
 			}
 		},
@@ -340,6 +355,13 @@
 			this.getSceneList(this.venueId); // 获取场景列表
 			
 			this.getUserInfo(); // 获取用户信息
+		},
+		onPageScroll(event) {
+			if (event.scrollTop >= 100) {
+				this.stylePosition = 'position: fixed; left: 0; right: 0; top: 80upx; z-index: 1;';
+			} else {
+				this.stylePosition = '';
+			}
 		},
 		computed: mapState(['hasLogin', 'userInfo']), // 对全局变量 hasLogin、userInfo 进行监控
 		methods: {
@@ -399,52 +421,41 @@
 					this.current = this.active = 2;
 					return;
 				}
-				// 选好第1~3步外，其他步骤必须判断是否选择人数
-				if ((this.number < 1 || this.number > 3) && this.active > 2) {
+				// 选好第1~3步外，其他步骤必须判断是否选择组队
+				if (!this.teamId && this.active > 2) {
 					uni.showToast({
-						title: '请输入1~3人',
+						title: '请创建或加入团队',
 						icon: 'none'
 					});
 					this.current = this.active = 3;
 					return;
 				}
-				// 选好第1~4步外，其他步骤必须判断是否选择组队
-				if (!this.teamId && this.active > 3) {
-					uni.showToast({
-						title: '请创建或加入团队',
-						icon: 'none'
-					});
-					this.current = this.active = 4;
-					return;
-				}
-				// 选好第1~5步外，其他步骤必须判断是否选择装备
-				if (!this.equipmentId && this.active > 4) {
+				// 选好第1~4步外，其他步骤必须判断是否选择装备
+				/* if (!this.equipmentId && this.active > 3) {
 					uni.showToast({
 						title: '请选择装备',
 						icon: 'none'
 					});
-					this.current = this.active = 5;
+					this.current = this.active = 4;
 					return;
-				}
-				// 计算入场费
-				if (this.active >= 5) {
-					// 计算入场费
-					var session_price = parseFloat(this.sessionArray[this.sessionIndex].session_price);
-					var room_price = parseFloat(this.roomList[this.currentRoom].room_price);
-					var number = parseInt(this.number);
-					var use_fee = parseFloat(this.equipmentArray[this.equipmentIndex].use_fee);
-					this.price = ((session_price + room_price) * number + use_fee).toFixed(2);
+				} */
+				// 计算比赛费用
+				if (this.active >= 4) {
+					// 计算比赛费用
+					var session_price = parseFloat(this.sessionArray[this.sessionIndex].session_price); // 场次费
+					var room_price = parseFloat(this.roomList[this.currentRoom].room_price); // 房间费
+					var equipment_use_fee = this.equipmentArray[this.equipmentIndex].use_fee ? parseFloat(this.equipmentArray[this.equipmentIndex].use_fee) : 0; // 装备使用费
+					this.price = (session_price + room_price + equipment_use_fee).toFixed(2);
 				}
 				// 发起支付
-				if (this.active == 6) {
+				if (this.active == 5) {
 					let self = this;
 					uni.showModal({
 						title: '发起支付',
 						success:function(res){
 							if (res.confirm) {
-								uni.navigateTo({
-									url: '/pages/API/request-payment/request-payment?price=' + self.price
-								})
+								// 生成订单并跳转支付页面
+								self.createOrder();
 							}
 						}
 					});
@@ -517,16 +528,26 @@
 				this.sceneId = checked; // 选中的场景ID
 				console.log('场景sceneId = ', checked);
 				
-				// 初始化选中的场次ID、房间ID、组队ID、装备ID、入场费
+				// 初始化选中的场次ID、房间ID、组队ID、装备ID、比赛费用
 				this.sessionId = ''; this.sessionIndex = 0;
 				this.roomId = ''; this.currentRoom = '';
 				this.teams = []; this.teamArray = [{}]; this.teamIndex = 0; this.teamId = '';
 				this.equipmentId = ''; this.equipmentIndex = 0;
-				this.price = '';
+				this.price = 0;
 				
 				this.getSessionList(this.venueId, this.sceneId); // 获取场次列表
 				this.getSceneRoomList(this.venueId, this.sceneId); // 获取房间列表
 				this.getEquipmentList(this.venueId, this.sceneId); // 获取装备列表
+			},
+			
+			/**
+			 * 查看场景描述或比赛规则
+			 * @param {Object} types
+			 */
+			footerClick(types, scene_id) {
+				uni.navigateTo({
+					url: '/pages/scene/scene-detail?scene_id=' + scene_id + '&types=' + types
+				});
 			},
 			/* 选择场景 e */
 			
@@ -617,13 +638,20 @@
 				        // console.log(res.data);
 						// 场次列表
 						let sessionArray = res.data.data.data;
-						sessionArray.forEach ((item, index) => {
-							// 场次时间
-							item.session_time = item.start_time + '~' + item.end_time;
-							// 场次时间、价格
-							item.session = item.start_time + '~' + item.end_time + ' ￥' + item.session_price;
-						})
-						self.sessionArray = sessionArray;
+						if (sessionArray) {
+							sessionArray.unshift({});
+							sessionArray.forEach ((item, index) => {
+								// 场次时间
+								item.session_time = item.start_time + '~' + item.end_time;
+								// 场次时间、价格
+								item.session = item.start_time + '~' + item.end_time + ' ￥' + item.session_price;
+								if (0 == index) {
+									item.session_time = '';
+									item.session = '请选择…';
+								}
+							})
+							self.sessionArray = sessionArray;
+						}
 				    }
 				});
 			},
@@ -638,6 +666,9 @@
 				
 				this.sessionId = this.sessionArray[this.sessionIndex].session_id; // 选中的场次ID
 				console.log('比赛场次：sessionDate=' + this.timeData.fulldate, 'sessionId=' + this.sessionId)
+				
+				// 初始化比赛场次组队
+				this.teams = []; this.teamArray = [{}]; this.teamIndex = 0; this.teamId = '';
 			},
 			/* 场次 e */
 			/* 选择场次 e */
@@ -689,6 +720,8 @@
 						// 先初始化比赛场次组队，再获取比赛场次组队列表
 						this.teams = []; this.teamArray = [{}]; this.teamIndex = 0; this.teamId = '';
 						this.getTeamList(this.venueId, this.sceneId, this.timeData.fulldate, this.sessionId, this.roomId);
+						// 初始化比赛费用
+						this.price = 0;
 						
 						break;
 					}
@@ -701,9 +734,9 @@
 			 * 选择人数
 			 * @param {Object} value
 			 */
-			changeNumber(value) {
+			/* changeNumber(value) {
 				this.number = value
-			},
+			}, */
 			/* 选择人数 e */
 			
 			/* 选择组队 s */
@@ -737,11 +770,20 @@
 						// console.log(res.data);
 						// 比赛场次组队列表
 						let teams = self.teams = res.data.data;
-						let teamArray = JSON.parse(teams.session_teams_detail);
-						teamArray.forEach ((item, index) => {
-							item.team = String('team-' + item.team_id + ' （已加入' + item.players_number + '人）');
-						})
-						self.teamArray = teamArray;
+						if (teams) {
+							let teamArray = JSON.parse(teams.session_teams_detail);
+							if (teamArray) {
+								teamArray.unshift({});
+								teamArray.forEach ((item, index) => {
+									item.team = String('team-' + item.team_id + ' （已加入' + item.players_number + '人）');
+									if (0 == index) {
+										item.team = '请选择…';
+									}
+								})
+								self.teamArray = teamArray;
+							}
+							
+						}
 					}
 				});
 			},
@@ -787,6 +829,7 @@
 						// console.log('joinTeam返回', res.data);
 						// TODO：从数据库获取已加入比赛场次的相关信息，如人数、团队ID
 						self.teamId = res.data.data.team_id;
+						console.log('joinTeam返回组队teamId=' + self.teamId)
 						uni.showToast({
 							title: res.data.message,
 							icon: 'none'
@@ -828,10 +871,14 @@
 									// console.log('createTeam返回', res.data);
 									// TODO：从数据库获取已加入比赛场次的相关信息，如人数、团队ID
 									self.teamId = res.data.data.team_id;
+									console.log('createTeam返回组队teamId=' + self.teamId)
 									uni.showToast({
 										title: res.data.message,
 										icon: 'none'
 									});
+									
+									// 获取比赛场次组队列表
+									self.getTeamList(self.venueId, self.sceneId, self.timeData.fulldate, self.sessionId, self.roomId);
 								}
 							});
 						}
@@ -842,7 +889,7 @@
 			
 			/* 选择装备 s */
 			/**
-			 * 获取场次列表
+			 * 获取装备列表
 			 * @param {Object} venueId
 			 * @param {Object} sceneId
 			 */
@@ -852,7 +899,8 @@
 				    url: this.$serverUrl + 'equipment',
 				    data: {
 				        venue_id: venueId,
-						scene_id: sceneId
+						scene_id: sceneId,
+						equipment_type: 1 // 付费装备
 				    },
 				    header: {
 				    	'sign': common.sign(), // 签名
@@ -865,10 +913,16 @@
 				        // console.log(res.data);
 						// 装备列表
 						let equipmentArray = res.data.data.data;
-						equipmentArray.forEach ((item, index) => {
-							item.equipment = item.equipment_name + ' ￥' + item.use_fee;
-						})
-						self.equipmentArray = equipmentArray;
+						if (equipmentArray) {
+							equipmentArray.unshift({}); // unshift()方法在数组的开头添加一个或多个元素
+							equipmentArray.forEach ((item, index) => {
+								item.equipment = item.equipment_name + ' ￥' + item.use_fee;
+								if (0 == index) {
+									item.equipment = '请选择…';
+								}
+							})
+						}
+						self.equipmentArray = equipmentArray != '' ? equipmentArray : [{}];
 				    }
 				});
 			},
@@ -881,10 +935,80 @@
 				// console.log('picker发送选择改变，携带值为：' + e.target.value)
 				this.equipmentIndex = e.target.value
 				
-				this.equipmentId = this.equipmentArray[this.equipmentIndex].equipment_id; // 选中的装备ID
+				// 当前选中的装备
+				let currentEquipment = this.equipmentArray[this.equipmentIndex];
+				let equipmentId = currentEquipment.equipment_id; // 选中的装备ID
+				
+				this.equipmentId = equipmentId;
 				console.log('装备equipmentId = ', this.equipmentId)
 			},
 			/* 选择装备 e */
+			
+			/**
+			 * 生成订单并跳转支付页面
+			 */
+			createOrder() {
+				// 生成订单
+				uni.request({
+					url: this.$serverUrl + 'session_order',
+					data: {
+						user_id: this.userData.user_id,
+						session_teams_id: this.teams.session_teams_id,
+						team_id: this.teamId,
+						venue_id: this.venueId,
+						scene_id: this.sceneId,
+						session_date: this.timeData.fulldate,
+						session_id: this.sessionId,
+						start_time: this.sessionArray[this.sessionIndex].start_time,
+						end_time: this.sessionArray[this.sessionIndex].end_time,
+						session_price: this.sessionArray[this.sessionIndex].session_price,
+						room_id: this.roomId,
+						room_price: parseFloat(this.roomList[this.currentRoom].room_price),
+						equipment_id: this.equipmentArray[this.equipmentIndex].equipment_id,
+						equipment_use_fee: this.equipmentArray[this.equipmentIndex].use_fee ? parseFloat(this.equipmentArray[this.equipmentIndex].use_fee) : 0,
+						order_price: this.price
+					},
+					header: {
+						'sign': common.sign(), // 签名
+						'version': getApp().globalData.version, // 应用大版本号
+						'model': getApp().globalData.systemInfo.model, // 手机型号
+						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
+						'did': getApp().globalData.did, // 设备号
+						'access-user-token': this.userInfo.token
+					},
+					method: 'POST',
+					success: (res) => {
+						if (res.statusCode == 201) { // 生成订单成功
+							// 跳转支付页面
+							uni.navigateTo({
+								url: '/pages/API/request-payment/request-payment?price=' + this.price
+							})
+						} else { // 生成订单失败
+							uni.showModal({
+								title: '订单生成失败',
+								content: res.data.message,
+								showCancel: false,
+								success:function(){
+									// 跳转个人中心，查看比赛订单
+									if (res.data.message == "已加入该场比赛") {
+										uni.showModal({
+											title: '查看比赛订单',
+											// content: res.data.message,
+											success:function(res1){
+												if (res1.confirm) {
+													uni.switchTab({
+														url: '/pages/user/user'
+													})
+												}
+											}
+										});
+									}
+								}
+							});
+						}
+					}
+				})
+			}
 		}
 	}
 </script>
@@ -944,7 +1068,8 @@
 	.example-body {
 		border-top: 1px #f5f5f5 solid;
 		padding: 30upx;
-		background: #fff
+		background: #fff;
+		margin-bottom: 200upx;
 	}
 
 	.example-info {
@@ -953,8 +1078,16 @@
 		background: #fff
 	}
 
-	button {
-		margin: 30upx;
+	.next_step {
+		/* margin: 30upx; */
+		/* flex-direction: column; */
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	}
+	.next_step button {
+		margin: 20upx;
 	}
 	
 	.image {
@@ -968,7 +1101,8 @@
 	}
 	.scene_name {
 		background-color: rgba(255, 255, 255, 0.6);
-		padding: 10upx;
+		padding: 5upx;
+		margin: 5upx;
 		border-radius: 10upx;
 	}
 	
@@ -980,4 +1114,21 @@
 	.uni-icon-clear {
 		color: #999;
 	}
+	
+	/* uni-card s */
+	.footer-box {
+		/* #ifndef APP-NVUE */
+		display: flex;
+		/* #endif */
+		justify-content: space-between;
+		flex-direction: row;
+	}
+	
+	.footer-box__item {
+		align-items: center;
+		padding: 10rpx 0;
+		font-size: 30rpx;
+		color: #666;
+	}
+	/* uni-card e */
 </style>

@@ -87,21 +87,23 @@ class Equipment extends Base
             $data = input('post.');
             $data['venue_id'] = $this->session_venue->venue_id; // 场馆ID
 
-            // 装备类型：基本装备
-            if (isset($data['equipment_type']) && ($data['equipment_type'] == 0)) {
+            // 根据装备类型赋值装备使用费
+            if (isset($data['equipment_type']) && ($data['equipment_type'] == 0)) { // 基本装备
                 $data['use_fee'] = 0;
+            } elseif (isset($data['equipment_type']) && ($data['equipment_type'] == 1) && $data['use_fee'] == 0) { // 付费装备
+                return show(config('code.error'), '请输入装备使用费', [], 403);
             }
 
             // 入库操作
             try {
                 $id = model('Equipment')->add($data, 'equipment_id');
             } catch (\Exception $e) {
-                return show(0, '新增失败 ' . $e->getMessage(), [], 400);
+                return show(config('code.error'), '新增失败 ' . $e->getMessage(), [], 400);
             }
             if ($id) {
                 return show(config('code.success'), '新增成功', ['url' => url('Equipment/index')], 201);
             } else {
-                return show(0, '新增失败', [], 400);
+                return show(config('code.error'), '新增失败', [], 400);
             }
         }
     }
@@ -180,9 +182,11 @@ class Equipment extends Base
             if (isset($param['use_fee'])) { // 装备使用费
                 $data['use_fee'] = trim($param['use_fee']);
 
-                // 装备类型：基本装备
-                if (isset($param['equipment_type']) && ($param['equipment_type'] == 0)) {
+                // 根据装备类型赋值装备使用费
+                if (isset($param['equipment_type']) && ($param['equipment_type'] == 0)) { // 基本装备
                     $data['use_fee'] = 0;
+                } elseif (isset($data['equipment_type']) && ($data['equipment_type'] == 1) && $data['use_fee'] == 0) { // 付费装备
+                    return show(config('code.error'), '请输入装备使用费', [], 403);
                 }
             }
             if (isset($param['use_number'])) { // 装备使用数量

@@ -12,7 +12,7 @@
 			<uni-swiper-dot :info="adList" :current="current" :mode="mode" field="ad_name">
 				<swiper class="swiper-box" @change="swiperChange" :indicator-dots="false" :autoplay="autoplay" :interval="interval" :duration="duration" circular="true">
 					<swiper-item v-for="(item, index) in adList" :key="index">
-						<view class="swiper-item" :style="{background: item.bgcolor + ' url(' + item.ad_pic + ')'}" @click="toAdDetail(value.ad_link)">
+						<view class="swiper-item" :style="{background: item.bgcolor + ' url(' + item.ad_pic + ')'}" @click="toAdDetail(item.ad_link)">
 							<image :src="item.ad_pic" mode="aspectFill" />
 						</view>
 					</swiper-item>
@@ -291,11 +291,11 @@
 				let detail = {
 					venue_id: e.venue_id,
 					venue_name: e.venue_name,
-					thumb: e.thumb,
+					/* thumb: e.thumb,
 					address: e.address,
 					venue_phone: e.venue_phone,
 					longitude: e.longitude,
-					latitude: e.latitude
+					latitude: e.latitude */
 				};
 				uni.navigateTo({
 					url: '../venue/venue-detail?detailData=' + encodeURIComponent(JSON.stringify(detail))

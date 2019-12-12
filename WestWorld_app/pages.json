@@ -96,7 +96,7 @@
             }
         }
         ,{
-            "path" : "pages/game/join/join-steps",
+            "path" : "pages/game/join-steps",
             "style" : {
 				"navigationBarTitleText": "加入比赛"
 			}
@@ -107,6 +107,12 @@
 				"navigationBarTitleText": "发起支付"
 			}
 		}
+        ,{
+            "path" : "pages/scene/scene-detail",
+            "style" : {
+				"navigationBarTitleText": "场景描述与比赛规则"
+			}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

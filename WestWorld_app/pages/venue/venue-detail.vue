@@ -69,7 +69,15 @@
 					},
 					success: (data) => {
 						if (data.statusCode == 200) {
-							var htmlString = data.data.data.venue_description.replace(/\\/g, "").replace(/<img/g, "<img style=\"display:none;\"");
+							// 场馆信息
+							let venueData = data.data.data;
+							this.banner = venueData;
+							
+							// 场馆缩略图
+							this.banner.thumb = venueData.thumb ? this.$imgServerUrl + venueData.thumb.replace(/\\/g, "/") : '../../static/img/home.png';
+							
+							// 场馆介绍
+							var htmlString = venueData.venue_description.replace(/\\/g, "").replace(/<img/g, "<img style=\"display:none;\"");
 							this.htmlNodes = htmlParser(htmlString);
 						}
 					},
@@ -122,7 +130,7 @@
 				
 				// 跳转比赛选择页
 				uni.navigateTo({
-				    url: '/pages/game/join/join-steps?id=' + this.banner.venue_id + '&venueData=' + JSON.stringify(this.banner)
+				    url: '/pages/game/join-steps?id=' + this.banner.venue_id + '&venueData=' + JSON.stringify(this.banner)
 				});
 			}
 		}

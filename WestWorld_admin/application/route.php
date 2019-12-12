@@ -59,8 +59,6 @@ Route::resource('api/:ver/session_teams', 'api/:ver.session_teams');
 Route::resource('api/:ver/equipment', 'api/:ver.equipment');
 // 比赛场次订单
 Route::resource('api/:ver/session_order', 'api/:ver.session_order');
-// 店鋪比赛场次模板
-Route::resource('api/:ver/session_template', 'api/:ver.session_template');
 
 /*// 后台管理中心路由
 // 显示指定的管理员

@@ -103,8 +103,9 @@
             elem: '#layui_table'
             , cols: [[ //表头
                 {field: 'team_id', title: 'ID', width: 80, sort: true, fixed: 'left'}
-                , {field: 'players', title: '报名会员', cellMinWidth: 120}
-                , {field: 'players_number', title: '队友人数', width: 120}
+                , {field: 'team_leader', title: '队长', width: 120}
+                , {field: 'players', title: '比赛队员', cellMinWidth: 120}
+                , {field: 'players_number', title: '队员人数', width: 120}
                 //, {title: '操作', fixed: 'right', width: 120, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
             ]]
             , url: '{:url("venue/session_teams/read")}' //数据接口
