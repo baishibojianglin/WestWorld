@@ -10,7 +10,7 @@
 			<text class="venue-location"><text class="uni-icon uni-icon-map uni-bg-red" @click="openLocation()"></text></text>
 		</view>
 		
-		<view class="uni-padding-wrap uni-common-mt uni-common-mb">
+		<view class="uni-padding-wrap uni-common-mt uni-common-mb to_game">
 			<button type="warn" @click="toGame()">加入比赛</button>
 		</view>
 		
@@ -27,7 +27,7 @@
 <script>
 	import htmlParser from '@/common/html-parser';
 	import {mapState} from 'vuex';
-	import common from '../../common/common.js';
+	import common from '../../common/common.js';
 	
 	export default {
 		data() {
@@ -61,7 +61,7 @@
 				uni.request({
 					url: this.$serverUrl + 'venue/' + this.banner.venue_id,
 					header: {
-						'sign': common.sign(), // 签名
+						'sign': common.sign(), // 验签
 						'version': getApp().globalData.version, // 应用大版本号
 						'model': getApp().globalData.systemInfo.model, // 手机型号
 						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
@@ -186,6 +186,14 @@
 		padding: 0 30upx;
 		overflow: hidden;
 		font-size: 30upx;
-		margin-bottom: 30upx;
+		margin-bottom: 200upx; // 30upx
+	}
+	
+	.to_game {
+		/* flex-direction: column; */
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
 	}
 </style>

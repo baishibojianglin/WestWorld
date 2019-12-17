@@ -12,7 +12,7 @@
 			<uni-segmented-control :current="current" :values="items" :style-type="styleType" :active-color="activeColor" @clickItem="onClickItem" />
 		</view>
 		
-		<view class="example-title">{{active === 6 ? '' : '选择'}}{{ items[active] }}</view>
+		<view class="example-title">{{active === 5 ? '' : '选择'}}{{ items[active] }}</view>
 		<view class="example-body">
 			<view class="content uni-common-mb">
 				<!-- 场景 s -->
@@ -141,8 +141,8 @@
 			</view>
 		</view>
 		
-		<view class="next_step">
-			<button type="default" @click="change">{{ active === 5 ? '确 定' : '下一步' }}</button>
+		<view class="uni-padding-wrap uni-common-mt uni-common-mb next_step">
+			<button :type="active === 5 ? 'warn' : 'default'" @click="change">{{ active === 5 ? '确 定' : '下一步' }}</button>
 		</view>
 		
 		<!-- Calendar 日期组件 s，单独放在外面防止其他样式对其干扰 -->
@@ -154,8 +154,8 @@
 <script>
 	import {uniSteps, uniSegmentedControl, uniGrid, uniCard, uniGridItem, uniCalendar, uniTag, uniNumberBox} from '@dcloudio/uni-ui';
 	import {mapState} from 'vuex';
-	import common from '@/common/common.js';
-	import Aes from '@/common/Aes.js';
+	import common from '@/common/common.js';
+	import Aes from '@/common/Aes.js';
 
 	export default {
 		components: {
@@ -275,7 +275,7 @@
 				colorIndex: 0,
 				activeColor: '#4cd964',
 				styleType: 'text',
-				stylePosition: '',
+				stylePosition: '', // 分段器定位样式
 				/* 分段器 e */
 				
 				/* 选择场景 s */
@@ -353,44 +353,17 @@
 			this.venueId = event.id; // 场馆ID
 			this.venueData = JSON.parse(event.venueData); // 场馆数据
 			this.getSceneList(this.venueId); // 获取场景列表
-			
-			this.getUserInfo(); // 获取用户信息
 		},
 		onPageScroll(event) {
+			// 分段器定位样式
 			if (event.scrollTop >= 100) {
-				this.stylePosition = 'position: fixed; left: 0; right: 0; top: 80upx; z-index: 1;';
+				this.stylePosition = 'position: fixed; left: 0; right: 0; top: 59upx; z-index: 1; background-color: rgba(255, 255, 255, 0.9);';
 			} else {
 				this.stylePosition = '';
 			}
 		},
 		computed: mapState(['hasLogin', 'userInfo']), // 对全局变量 hasLogin、userInfo 进行监控
 		methods: {
-			/**
-			 * 获取用户信息
-			 */
-			getUserInfo () {
-				let self = this;
-				if (this.hasLogin) {
-					uni.request({
-						url: this.$serverUrl + 'user/1',
-						header: {
-							'sign': common.sign(), // 签名
-							'version': getApp().globalData.version, // 应用大版本号
-							'model': getApp().globalData.systemInfo.model, // 手机型号
-							'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
-							'did': getApp().globalData.did, // 设备号
-							'access-user-token': this.userInfo.token
-						},
-						method: 'GET',
-						success:function(res){
-							let userData = JSON.parse(Aes.decode(res.data.data)); // 用户信息
-							// console.log('用户信息：', userData);
-							self.userData = userData;
-						}
-					})
-				}
-			},
-			
 			/* 步骤条 s */
 			change() {
 				// console.log(this.active)
@@ -499,7 +472,7 @@
 				        venue_id: venueId
 				    },
 				    header: {
-				    	'sign': common.sign(), // 签名
+				    	'sign': common.sign(), // 验签
 				    	'version': getApp().globalData.version, // 应用大版本号
 				    	'model': getApp().globalData.systemInfo.model, // 手机型号
 				    	'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
@@ -628,7 +601,7 @@
 						scene_id: sceneId
 				    },
 				    header: {
-				    	'sign': common.sign(), // 签名
+				    	'sign': common.sign(), // 验签
 				    	'version': getApp().globalData.version, // 应用大版本号
 				    	'model': getApp().globalData.systemInfo.model, // 手机型号
 				    	'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
@@ -688,7 +661,7 @@
 						scene_id: sceneId
 				    },
 				    header: {
-				    	'sign': common.sign(), // 签名
+				    	'sign': common.sign(), // 验签
 				    	'version': getApp().globalData.version, // 应用大版本号
 				    	'model': getApp().globalData.systemInfo.model, // 手机型号
 				    	'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
@@ -760,7 +733,7 @@
 						room_id: roomId
 					},
 					header: {
-						'sign': common.sign(), // 签名
+						'sign': common.sign(), // 验签
 						'version': getApp().globalData.version, // 应用大版本号
 						'model': getApp().globalData.systemInfo.model, // 手机型号
 						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
@@ -814,11 +787,11 @@
 						session_date: self.timeData.fulldate,
 						session_teams_id: this.teams.session_teams_id,
 						team_id: this.teamId,
-						user_id: this.userData.user_id,
+						user_id: this.userInfo.user_id,
 						number: this.number
 					},
 					header: {
-						'sign': common.sign(), // 签名
+						'sign': common.sign(), // 验签
 						'version': getApp().globalData.version, // 应用大版本号
 						'model': getApp().globalData.systemInfo.model, // 手机型号
 						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
@@ -856,11 +829,11 @@
 									session_date: self.timeData.fulldate,
 									session_id: self.sessionId,
 									room_id: self.roomId,
-									user_id: self.userData.user_id,
+									user_id: self.userInfo.user_id,
 									number: self.number
 								},
 								header: {
-									'sign': common.sign(), // 签名
+									'sign': common.sign(), // 验签
 									'version': getApp().globalData.version, // 应用大版本号
 									'model': getApp().globalData.systemInfo.model, // 手机型号
 									'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
@@ -903,7 +876,7 @@
 						equipment_type: 1 // 付费装备
 				    },
 				    header: {
-				    	'sign': common.sign(), // 签名
+				    	'sign': common.sign(), // 验签
 				    	'version': getApp().globalData.version, // 应用大版本号
 				    	'model': getApp().globalData.systemInfo.model, // 手机型号
 				    	'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
@@ -952,7 +925,7 @@
 				uni.request({
 					url: this.$serverUrl + 'session_order',
 					data: {
-						user_id: this.userData.user_id,
+						user_id: this.userInfo.user_id,
 						session_teams_id: this.teams.session_teams_id,
 						team_id: this.teamId,
 						venue_id: this.venueId,
@@ -969,7 +942,7 @@
 						order_price: this.price
 					},
 					header: {
-						'sign': common.sign(), // 签名
+						'sign': common.sign(), // 验签
 						'version': getApp().globalData.version, // 应用大版本号
 						'model': getApp().globalData.systemInfo.model, // 手机型号
 						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
@@ -1079,15 +1052,11 @@
 	}
 
 	.next_step {
-		/* margin: 30upx; */
 		/* flex-direction: column; */
 		position: fixed;
 		left: 0;
 		right: 0;
 		bottom: 0;
-	}
-	.next_step button {
-		margin: 20upx;
 	}
 	
 	.image {

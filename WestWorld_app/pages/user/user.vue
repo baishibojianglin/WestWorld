@@ -28,6 +28,7 @@
 		    <view class="uni-panel-c" v-if="item.open">
 		        <view class="uni-navigate-item" v-for="(item2,key) in item.pages" :key="key" @click="goDetailPage(item2)">
 		            <text class="uni-navigate-text">{{item2.name ? item2.name : item2}}</text>
+					<uni-badge :text="item2.count ? item2.count : ''" type="success" size="small" :inverted="false"></uni-badge>
 		            <text class="uni-navigate-icon uni-icon">&#xe470;</text>
 		        </view>
 		    </view>
@@ -44,18 +45,20 @@
 </template>
 
 <script>
+	import {uniBadge} from '@dcloudio/uni-ui';
 	import {mapState, mapMutations} from 'vuex';
-	import common from '../../common/common.js';
-	import Aes from '../../common/Aes.js';
+	import common from '../../common/common.js';
+	import Aes from '../../common/Aes.js';
 	
 	export default {
+		components: {uniBadge},
 		data() {
 			return {
 				userData: {},
 				list: [
 					{
-						name: '积分',
-						open: true,
+						name: '我的积分',
+						open: false,
 						pages: [{
 							name: '已兑换积分',
 							url: 'lazy-load'
@@ -65,49 +68,39 @@
 						}],
 						url: 'mpvue-picker'
 					},
-					{
-						name: '历史比赛',
-						url: 'mpvue-picker'
+					{ // 比赛场次订单状态类型列表
+						name: '我的比赛',
+						open: true,
+						pages: [{
+							name: '已预约比赛',
+							url: '/pages/session-order/session-order?order_status=1',
+							order_status: 1,
+							count: ''
+						}, {
+							name: '待付款比赛',
+							url: '/pages/session-order/session-order?order_status=0',
+							order_status: 0,
+							count: ''
+						}, {
+							name: '历史比赛',
+							url: '/pages/session-order/session-order?order_status=3',
+							order_status: 3,
+							count: ''
+						}],
+						// url: 'mpvue-picker'
 					},
-					{
-						name: '待参与活动',
-						url: 'mpvue-picker'
-					},
-					{
+					/* {
 						name: '个人红利',
 						url: 'mpvue-picker'
-					}
-				]
+					} */
+				],
+				navigateFlag: false
 			}
 		},
 		computed: mapState(['hasLogin', 'userInfo']), // 对全局变量 hasLogin、userInfo 进行监控
 		onLoad:function(){
-			// 获取用户信息
-			let self = this
-			if (this.hasLogin) {
-				uni.request({
-					url: this.$serverUrl + 'user/1',
-					header: {
-						'sign': common.sign(), // 签名
-						'version': getApp().globalData.version, // 应用大版本号
-						'model': getApp().globalData.systemInfo.model, // 手机型号
-						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
-						'did': getApp().globalData.did, // 设备号
-						'access-user-token': this.userInfo.token
-					},
-					method: 'GET',
-					success:function(res){
-						let userData = JSON.parse(Aes.decode(res.data.data)); // 用户信息
-						userData.avatar = userData.avatar ? self.$imgServerUrl + userData.avatar.replace(/\\/g, "/") : '../../static/img/user.png'; // 用户头像
-						
-						// 用户创建时间
-						let create_time = new Date(userData.create_time);
-						userData.create_time = create_time.getFullYear() + '.' + create_time.getMonth() + '.' + create_time.getDate();
-						
-						self.userData = userData;
-					}
-				})
-			}
+			this.getUserInfo(); // 获取用户信息
+			this.getSessionOrderCount(); // 获取比赛场次订单数量
 		},
 		onShow() {
 			// 当未登录时，直接跳转到登录页面
@@ -119,6 +112,9 @@
 		},
 		methods: {
 			...mapMutations(['logout']), // 对全局方法 logout 进行监控
+			/**
+			 * （退出）登录
+			 */
 			bindLogin() {
 				if (this.hasLogin) {
 					this.logout()
@@ -128,6 +124,39 @@
 					})
 				}
 			},
+			
+			/**
+			 * 获取用户信息
+			 */
+			getUserInfo() {
+				let self = this
+				if (this.hasLogin) {
+					uni.request({
+						url: this.$serverUrl + 'user/1',
+						header: {
+							'sign': common.sign(), // 验签
+							'version': getApp().globalData.version, // 应用大版本号
+							'model': getApp().globalData.systemInfo.model, // 手机型号
+							'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
+							'did': getApp().globalData.did, // 设备号
+							'access-user-token': this.userInfo.token
+						},
+						method: 'GET',
+						success:function(res){
+							let userData = JSON.parse(Aes.decode(res.data.data)); // 用户信息
+							userData.avatar = userData.avatar ? self.$imgServerUrl + userData.avatar.replace(/\\/g, "/") : '../../static/img/user.png'; // 用户头像
+							userData.signature = userData.signature ? userData.signature : '（还没有签名）'; // 个性签名
+							
+							// 用户创建时间
+							let create_time = new Date(userData.create_time);
+							userData.create_time = create_time.getFullYear() + '.' + create_time.getMonth() + '.' + create_time.getDate();
+							
+							self.userData = userData;
+						}
+					})
+				}
+			},
+			
 			triggerCollapse(e) {
 				if (!this.list[e].pages) {
 					this.goDetailPage(this.list[e].url);
@@ -141,13 +170,17 @@
 					}
 				}
 			},
+			/**
+			 * 跳转详情页
+			 * @param {Object} e
+			 */
 			goDetailPage(e) {
 			    if (this.navigateFlag) {
 			        return;
 			    }
 			    this.navigateFlag = true;
 				let path = e.url ? e.url : e;
-				let url = ~path.indexOf('platform') ? path : '/pages/template/' + path + '/' + path;
+				let url = ~path.indexOf('pages') ? path : '/pages/' + path + '/' + path; // ~ 为按位取反运算符
 				uni.navigateTo({
 					url: url
 				});
@@ -155,6 +188,38 @@
 			        this.navigateFlag = false;
 			    }, 200)
 				return false;
+			},
+			
+			/**
+			 * 获取比赛场次订单数量
+			 */
+			getSessionOrderCount() {
+				this.list[1].pages.forEach((item, index) => {
+					uni.request({
+						url: this.$serverUrl + 'session_order',
+						data: {
+							user_id: this.userInfo.user_id,
+							order_status: item.order_status
+						},
+						header: {
+							'sign': common.sign(), // 验签
+							'version': getApp().globalData.version, // 应用大版本号
+							'model': getApp().globalData.systemInfo.model, // 手机型号
+							'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
+							'did': getApp().globalData.did, // 设备号
+							'access-user-token': this.userInfo.token
+						},
+						method: 'GET',
+						success: (res) => {
+							if (res.statusCode == 200) {
+								item.count = String(res.data.data.total);
+							}
+						},
+						fail: (error) => {
+							console.log(error)
+						}
+					})
+				})
 			}
 		}
 	}

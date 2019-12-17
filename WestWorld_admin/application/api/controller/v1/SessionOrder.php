@@ -41,6 +41,9 @@ class SessionOrder extends AuthBase
             if (!empty($param['order_time'])) { // 下单时间
                 $map['so.order_time'] = $param['order_time'];
             }
+            if (isset($param['order_status'])) { // 订单状态：0未付款，1已付款预约，2进行中，3已完成，4已取消
+                $map['so.order_status'] = $param['order_status'];
+            }
             if (!empty($param['pay_status'])) { // 支付状态
                 $map['so.pay_status'] = $param['pay_status'];
             }
@@ -82,6 +85,7 @@ class SessionOrder extends AuthBase
 
             // 生成唯一订单编号 order_sn
             $data['order_sn'] = $this->_getOrderSn();
+            $data['order_time'] = time();
 
             // validate验证，包括判断订单是否重复提交
             $validate = validate('SessionOrder');
@@ -155,13 +159,40 @@ class SessionOrder extends AuthBase
     /**
      * 保存更新的资源
      *
-     * @param  \think\Request  $request
-     * @param  int  $id
+     * @param  \think\Request $request
+     * @param  int $id
      * @return \think\Response
+     * @throws ApiException
      */
     public function update(Request $request, $id)
     {
-        //
+        // 判断为PUT请求
+        if (request()->isPut()) {
+            // 传入的参数
+            $param = input('param.');
+
+            // 判断数据是否存在
+            $data = [];
+            if (isset($param['order_status'])) { // 订单状态
+                $data['order_status'] = intval($param['order_status']);
+            }
+
+            if (empty($data)) {
+                return show(config('code.error'), '数据不合法', [], 404);
+            }
+
+            // 更新
+            try {
+                $result = model('SessionOrder')->save($data, ['session_order_id' => $id]); // 更新
+            } catch (\Exception $e) {
+                throw new ApiException($e->getMessage(), 500, config('code.error'));
+            }
+            if ($result) {
+                return show(config('code.success'), '更新成功', [], 201);
+            } else {
+                return show(config('code.error'), '更新失败', [], 403);
+            }
+        }
     }
 
     /**
@@ -181,7 +212,6 @@ class SessionOrder extends AuthBase
             // 显示指定的比赛场次订单
             try {
                 $data = model('SessionOrder')->where($map)->find($id);
-                //return show(config('code.success'), 'ok', $data);
             } catch (\Exception $e) {
                 throw new ApiException($e->getMessage(), 500, config('code.error'));
             }

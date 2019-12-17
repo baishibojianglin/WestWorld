@@ -26,7 +26,7 @@
 </template>
 
 <script>
-	import common from '../../common/common.js';
+	import common from '../../common/common.js';
 	import {mapState, mapMutations} from 'vuex'; // 导入 vuex 的 mapState 和 mapMutations 方法
 	
 	export default {
@@ -120,7 +120,7 @@
 						password: this.password,
 					},
 					header: {
-						'sign': common.sign(), // 签名，TODO：对参数如did等进行AES加密，生成sign如：'6IpZZyb4DOmjTaPBGZtufjnSS4HScjAhL49NFjE6AJyVdsVtoHEoIXUsjrwu6m+o'
+						'sign': common.sign(), // 验签，TODO：对参数如did等进行AES加密，生成sign如：'6IpZZyb4DOmjTaPBGZtufjnSS4HScjAhL49NFjE6AJyVdsVtoHEoIXUsjrwu6m+o'
 						'version': getApp().globalData.version, // 应用大版本号
 						'model': getApp().globalData.systemInfo.model, // 手机型号
 						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台

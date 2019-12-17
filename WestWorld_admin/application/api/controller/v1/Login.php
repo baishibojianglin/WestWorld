@@ -85,7 +85,10 @@ class Login extends Common
         if ($id) {
             // 返回token给客户端
             $result = [
-                'token' => Aes::opensslEncrypt($token . '&' . $id), // AES加密（自定义拼接字符串）
+                'token' => Aes::opensslEncrypt($token . '&' . $user['user_id']), // AES加密（自定义拼接字符串）
+                'user_id' => $user['user_id'],
+                'user_name' => $user['user_name'],
+                'phone' => $user['phone'],
             ];
             return show(config('code.success'), 'OK', $result);
         } else {

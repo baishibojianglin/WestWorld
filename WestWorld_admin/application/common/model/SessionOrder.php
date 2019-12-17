@@ -26,8 +26,7 @@ class SessionOrder extends Base
         $order = ['so.session_order_id' => 'desc'];
         $join = [
             ['__USER__ u', 'u.user_id = so.user_id', 'LEFT'],
-            ['__VENUE__ s', 's.venue_id = so.venue_id', 'LEFT'],
-            ['__SESSION_TEMPLATE__ st', 'st.session_template_id = so.session_template_id', 'LEFT'],
+            ['__VENUE__ s', 's.venue_id = so.venue_id', 'LEFT']
         ];
 
         $result = $this->alias('so')
@@ -53,8 +52,7 @@ class SessionOrder extends Base
 
         $join = [
             ['__USER__ u', 'u.user_id = so.user_id', 'LEFT'],
-            ['__VENUE__ s', 's.venue_id = so.venue_id', 'LEFT'],
-            ['__SESSION_TEMPLATE__ st', 'st.session_template_id = so.session_template_id', 'LEFT'],
+            ['__VENUE__ s', 's.venue_id = so.venue_id', 'LEFT']
         ];
 
         $data = model('SessionOrder')
@@ -77,20 +75,24 @@ class SessionOrder extends Base
             'so.order_sn',
             'so.user_id',
             'so.venue_id',
-            'so.session_template_id',
+            'so.scene_id',
             'so.session_price',
             'so.session_date',
-            'so.session_start_time',
-            'so.session_end_time',
+            'so.start_time',
+            'so.end_time',
             'so.order_time',
+            'so.order_status',
             'so.pay_status',
             'so.pay_time',
+            'so.order_price',
+            'so.total_price',
             'so.get_points',
             'u.user_name',
             'u.phone user_phone',
             'u.avatar',
             's.venue_name',
             's.venue_account',
+            's.thumb',
             's.venue_phone',
             's.venue_manager',
         ];

@@ -52,7 +52,7 @@
 	// import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	var dateUtils = require('../../common/util.js').dateUtils;
 	import {mapState} from 'vuex';
-	import common from '../../common/common.js';
+	import common from '../../common/common.js';
 	
 	export default {
 		components: {
@@ -184,7 +184,7 @@
 						position_id: 1, // 广告位ID
 					},
 					header: {
-						'sign': common.sign(), // 签名
+						'sign': common.sign(), // 验签
 						'version': getApp().globalData.version, // 应用大版本号
 						'model': getApp().globalData.systemInfo.model, // 手机型号
 						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
@@ -245,7 +245,7 @@
 						listFlag: this.listFlag, // 获取附近或全部场馆列表的标识
 					}, */
 					header: {
-						'sign': common.sign(), // 签名
+						'sign': common.sign(), // 验签
 						'version': getApp().globalData.version, // 应用大版本号
 						'model': getApp().globalData.systemInfo.model, // 手机型号
 						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台

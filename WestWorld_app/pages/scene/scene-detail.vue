@@ -25,7 +25,7 @@
 
 <script>
 	import {uniSegmentedControl} from '@dcloudio/uni-ui';
-	import common from '@/common/common.js';
+	import common from '@/common/common.js';
 	
 	export default {
 		components: {
@@ -43,7 +43,12 @@
 		onLoad(event) {
 			this.sceneId = event.scene_id; // 场景ID
 			this.getSceneDetail(); // 获取场景信息
-			this.current = event.types == this.items[0] ? 0 : 1;
+			this.current = (event.types == this.items[0]) ? 0 : 1;
+			
+			// 动态设置当前页面的标题
+			uni.setNavigationBarTitle({
+				title: this.items[this.current]
+			});
 		},
 		methods: {
 			/**
@@ -54,7 +59,7 @@
 				uni.request({
 					url: this.$serverUrl + 'scene/' + this.sceneId,
 					header: {
-						'sign': common.sign(), // 签名
+						'sign': common.sign(), // 验签
 						'version': getApp().globalData.version, // 应用大版本号
 						'model': getApp().globalData.systemInfo.model, // 手机型号
 						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
@@ -70,7 +75,12 @@
 			
 			onClickItem(e) {
 				if (this.current !== e) {
-					this.current = e
+					this.current = e;
+					
+					// 动态设置当前页面的标题
+					uni.setNavigationBarTitle({
+						title: this.items[this.current]
+					});
 				}
 			}
 		}

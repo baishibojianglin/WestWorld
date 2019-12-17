@@ -113,6 +113,12 @@
 				"navigationBarTitleText": "场景描述与比赛规则"
 			}
         }
+        ,{
+            "path" : "pages/session-order/session-order",
+            "style" : {
+				"navigationBarTitleText": "比赛订单"
+			}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

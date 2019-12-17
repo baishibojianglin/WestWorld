@@ -30,7 +30,7 @@
 </template>
 
 <script>
-	import common from '../../common/common.js';
+	import common from '../../common/common.js';
 
 	export default {
 		data() {
@@ -86,7 +86,7 @@
 					},
 					header: {
 						'content-type': 'application/x-www-form-urlencoded',
-						'sign': common.sign(), // 签名
+						'sign': common.sign(), // 验签
 						'version': getApp().globalData.version, // 应用大版本号
 						'model': getApp().globalData.systemInfo.model, // 手机型号
 						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
