@@ -1,4 +1,2 @@
-*
 /WestWorld_app/unpackage
-!/WestWorld_admin/
-!/WestWorld_app/
+*.zip
