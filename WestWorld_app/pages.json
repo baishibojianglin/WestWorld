@@ -10,24 +10,25 @@
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "WEST WORLD",
+				"enablePullDownRefresh": true, // 开启下拉刷新
 				"app-plus": {
 					"titleNView": {
-						"titleColor": "#fff",
+						// "titleColor": "#fff",
 						// "backgroundColor": "#007AFF",
-						"buttons": [{
+						/* "buttons": [{
 						    "fontSrc": "/static/uni.ttf",
 						    "text": "\ue537",
 						    "width": "auto",
 						    "fontSize": "28px",
 						    "color": "#808080"
-						}],
-						// "type": "transparent",
-						"searchInput": {
+						}], */
+						// "type": "transparent"
+						/* "searchInput": {
 						    "backgroundColor": "#fff",
 						    "borderRadius": "6px",
 						    "placeholder": "请输入地址 如：大钟寺",
 						    "disabled": true
-						}
+						} */
 					}
 				}
 			}
@@ -76,9 +77,28 @@
 			}
 		}
         ,{
+            "path" : "pages/user/user-shares/user-shares",
+            "style" : {
+            	"navigationBarTitleText": "用户红利"
+            }
+        }
+        ,{
+            "path" : "pages/user/user-shares/user-shares-instructions",
+            "style" : {
+            	"navigationBarTitleText": "用户红利说明"
+            }
+        }
+        ,{
+            "path" : "pages/venue/venue",
+            "style" : {
+				"navigationBarTitleText": "场馆",
+				"enablePullDownRefresh": true
+			}
+        }
+        ,{
             "path" : "pages/venue/venue-detail",
             "style": {
-            	"navigationBarTitleText": "详情",
+            	"navigationBarTitleText": "场馆详情",
             	"app-plus": {
             		"titleNView": {
             			"type": "transparent",
@@ -96,7 +116,13 @@
             }
         }
         ,{
-            "path" : "pages/game/join-steps",
+            "path" : "pages/game/game",
+            "style" : {
+				"navigationBarTitleText": "比赛"
+			}
+        }
+        ,{
+            "path" : "pages/game/join-game",
             "style" : {
 				"navigationBarTitleText": "加入比赛"
 			}
@@ -116,8 +142,15 @@
         ,{
             "path" : "pages/session-order/session-order",
             "style" : {
-				"navigationBarTitleText": "比赛订单"
+				"navigationBarTitleText": "比赛订单",
+				"enablePullDownRefresh": true
 			}
+        }
+        ,{
+            "path" : "pages/session-order/session-order-detail",
+            "style" : {
+				"navigationBarTitleText": "比赛订单详情"
+            }
         }
     ],
 	"globalStyle": {
@@ -135,6 +168,11 @@
 	        "text": "首页",
 	        "iconPath": "static/img/home.png",
 	        "selectedIconPath": "static/img/homeHL.png"
+	    }, {
+	        "pagePath": "pages/game/game",
+	        "text": "比赛",
+	        "iconPath": "static/img/game.png",
+	        "selectedIconPath": "static/img/gameHL.png"
 	    }, {
 	        "pagePath": "pages/user/user",
 	        "text": "我的",

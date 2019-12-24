@@ -23,13 +23,14 @@
 		<view class="uni-panel" v-for="(item, index) in list" :key="item.id" v-if="hasLogin">
 		    <view class="uni-panel-h" :class="item.open ? 'uni-panel-h-on' : ''" @click="triggerCollapse(index)">
 		        <text class="uni-panel-text">{{item.name}}</text>
+				<uni-badge :text="item.count ? item.count : ''" type="error" size="small" :inverted="false"></uni-badge>
 		        <text class="uni-panel-icon uni-icon" :class="item.open ? 'uni-panel-icon-on' : ''">{{item.pages ? '&#xe581;' : '&#xe470;'}}</text>
 		    </view>
 		    <view class="uni-panel-c" v-if="item.open">
-		        <view class="uni-navigate-item" v-for="(item2,key) in item.pages" :key="key" @click="goDetailPage(item2)">
+		        <view class="uni-navigate-item" v-for="(item2,key) in item.pages" :key="key" @click="item2.url ? goDetailPage(item2) : ''">
 		            <text class="uni-navigate-text">{{item2.name ? item2.name : item2}}</text>
 					<uni-badge :text="item2.count ? item2.count : ''" type="success" size="small" :inverted="false"></uni-badge>
-		            <text class="uni-navigate-icon uni-icon">&#xe470;</text>
+		            <text class="uni-navigate-icon uni-icon" v-if="item2.url">&#xe470;</text>
 		        </view>
 		    </view>
 		</view>
@@ -61,12 +62,15 @@
 						open: false,
 						pages: [{
 							name: '已兑换积分',
-							url: 'lazy-load'
+							url: '',
+							count: ''
 						}, {
 							name: '待兑换积分',
-							url: 'lazy-load-custom'
+							url: '',
+							count: ''
 						}],
-						url: 'mpvue-picker'
+						url: '',
+						count: ''
 					},
 					{ // 比赛场次订单状态类型列表
 						name: '我的比赛',
@@ -89,10 +93,11 @@
 						}],
 						// url: 'mpvue-picker'
 					},
-					/* {
-						name: '个人红利',
-						url: 'mpvue-picker'
-					} */
+					{
+						name: '用户红利',
+						url: '/pages/user/user-shares/user-shares',
+						count: ''
+					}
 				],
 				navigateFlag: false
 			}
@@ -143,7 +148,8 @@
 						},
 						method: 'GET',
 						success:function(res){
-							let userData = JSON.parse(Aes.decode(res.data.data)); // 用户信息
+							// 用户信息
+							let userData = JSON.parse(Aes.decode(res.data.data));
 							userData.avatar = userData.avatar ? self.$imgServerUrl + userData.avatar.replace(/\\/g, "/") : '../../static/img/user.png'; // 用户头像
 							userData.signature = userData.signature ? userData.signature : '（还没有签名）'; // 个性签名
 							
@@ -152,6 +158,24 @@
 							userData.create_time = create_time.getFullYear() + '.' + create_time.getMonth() + '.' + create_time.getDate();
 							
 							self.userData = userData;
+							
+							// 获取用户积分
+							self.list[0].count = String(userData.get_integrals);
+							self.list[0].pages.forEach((item, index) => {
+								switch (index){
+									case 0:
+										item.count = String(userData.used_integrals);
+										break;
+									case 1:
+										item.count = String(userData.rest_integrals);
+									default:
+										break;
+								}
+							});
+							
+							// 获取用户红利
+							self.list[2].count = String(userData.user_shares);
+							self.list[2].url = self.list[2].url + '?user_id=' + self.userInfo.user_id + '&user_shares=' + userData.user_shares;
 						}
 					})
 				}

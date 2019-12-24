@@ -4,10 +4,17 @@
 			<image class="banner-img" :src="banner.thumb"></image>
 			<view class="banner-title">{{banner.venue_name}}</view>
 		</view>
+		
 		<view class="article-meta">
-			<text class="venue-phone" @click="callPhone(banner.venue_phone)"><text class="uni-icon uni-icon-phone"></text>{{banner.venue_phone}}</text>
-			<text class="venue-address"><text class="uni-icon uni-icon-location"></text>{{banner.address}}</text>
-			<text class="venue-location"><text class="uni-icon uni-icon-map uni-bg-red" @click="openLocation()"></text></text>
+			<view class="uni-flex uni-row" style="-webkit-justify-content: space-between;justify-content: space-between;">
+				<view class="text">
+					<text class="venue-phone" @click="callPhone(banner.venue_phone)"><text class="uni-icon uni-icon-phone"></text>{{banner.venue_phone}}</text>
+				</view>
+				<view class="text">
+					<text class="venue-address" @click="openLocation()"><text class="uni-icon uni-icon-map uni-icon-warn"></text>{{banner.address}}</text>
+					<!-- <text class="venue-location"><text class="uni-icon uni-icon-map uni-icon-warn" @click="openLocation()"></text></text> -->
+				</view>
+			</view>
 		</view>
 		
 		<view class="uni-padding-wrap uni-common-mt uni-common-mb to_game">
@@ -130,7 +137,7 @@
 				
 				// 跳转比赛选择页
 				uni.navigateTo({
-				    url: '/pages/game/join-steps?id=' + this.banner.venue_id + '&venueData=' + JSON.stringify(this.banner)
+				    url: '/pages/game/join-game?id=' + this.banner.venue_id + '&venueData=' + JSON.stringify(this.banner)
 				});
 			}
 		}
@@ -165,9 +172,9 @@
 
 	.article-meta {
 		padding: 20upx 40upx;
-		display: flex;
+		/* display: flex;
 		flex-direction: row;
-		justify-content: flex-start;
+		justify-content: flex-start; */
 		color: gray;
 	}
 

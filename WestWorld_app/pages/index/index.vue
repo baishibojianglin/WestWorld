@@ -1,5 +1,18 @@
 <template>
 	<view class="content">
+		<view class="header uni-flex uni-row" :style="styleHeader">
+			<view class="text" style="width: 120upx;margin-top: 20upx;">
+				<text class="uni-icon uni-icon-location uni-icon-warn" @click="getVenueListByLocation()"></text>
+				<text class="uni-bold">定位</text>
+			</view>
+			<view class="text" style="-webkit-flex: 1;flex: 1;">
+				<uni-search-bar placeholder="搜索场馆" @confirm="search" @input="input" @cancel="cancel" />
+				<view class="search-result uni-center">
+					<text class="search-result-text"><!-- 当前输入为： -->{{ searchVal }}</text>
+				</view>
+			</view>
+		</view>
+		
 		<!-- swiper s -->
 		<view class="uni-margin-wrap">
 			<!-- <swiper class="swiper" :indicator-dots="indicatorDots" :autoplay="autoplay" :interval="interval" :duration="duration" circular="true">
@@ -13,7 +26,7 @@
 				<swiper class="swiper-box" @change="swiperChange" :indicator-dots="false" :autoplay="autoplay" :interval="interval" :duration="duration" circular="true">
 					<swiper-item v-for="(item, index) in adList" :key="index">
 						<view class="swiper-item" :style="{background: item.bgcolor + ' url(' + item.ad_pic + ')'}" @click="toAdDetail(item.ad_link)">
-							<image :src="item.ad_pic" mode="aspectFill" />
+							<image :src="item.ad_pic" mode="aspectFill" style="width: 100%;" />
 						</view>
 					</swiper-item>
 				</swiper>
@@ -48,7 +61,7 @@
 </template>
 
 <script>
-	import {uniSwiperDot, uniLoadMore} from '@dcloudio/uni-ui';
+	import {uniSearchBar, uniSwiperDot, uniLoadMore} from '@dcloudio/uni-ui';
 	// import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	var dateUtils = require('../../common/util.js').dateUtils;
 	import {mapState} from 'vuex';
@@ -56,11 +69,17 @@
 	
 	export default {
 		components: {
+			uniSearchBar, // SearchBar 搜索栏
 			uniSwiperDot, // SwiperDot 轮播图指示点
 			uniLoadMore // LoadMore 加载更多
 		},
 		data() {
 			return {
+				/* 搜索栏 s */
+				styleHeader: '',
+				searchVal: '',
+				/* 搜索栏 e */
+				
 				/* 顶部轮播 s */
 				/* swiper s */
 				// background: ['color1', 'color2', 'color3'],
@@ -101,43 +120,25 @@
 			latitude: '', // 当前位置的纬度
 		},
 		onLoad() {
-			let self = this;
-			
-			this.getTopBanner();
-			
-			uni.showModal({
-				title: '授权定位',
-				content: '获取你的地理位置，查看场馆',
-				cancelText: '全部',
-				confirmText: '附近',
-				success: function (res) {
-					// 获取当前的地理位置、速度
-					uni.getLocation({
-						type: 'wgs84',
-						success: function (res1) {
-							// console.log('当前位置的经度：' + res.longitude);
-							// console.log('当前位置的纬度：' + res.latitude);
-							getApp().globalData.longitude = res1.longitude.toFixed(6);
-							getApp().globalData.latitude = res1.latitude.toFixed(6);
-							
-							if (res.confirm == true) {
-								self.title = '附 近 场 馆';
-								self.listFlag = 1;
-								self.getVenueList(); // 获取（附近）场馆列表数据
-							}
-							if (res.cancel == true) {
-								self.getVenueList(); // 获取（全部）场馆列表数据
-							}
-						}
-					});
-				}
-			});
+			this.getTopBanner(); // 获取顶部轮播列表
+			this.getVenueListByLocation(); // 通过定位获取场馆列表
 		},
-		onPullDownRefresh() {
+		onPageScroll(event) {
+			// 顶部样式
+			if (event.scrollTop > 0) {
+				this.styleHeader = 'position: fixed; z-index: 9; top: 87upx; background-color: rgba(255, 255, 255, 0.9);';
+			} else {
+				this.styleHeader = '';
+			}
+		},
+		onPullDownRefresh() { // 监听用户下拉动作
 			this.reload = true;
 			this.last_id = '';
-			this.getBanner();
+			this.getTopBanner();
 			this.getVenueList();
+			setTimeout(function () {
+				uni.stopPullDownRefresh();
+			}, 1000);
 		},
 		onReachBottom() {
 			this.status = 'more';
@@ -170,6 +171,64 @@
 		
 		computed: mapState(['userInfo']), // 对全局变量 userInfo 进行监控
 		methods: {
+			/**
+			 * 通过定位获取场馆列表
+			 */
+			getVenueListByLocation() {
+				let self = this;
+				this.listData = [];
+				this.last_id = '';
+				
+				uni.showModal({
+					title: '授权定位',
+					content: '获取你的地理位置，查看场馆',
+					cancelText: '全部',
+					confirmText: '附近',
+					success: function (res) {
+						// 获取当前的地理位置、速度
+						uni.getLocation({
+							type: 'wgs84',
+							success: function (res1) {
+								// console.log('当前位置的经度：' + res.longitude);
+								// console.log('当前位置的纬度：' + res.latitude);
+								getApp().globalData.longitude = res1.longitude.toFixed(6);
+								getApp().globalData.latitude = res1.latitude.toFixed(6);
+								
+								if (res.confirm == true) {
+									self.title = '附 近 场 馆';
+									self.listFlag = 1;
+									self.getVenueList(); // 获取（附近）场馆列表数据
+								}
+								if (res.cancel == true) {
+									self.title = '场 馆';
+									self.listFlag = 0;
+									self.getVenueList(); // 获取（全部）场馆列表数据
+								}
+							}
+						});
+					}
+				});
+			},
+			
+			/* 搜索栏 s */
+			search(res) {
+				uni.showToast({
+					title: '搜索：' + res.value,
+					icon: 'none'
+				})
+				this.getVenueListByLocation();
+			},
+			input(res) {
+				this.searchVal = res.value
+			},
+			cancel(res) {
+				uni.showToast({
+					title: '点击取消，输入值为：' + res.value,
+					icon: 'none'
+				})
+			},
+			/* 搜索栏 e */
+			
 			swiperChange(e) {
 				this.current = e.detail.current
 			},
@@ -210,9 +269,13 @@
 			 * @param {Object} url
 			 */
 			toAdDetail(url) {
-				uni.navigateTo({
-					url: url
-				});
+				if (url.substr(0, 7).toLowerCase() == "http://" || url.substr(0, 8).toLowerCase() == "https://") { // 跳转外部链接
+					window.location.href = url;
+				} else {
+					uni.navigateTo({
+						url: url
+					});
+				}
 			},
 			
 			/**
@@ -229,6 +292,12 @@
 					size: 10, // 首次加载条数
 					// column: 'venue_id,venue_name,thumb,venue_phone,address' //需要的字段名
 				};
+				
+				// 搜索条件
+				if(this.searchVal != null) {
+					data.venue_name = this.searchVal;
+				}
+				
 				if (this.last_id) {
 					//说明已有数据，目前处于上拉加载
 					this.status = 'loading';
@@ -326,6 +395,12 @@
 		align-items: center;
 		justify-content: center;
 	}
+	
+	/* 顶部 s */
+	.header {
+		width:690upx;
+	}
+	/* 顶部 e */
 	
 	/* swiper s */
 	.uni-margin-wrap {

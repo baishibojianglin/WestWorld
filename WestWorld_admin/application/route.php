@@ -59,6 +59,8 @@ Route::resource('api/:ver/session_teams', 'api/:ver.session_teams');
 Route::resource('api/:ver/equipment', 'api/:ver.equipment');
 // 比赛场次订单
 Route::resource('api/:ver/session_order', 'api/:ver.session_order');
+// 系统配置，如网站名称、用户协议、隐私政策等
+Route::resource('api/:ver/system_config', 'api/:ver.system_config');
 
 /*// 后台管理中心路由
 // 显示指定的管理员

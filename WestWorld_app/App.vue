@@ -44,6 +44,11 @@
 					}) */
 				}
 			});
+			
+			// 显示 tabBar 某一项的右上角的红点
+			uni.showTabBarRedDot({
+				index: 1
+			});
 		},
 		onShow: function() {
 			// console.log('App Show')

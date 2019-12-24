@@ -52,9 +52,11 @@
                     <em>比赛订单</em>
                 </a>
                 <dl class="layui-nav-child">
-                    <dd><a href="{:url('Order/index')}">已完成订单</a></dd>
-                    <dd><a href="{:url('Order/index')}">进行中订单</a></dd>
-                    <dd><a href="{:url('Order/index')}">预约订单</a></dd>
+                    <!--订单状态：0未付款，1已付款预约，2进行中，3已完成，4已取消-->
+                    <dd><a href="{:url('SessionOrder/index')}">全部订单</a></dd>
+                    <dd><a href="{:url('SessionOrder/index', array('order_status' => 1))}">已预约订单</a></dd>
+                    <dd><a href="{:url('SessionOrder/index', array('order_status' => 2))}">进行中订单</a></dd>
+                    <dd><a href="{:url('SessionOrder/index', array('order_status' => 3))}">已完成订单</a></dd>
                 </dl>
             </li>
             <li class="layui-nav-item">

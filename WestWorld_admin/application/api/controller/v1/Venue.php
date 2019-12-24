@@ -33,7 +33,7 @@ class Venue extends Common
                 $map['grade_id'] = input('param.grade_id', 0, 'intval'); //intval($param['grade_id'])
             }
             if (!empty($param['venue_name'])) { // 场馆名称
-                $map['venue_name'] = ['like', '%' . $param['venue_name'] . '%'];
+                $map['venue_name|address'] = ['like', '%' . $param['venue_name'] . '%'];
             }
             if (!empty($param['create_time'])) { // 创建时间
                 $map['create_time'] = $param['create_time'];
