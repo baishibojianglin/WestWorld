@@ -1,0 +1,237 @@
+{include file="public/_meta" /}
+</head>
+<body class="layui-view-body">
+<div class="layui-content">
+    <div class="layui-page-header layui-hide">
+        <div class="pagewrap">
+            <span class="layui-breadcrumb">
+                <a href="">首页</a>
+                <a href="">比赛订单</a>
+                <a><cite>比赛订单列表</cite></a>
+            </span>
+        </div>
+    </div>
+    <div class="layui-row">
+        <div class="layui-card">
+            <div class="layui-card-header">比赛订单列表 <a href="javascript:window.location.reload()" title="刷新" class="layui-btn layui-btn-sm" style="float: right;margin-top: 5px"><i class="layui-icon layui-icon-refresh-1"></i></a></div>
+            <div class="layui-card-body">
+                <div type="text/html" id="toolbar">
+                    <div class="form-box">
+                        <div class="layui-form layui-form-item">
+                            <div class="layui-inline">
+                                <!--<div class="layui-form-mid">下单时间</div>-->
+                                <div class="layui-input-inline" style="width: 100px;">
+                                    <input type="text" name="order_time" value="" placeholder="下单时间" title="yyyy-MM-dd" autocomplete="off" class="layui-input" id="order_time">
+                                </div>
+                                {if condition="!input('param.order_status')"}
+                                <div class="layui-input-inline" style="width: 120px;">
+                                    <select name="order_status" lay-filter="order_status">
+                                        <option value="" selected>订单状态…</option>
+                                        {volist name="order_status" id="vo"}
+                                        <option value="{$key}">{$vo}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                                {/if}
+                                <div class="layui-input-inline" style="width: 120px;">
+                                    <select name="pay_status" lay-filter="pay_status">
+                                        <option value="" selected>支付状态…</option>
+                                        {volist name=":config('code.pay_status')" id="vo"}
+                                        <option value="{$key}">{$vo}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                                <!--<div class="layui-form-mid">付款时间</div>-->
+                                <div class="layui-input-inline" style="width: 100px;">
+                                    <input type="text" name="pay_time" value="" placeholder="付款时间" title="yyyy-MM-dd" autocomplete="off" class="layui-input" id="pay_time">
+                                </div>
+                                <!--<div class="layui-form-mid">用户名称或电话</div>-->
+                                <div class="layui-input-inline" style="width: 120px;">
+                                    <input type="text" name="user_name" value="" placeholder="用户名称/电话" autocomplete="off" class="layui-input">
+                                </div>
+                                <!--<div class="layui-form-mid">场景</div>-->
+                                <div class="layui-input-inline" style="width: 120px;">
+                                    <select name="scene_id" lay-filter="scene_id">
+                                        <option value="" selected>请选择场景…</option>
+                                        {volist name="sceneList" id="vo"}
+                                        <option value="{$vo.scene_id}">{$vo.scene_name}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                                <!--<div class="layui-form-mid">比赛日期</div>-->
+                                <div class="layui-input-inline" style="width: 100px;">
+                                    <input type="text" name="session_date" value="" placeholder="比赛日期" title="yyyy-MM-dd" autocomplete="off" class="layui-input" id="session_date">
+                                </div>
+                                <button class="layui-btn layui-btn-blue" onclick="layuiTable()">查询</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table class="layui-hide" id="layui_table" lay-filter="lay_filter_table"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script src="/static/layui/layui.all.js"></script>
+<script src="/static/common/js/common.js"></script>
+<script>
+    // 声明页面全局变量
+    var order_status = '{:input("param.order_status")}'; // 订单状态
+    var pay_status; // 支付状态
+    var scene_id; // 场景ID
+
+    // 页面加载时执行
+    layuiTable();
+
+    /**
+     * layui.table 数据表格：初始化渲染方式为方法渲染
+     */
+    function layuiTable() {
+        layui.use(['form', 'table', 'laydate'], function () {
+
+            var table = layui.table;
+            var form = layui.form;
+            var laydate = layui.laydate;
+            var order_time = $('input[name="order_time"]').val(); // 下单时间
+            var pay_time = $('input[name="pay_time"]').val(); // 付款时间
+            var session_date = $('input[name="session_date"]').val(); // 比赛日期
+
+            // 监听表单select
+            form.on('select(order_status)', function(data){
+                //console.log(data.value); //得到被选中的值
+                order_status = data.value;
+            });
+            form.on('select(pay_status)', function(data){
+                pay_status = data.value;
+            });
+            form.on('select(scene_id)', function(data){
+                scene_id = data.value;
+            });
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#order_time' //指定元素
+                ,value: order_time
+                ,trigger: 'click'
+            });
+            laydate.render({
+                elem: '#pay_time' //指定元素
+                ,value: pay_time
+                ,trigger: 'click'
+            });
+            laydate.render({
+                elem: '#session_date' //指定元素
+                ,value: session_date
+                ,trigger: 'click'
+            });
+
+            // 方法级渲染
+            table.render({
+                elem: '#layui_table'
+                , cols: [[ //表头
+                    {field: 'session_order_id', title: 'ID', width: 80, sort: true, fixed: 'left'}
+                    , {field: 'order_sn', title: '订单编号', width: 180}
+                    , {field: 'order_time', title: '下单时间', width: 120}
+                    , {field: 'order_status_msg', title: '订单状态', width: 90}
+                    , {field: 'pay_status_msg', title: '付款状态', width: 90}
+                    , {field: 'pay_time', title: '付款时间', width: 120}
+                    , {field: 'order_price', title: '应付金额/￥', width: 120}
+                    , {field: 'total_price', title: '订单总价/￥', width: 120, templet: '<div>{{#  if(0 != d.total_price){ }} {{d.total_price}} {{#  }else{ }} {{d.order_price}} {{#  } }}</div>'}
+                    , {field: 'user', title: '用户', width: 120, templet: '<div><img src="/{{d.avatar}}" alt="{{d.avatar}}" title="{{d.avatar}}" width="25"> {{d.user_name}}</div>'}
+                    , {field: 'user_phone', title: '用户电话', width: 120}
+                    , {field: 'get_integrals', title: '获得积分', width: 90}
+                    , {field: 'session_teams_id', title: '比赛场次组队主键', width: 150}
+                    , {field: 'team_id', title: '比赛场次组队ID', width: 130}
+                    , {field: 'scene_name', title: '场景', width: 90}
+                    , {field: 'session_date', title: '比赛日期', width: 120}
+                    , {field: 'session_time', title: '比赛场次时间', width: 150, templet: '<div>{{d.start_time}}~{{d.end_time}}</div>'}
+                    , {field: 'session_price', title: '场次费用/￥', width: 120}
+                    , {field: 'room_name', title: '房间', width: 90}
+                    , {field: 'room_price', title: '房间价格/￥', width: 120}
+                    , {field: 'equipment_name', title: '装备', width: 90}
+                    , {field: 'equipment_use_fee', title: '装备使用费/￥', width: 120}
+                    , {title: '操作', fixed: 'right', width: 120, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                ]]
+                , url: '{:url("venue/session_order/getSessionOrder")}' //数据接口
+                //,method: 'get' // 接口http请求类型，默认：get
+                ,where: {order_time: order_time, order_status: order_status, pay_status: pay_status, pay_time: pay_time, user_name: $('input[name="user_name"]').val(), scene_id: scene_id, session_date: session_date} // 接口的其它参数，此处为搜索条件
+                //,contentType: 'application/x-www-form-urlencoded'
+                , parseData: function (res) { //res 即为原始返回的数据
+                    //console.log(this.limit); // 每页数据量
+                    //console.log(this.page.curr); // 当前页码
+                    return {
+                        "code": res.status, //解析接口状态
+                        "msg": res.message, //解析提示文本
+                        "count": res.data.total, //解析数据长度
+                        "data": res.data.data //解析数据列表
+                    };
+                }
+                , request: { // 用于对分页请求的参数：page、limit重新设定名称
+                    //pageName: 'curr' //页码的参数名称，默认：page
+                    limitName: 'size' //每页数据量的参数名，默认：limit
+                }
+                , response: { // 自定义数据响应名称
+                    //statusName: 'status' //规定数据状态的字段名称，默认：code
+                    statusCode: 1 //规定成功的状态码，默认：0
+                    //,msgName: 'hint' //规定状态信息的字段名称，默认：msg
+                    //,countName: 'total' //规定数据总数的字段名称，默认：count
+                    //,dataName: 'rows' //规定数据列表的字段名称，默认：data
+                }
+                //, id: 'layui_table'
+                , toolbar: true // '#toolbar' '<div>权限规则列表</div>'
+                //,height: 312 // 设定容器高度
+                ,page: true //开启分页 //, page: {limit: 2}
+            });
+
+            // 监听工具条
+            table.on('tool(lay_filter_table)', function(obj){ //注：tool 是工具条事件名，lay_filter_table 是 table 原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+
+                if(layEvent === 'detail'){ //查看
+                    //do somehing
+                } else if(layEvent === 'del'){ //删除
+                    layer.confirm('真的删除行么', function(index){
+                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                        layer.close(index);
+                        //向服务端发送删除指令
+                        ajaxRequest('{:url("venue/session_order/delete")}', 'delete', {id: data.session_order_id}); // ajax请求
+                    });
+                } else if(layEvent === 'edit'){ //编辑
+                    //do something
+                    layer.open({
+                        type: 2,
+                        title: '编辑',
+                        //skin: 'layui-layer-rim', //加上边框
+                        area: ['90%', '90%'], //宽高
+                        content: '{:url("venue/session_order/edit")}?id=' + data.session_order_id,
+                        maxmin: true
+                    });
+
+                    //同步更新缓存对应的值
+                    obj.update({
+                        name: '123'
+                        ,title: 'xxx'
+                    });
+                } else if(layEvent === 'LAYTABLE_TIPS'){
+                    layer.alert('Hi，头部工具栏扩展的右侧图标。');
+                }
+            });
+
+        });
+    }
+</script>
+
+<!--toolbar - 绑定工具条模板，它可以存放在页面的任意位置 s-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a><!--注意：属性 lay-event="" 是模板的关键所在，值可随意定义。-->
+    <!--<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>-->
+    <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
+</script>
+<!--toolbar - 绑定工具条模板 e-->
+
+</body>
+</html>
