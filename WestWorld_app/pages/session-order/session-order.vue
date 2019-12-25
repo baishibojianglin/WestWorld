@@ -5,7 +5,7 @@
 		</view>
 		
 		<view v-for="(item, index) in sessionOrderList" :key="index" ref="sessionOrderDom">
-			<uni-card :title="item.venue_name" :extra="item.pay_status ? '已付款' : '未付款'" :note="(item.pay_status && item.order_status != 3) ? '' : 'Tips'" :thumbnail="item.thumb" :is-shadow="true" @click="clickCard">
+			<uni-card :title="item.venue_name" :extra="item.pay_status ? '已付款' : '未付款'" :note="(item.pay_status && item.order_status != 3) ? '' : 'Tips'" :thumbnail="item.thumb" :is-shadow="true" @click="clickCard(item.session_order_id)">
 				
 				<uni-swipe-action :options="options" @click="swipeActionClick($event, item)" >
 					<view class="uni-flex uni-row" style="-webkit-justify-content: space-between;justify-content: space-between;">
@@ -23,7 +23,7 @@
 				</uni-swipe-action>
 				
 				<template slot="footer">
-					<view class="footer-box" v-if="!item.pay_status">
+					<view class="footer-box" v-if="0 == item.pay_status">
 						<view @click.stop="footerClick('取消比赛', item.session_order_id, item.order_sn, index)"> <button class="mini-btn" type="default" size="mini" plain="true">取消比赛</button></view>
 						<view @click.stop="footerClick('付款', item.session_order_id, item.order_sn, '', item.total_price)"> <button class="mini-btn" type="warn" size="mini" plain="true">付款</button></view>
 					</view>
@@ -37,13 +37,13 @@
 </template>
 
 <script>
-	import {uniSegmentedControl, uniSwipeAction, uniCard} from '@dcloudio/uni-ui';
-	import tkiQrcode from '@/components/tki-qrcode/tki-qrcode.vue'
+	import {uniSegmentedControl, uniCard, uniSwipeAction, uniCountDown} from '@dcloudio/uni-ui';
+	import tkiQrcode from '@/components/tki-qrcode/tki-qrcode.vue';
 	import {mapState} from 'vuex';
 	import common from '@/common/common.js';
 	
 	export default {
-		components: {uniSegmentedControl, uniSwipeAction, uniCard, tkiQrcode},
+		components: {uniSegmentedControl, uniCard, uniSwipeAction, uniCountDown, tkiQrcode},
 		data() {
 			return {
 				/* 分段器 s */
@@ -139,7 +139,7 @@
 						if (res.statusCode == 200) {
 							let sessionOrderList = res.data.data.data;
 							sessionOrderList.forEach ((item, index) => {
-								 // 场馆缩略图
+								// 场馆缩略图
 								item.thumb = item.thumb ? this.$imgServerUrl + item.thumb.replace(/\\/g, "/") : '/static/img/home.png';
 							})
 							this.sessionOrderList = sessionOrderList;
@@ -169,9 +169,13 @@
 				}
 			},
 			
-			clickCard() {
+			/**
+			 * 点击 Card 触发事件
+			 * @param {Object} session_order_id
+			 */
+			clickCard(session_order_id) {
 				uni.navigateTo({
-					url: '/pages/session-order/session-order-detail'
+					url: '/pages/session-order/session-order-detail?session_order_id=' + session_order_id
 				})
 			},
 			
@@ -335,7 +339,7 @@
 			 */
 			qrR(res) {
 				this.src = res;
-			},
+			}
 		}
 	}
 </script>

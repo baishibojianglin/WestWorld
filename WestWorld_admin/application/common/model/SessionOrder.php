@@ -88,6 +88,8 @@ class SessionOrder extends Base
             'so.scene_id',
             'so.session_date',
             'so.session_id',
+            'so.start_time as session_start_time',
+            'so.end_time as session_end_time',
             'so.session_price',
             'so.room_id',
             'so.room_price',

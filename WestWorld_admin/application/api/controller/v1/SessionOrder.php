@@ -60,9 +60,11 @@ class SessionOrder extends AuthBase
 
             if ($data) {
                 // 处理数据
-                $status = config('code.pay_status');
+                $orderStatus = config('code.order_status');
+                $payStatus = config('code.pay_status');
                 foreach ($data as $key => $value) {
-                    $data[$key]['pay_status_msg'] = $status[$value['pay_status']]; // 定义status_msg
+                    $data[$key]['order_status_msg'] = $orderStatus[$value['order_status']]; // 定义订单状态信息order_status_msg
+                    $data[$key]['pay_status_msg'] = $payStatus[$value['pay_status']]; // 定义付款状态信息pay_status_msg
                     //$data[$key]['venue_info'] = model('Venue')->find($value['venue_id']); // 获取店鋪信息
                 }
 
@@ -145,9 +147,11 @@ class SessionOrder extends AuthBase
 
             if ($data) {
                 // 处理数据
-                // 定义status_msg
-                $status = config('code.pay_status');
-                $data['pay_status_msg'] = $status[$data['pay_status']];
+                // 定义状态信息
+                $orderStatus = config('code.order_status');
+                $payStatus = config('code.pay_status');
+                $data['order_status_msg'] = $orderStatus[$data['order_status']]; // 定义订单状态信息order_status_msg
+                $data['pay_status_msg'] = $payStatus[$data['pay_status']]; // 定义付款状态信息pay_status_msg
 
                 return show(config('code.success'), 'ok', $data);
             } else {
