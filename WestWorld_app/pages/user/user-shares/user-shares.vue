@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<uni-card title="用户红利" thumbnail="" extra="" note="Tips" :is-shadow="true">
-			<view>{{ user_shares }}</view>
+			<view><text class="red uni-bold">{{ user_shares }}</text></view>
 			<template v-slot:footer>
 				<view class="footer-box">
 					<view @click.stop="footerClick('说明')">说明</view>
