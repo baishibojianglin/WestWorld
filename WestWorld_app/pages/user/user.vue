@@ -7,9 +7,12 @@
 						<image :src="userData.avatar" style="width: 200upx;height: 200upx;"></image>
 					</view>
 					<view class="uni-flex uni-column" style="-webkit-flex: 1;flex: 1;-webkit-justify-content: space-between;justify-content: space-between;">
-						<view class="text" style="height: 120upx;text-align: left;padding-left: 20upx;padding-top: 10upx;">
-							<view>{{userData.user_name}}</view>
-							<view style="font-size: 20upx;margin-top: 10upx">{{userData.signature}}</view>
+						<view class="uni-flex uni-row" style="-webkit-justify-content: space-between;justify-content: space-between;">
+							<view class="text uni-bold">{{userData.user_name}}</view>
+							<view class="text" @click="goUserInfo()"><text class="uni-icon uni-icon-compose"></text></view>
+						</view>
+						<view class="text" style="text-align: left;">
+							<view class="uni-text-small">{{userData.signature}}</view>
 						</view>
 						<view class="uni-flex uni-row">
 							<view class="text" style="-webkit-flex: 1;flex: 1;">{{userData.phone}}</view>
@@ -137,7 +140,7 @@
 				let self = this
 				if (this.hasLogin) {
 					uni.request({
-						url: this.$serverUrl + 'user/1',
+						url: this.$serverUrl + 'user/' + this.userInfo.user_id,
 						header: {
 							'sign': common.sign(), // 验签
 							'version': getApp().globalData.version, // 应用大版本号
@@ -151,7 +154,7 @@
 							// 用户信息
 							let userData = JSON.parse(Aes.decode(res.data.data));
 							userData.avatar = userData.avatar ? self.$imgServerUrl + userData.avatar.replace(/\\/g, "/") : '../../static/img/user.png'; // 用户头像
-							userData.signature = userData.signature ? userData.signature : '（还没有签名）'; // 个性签名
+							userData.signature = userData.signature ? userData.signature : '（没有签名）'; // 个性签名
 							
 							// 用户创建时间
 							let create_time = new Date(userData.create_time);
@@ -179,6 +182,15 @@
 						}
 					})
 				}
+			},
+			
+			/**
+			 * 跳转个人信息页
+			 */
+			goUserInfo() {
+				uni.navigateTo({
+					url: '/pages/user/user-info/user-info'
+				})
 			},
 			
 			triggerCollapse(e) {
@@ -253,7 +265,7 @@
 	@import '../../common/uni-nvue.css';
 	
 	.userData .text {
-		margin: 10upx 5upx;
+		/* margin: 10upx 5upx; */
 		padding: 0 20upx;
 		/* background-color: #ebebeb; */
 		height: 70upx;

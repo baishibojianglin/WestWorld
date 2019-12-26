@@ -77,6 +77,18 @@
 			}
 		}
         ,{
+            "path" : "pages/user/user-info/user-info",
+            "style" : {
+				"navigationBarTitleText": "个人信息"
+			}
+        }
+        ,{
+            "path" : "pages/user/user-info/user-info-edit",
+            "style" : {
+				"navigationBarTitleText": "编辑个人信息"
+			}
+        }
+        ,{
             "path" : "pages/user/user-shares/user-shares",
             "style" : {
             	"navigationBarTitleText": "用户红利"
@@ -98,7 +110,7 @@
         ,{
             "path" : "pages/venue/venue-detail",
             "style": {
-            	"navigationBarTitleText": "场馆详情",
+            	"navigationBarTitleText": "场馆信息",
             	"app-plus": {
             		"titleNView": {
             			"type": "transparent",
@@ -149,7 +161,7 @@
         ,{
             "path" : "pages/session-order/session-order-detail",
             "style" : {
-				"navigationBarTitleText": "比赛订单详情"
+				"navigationBarTitleText": "比赛订单信息"
             }
         }
     ],
