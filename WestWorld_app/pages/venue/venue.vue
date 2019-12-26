@@ -1,5 +1,8 @@
 <template>
 	<view class="content">
+		<!-- uniapp loading加载动画 -->
+		<w-loading text="" mask="true" click="false" ref="loading"></w-loading>
+		
 		<!-- swiper s -->
 		<view class="uni-margin-wrap">
 			<!-- uniSwiperDot s -->
@@ -109,6 +112,15 @@
 		onLoad() {
 			this.getTopBanner(); // 获取顶部轮播列表
 			this.getVenueListByLocation(); // 通过定位获取场馆列表
+		},
+		onReady() {
+			let self = this;
+			//打开加载动画
+			this.$refs.loading.open()
+			setTimeout(function () {
+				//关闭加载动画
+				self.$refs.loading.close()
+			}, 1000);
 		},
 		onPageScroll(event) {
 			

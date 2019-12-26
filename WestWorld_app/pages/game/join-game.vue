@@ -1,5 +1,8 @@
 <template>
 	<view>
+		<!-- uniapp loading加载动画 -->
+		<w-loading text="" mask="true" click="false" ref="loading"></w-loading>
+		
 		<view class="example-title"><!-- 报名步骤 --> 
 			<image :src="venueData.thumb" style="width: 80upx; height: 80upx; border-radius: 10upx;"></image>
 			<view>{{venueData.venue_name}}</view>
@@ -353,6 +356,15 @@
 			this.venueId = event.id; // 场馆ID
 			this.venueData = JSON.parse(event.venueData); // 场馆数据
 			this.getSceneList(this.venueId); // 获取场景列表
+		},
+		onReady() {
+			let self = this;
+			//打开加载动画
+			this.$refs.loading.open()
+			setTimeout(function () {
+				//关闭加载动画
+				self.$refs.loading.close()
+			}, 1000);
 		},
 		onPageScroll(event) {
 			// 分段器定位样式

@@ -1,5 +1,8 @@
 <template>
 	<view>
+		<!-- uniapp loading加载动画 -->
+		<w-loading text="" mask="true" click="false" ref="loading"></w-loading>
+		
 		<uni-card :title="sessionOrderDetail.venue_name" :extra="sessionOrderDetail.order_status_msg" note="" :thumbnail="sessionOrderDetail.thumb" :is-shadow="true">
 			
 			<view class="uni-flex uni-row" style="-webkit-justify-content: space-between;justify-content: space-between;">
@@ -9,7 +12,7 @@
 					<view class="uni-text-small">场景：<text class="uni-bold">{{ sessionOrderDetail.scene_name }}</text></view>
 					<view class="uni-text-small">房间：<text class="uni-bold">{{ sessionOrderDetail.room_name }}</text></view>
 					<view class="uni-text-small">比赛团队：<text class="uni-bold">{{ sessionOrderDetail.session_teams_id + "-" + sessionOrderDetail.team_id }}</text></view>
-					<view class="uni-text-small">付费装备：<text :class="sessionOrderDetail.equipment_name ? 'uni-bold' : ''">{{ sessionOrderDetail.equipment_name ? sessionOrderDetail.equipment_name : "（未选择付费装备）" }}</text></view>
+					<view class="uni-text-small">付费装备：<text :class="sessionOrderDetail.equipment_name ? 'uni-bold' : ''">{{ sessionOrderDetail.equipment_name ? sessionOrderDetail.equipment_name : "（未使用）" }}</text></view>
 					<view class="uni-text-small">订单编号：{{ sessionOrderDetail.order_sn }}</view>
 					<view class="red uni-bold">{{ '￥' + (sessionOrderDetail.total_price = sessionOrderDetail.total_price > 0 ? sessionOrderDetail.total_price : sessionOrderDetail.order_price) }}</view>
 					<view class="uni-text-small" v-if="sessionOrderDetail.order_status == 0 || sessionOrderDetail.order_status == 1">
@@ -79,6 +82,15 @@
 			this.sessionOrderId = event.session_order_id; // 比赛场次订单ID
 			this.getSessionOrderDetail(); // 获取比赛场次订单详情
 		},
+		onReady() {
+			let self = this;
+			//打开加载动画
+			this.$refs.loading.open()
+			setTimeout(function () {
+				//关闭加载动画
+				self.$refs.loading.close()
+			}, 1000);
+		},
 		computed: mapState(['hasLogin', 'userInfo']), // 对全局变量 hasLogin、userInfo 进行监控
 		methods: {
 			/**
@@ -99,15 +111,16 @@
 					success:function(res){
 						let sessionOrderDetail = res.data.data;
 						let timestamp = Date.parse(new Date())/1000; // 当前秒级时间戳
-						
-						// 场馆缩略图
-						sessionOrderDetail.thumb = sessionOrderDetail.thumb ? self.$imgServerUrl + sessionOrderDetail.thumb.replace(/\\/g, "/") : '/static/img/home.png';
-						
-						// 距离比赛开始与结束时间的转秒级时间戳差值
-						sessionOrderDetail.session_start_time = Date.parse(sessionOrderDetail.session_start_time)/1000 - timestamp;
-						sessionOrderDetail.session_end_time = Date.parse(sessionOrderDetail.session_end_time)/1000 - timestamp;
-						
-						self.sessionOrderDetail = sessionOrderDetail;
+						if (sessionOrderDetail) {
+							// 场馆缩略图
+							sessionOrderDetail.thumb = sessionOrderDetail.thumb ? self.$imgServerUrl + sessionOrderDetail.thumb.replace(/\\/g, "/") : '/static/img/home.png';
+							
+							// 距离比赛开始与结束时间的转秒级时间戳差值
+							sessionOrderDetail.session_start_time = Date.parse(sessionOrderDetail.session_start_time)/1000 - timestamp;
+							sessionOrderDetail.session_end_time = Date.parse(sessionOrderDetail.session_end_time)/1000 - timestamp;
+							
+							self.sessionOrderDetail = sessionOrderDetail;
+						}
 					}
 				})
 			},

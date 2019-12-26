@@ -1,5 +1,8 @@
 <template>
 	<view>
+		<!-- uniapp loading加载动画 -->
+		<w-loading text="" mask="true" click="false" ref="loading"></w-loading>
+		
 		<view class="uni-padding-wrap uni-common-mt" :style="stylePosition">
 			<uni-segmented-control :current="current" :values="items" style-type="text" active-color="#4cd964" @clickItem="onClickItem" />
 		</view>
@@ -98,6 +101,15 @@
 			
 			// 获取比赛场次订单列表
 			this.getSessionOrderList();
+		},
+		onReady() {
+			let self = this;
+			//打开加载动画
+			this.$refs.loading.open()
+			setTimeout(function () {
+				//关闭加载动画
+				self.$refs.loading.close()
+			}, 1000);
 		},
 		onPullDownRefresh() { // 监听用户下拉动作
 			this.sessionOrderList = [];

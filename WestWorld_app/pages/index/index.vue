@@ -1,5 +1,8 @@
 <template>
 	<view class="content">
+		<!-- uniapp loading加载动画 -->
+		<w-loading text="" mask="true" click="true" ref="loading"></w-loading>
+		
 		<view class="header uni-flex uni-row" :style="styleHeader">
 			<view class="text" style="width: 120upx;margin-top: 20upx;">
 				<text class="uni-icon uni-icon-location uni-icon-warn" @click="getVenueListByLocation()"></text>
@@ -122,6 +125,15 @@
 		onLoad() {
 			this.getTopBanner(); // 获取顶部轮播列表
 			this.getVenueListByLocation(); // 通过定位获取场馆列表
+		},
+		onReady() {
+			let self = this;
+			//打开加载动画
+			this.$refs.loading.open()
+			setTimeout(function () {
+				//关闭加载动画
+				self.$refs.loading.close()
+			}, 2000);
 		},
 		onPageScroll(event) {
 			// 顶部样式
