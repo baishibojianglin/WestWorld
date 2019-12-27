@@ -177,7 +177,7 @@
 							
 							// 获取用户红利
 							self.list[2].count = String(userData.user_shares);
-							self.list[2].url = self.list[2].url + '?user_id=' + self.userInfo.user_id + '&user_shares=' + userData.user_shares;
+							self.list[2].url = '/pages/user/user-shares/user-shares?user_id=' + self.userInfo.user_id + '&user_shares=' + userData.user_shares;
 						}
 					})
 				}

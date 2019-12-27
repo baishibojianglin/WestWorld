@@ -59,9 +59,30 @@
 			 * 跳转编辑个人信息页
 			 */
 			toEditUserInfo(title, key, value) {
-				uni.navigateTo({
-					url: '/pages/user/user-info/user-info-edit?title=' + title + '&key=' + key + '&value=' + value
-				})
+				if (key == 'avatar') { // 更换头像
+					this.updateAvatar();
+				} else {
+					uni.navigateTo({
+						url: '/pages/user/user-info/user-info-edit?title=' + title + '&key=' + key + '&value=' + value
+					})
+				}
+			},
+			
+			/**
+			 * 更换头像
+			 */
+			updateAvatar() {
+				uni.chooseImage({
+				    count: 1, //默认9
+				    // sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+				    // sourceType: ['album'], // album 从相册选图，camera 使用相机，默认二者都有
+				    success: function (res) {
+				        console.log(JSON.stringify(res.tempFilePaths));
+				    },
+					fail:function(err){
+						console.log(err)
+					}
+				});
 			}
 		}
 	}
