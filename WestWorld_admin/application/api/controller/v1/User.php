@@ -69,16 +69,16 @@ class User extends AuthBase
             // 判断传入的参数是否存在
             $data = [];
             if (!empty($param['file'])) { // 头像
-                $data['avatar'] = $param['file'];
+                $data['avatar'] = trim($param['file']);
             }
             if (!empty($param['user_name'])) { // 用户名 // TODO 如果用户名是唯一性的，在表单输入用户名的时候做用户名唯一性验证接口
-                $data['user_name'] = $param['user_name'];
+                $data['user_name'] = trim($param['user_name']);
             }
             if (isset($param['gender'])) { // 性别
                 $data['gender'] = $param['gender'];
             }
             if (!empty($param['signature'])) { // 个性签名
-                $data['signature'] = $param['signature'];
+                $data['signature'] = trim($param['signature']);
             }
             if (!empty($param['password'])) { // 密码 更新密码的接口
                 // TODO 密码在传输过程中需要（AES）加密

@@ -133,7 +133,7 @@
 			setTimeout(function () {
 				//关闭加载动画
 				self.$refs.loading.close()
-			}, 2000);
+			}, 1000);
 		},
 		onPageScroll(event) {
 			// 顶部样式

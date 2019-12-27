@@ -8,6 +8,13 @@
 		<view class="text-area">
 			<text class="iconfont iconmima"></text>
 		    <input password="true" v-model="password" placeholder="输入密码" />
+			<!-- <view class="uni-form-item uni-column">
+				<view class="title">可查看密码的输入框</view>
+				<view class="with-fun">
+					<input class="uni-input" placeholder="请输入密码" :password="showPassword" />
+					<view class="uni-icon uni-icon-eye" :class="[!showPassword ? 'uni-active' : '']" @click="changePassword"></view>
+				</view>
+			</view> -->
 		</view>
 		<view class="text-area">
 			<text class="iconfont iconmima"></text>
@@ -39,7 +46,9 @@
 				password: 'abc123',
 				repassword: '',
 				notecode: '',
-				content: ''
+				content: '',
+				
+				showPassword: true,
 			}
 		},
 		components: {uniPopup},
@@ -116,7 +125,14 @@
 			//弹窗
 			openPopup(){
 				this.$refs.popup.open()
-			}
+			},
+			
+			/**
+			 * 查看密码
+			 */
+			changePassword: function() {
+				this.showPassword = !this.showPassword;
+			},
 		}
 	}
 </script>

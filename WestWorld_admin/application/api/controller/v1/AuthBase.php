@@ -71,6 +71,7 @@ class AuthBase extends Common
         }
 
         // 赋值登录用户的基本信息
+        $user['gender_msg'] = config('code.gender')[$user['gender']];
         $this->user = $user;
         return true;
     }

@@ -106,10 +106,6 @@
 			}
 		},
 		computed: mapState(['hasLogin', 'userInfo']), // 对全局变量 hasLogin、userInfo 进行监控
-		onLoad:function(){
-			this.getUserInfo(); // 获取用户信息
-			this.getSessionOrderCount(); // 获取比赛场次订单数量
-		},
 		onShow() {
 			// 当未登录时，直接跳转到登录页面
 			if (!this.hasLogin) {
@@ -117,6 +113,9 @@
 					url: '/pages/login/login'
 				})
 			}
+			
+			this.getUserInfo(); // 获取用户信息
+			this.getSessionOrderCount(); // 获取比赛场次订单数量
 		},
 		methods: {
 			...mapMutations(['logout']), // 对全局方法 logout 进行监控

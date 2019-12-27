@@ -1,9 +1,10 @@
 <template>
 	<view>
 		<uni-list>
-			<uni-list-item :thumb="userData.avatar" @click="toEditUserInfo('avatar')" />
-			<uni-list-item title="昵称" :note="userData.user_name" @click="toEditUserInfo('user_name')" />
-			<uni-list-item title="签名" :note="userData.signature" @click="toEditUserInfo('signature')" />
+			<uni-list-item :thumb="userData.avatar" @click="toEditUserInfo('更换头像', 'avatar', userData.avatar)" />
+			<uni-list-item title="昵称" :note="userData.user_name" @click="toEditUserInfo('更改昵称', 'user_name', userData.user_name)" />
+			<uni-list-item title="性别" :note="userData.gender_msg" @click="toEditUserInfo('设置性别', 'gender', userData.gender)" />
+			<uni-list-item title="个性签名" :note="userData.signature ? userData.signature : '（没有签名）'" @click="toEditUserInfo('个性签名', 'signature', userData.signature)" />
 		</uni-list>
 	</view>
 </template>
@@ -21,10 +22,10 @@
 				userData: {}
 			}
 		},
-		computed: mapState(['hasLogin', 'userInfo']), // 对全局变量 hasLogin、userInfo 进行监控
-		onLoad() {
+		onShow() {
 			this.getUserInfo();
 		},
+		computed: mapState(['hasLogin', 'userInfo']), // 对全局变量 hasLogin、userInfo 进行监控
 		methods: {
 			/**
 			 * 获取用户信息
@@ -47,7 +48,6 @@
 							// 用户信息
 							let userData = JSON.parse(Aes.decode(res.data.data));
 							userData.avatar = userData.avatar ? self.$imgServerUrl + userData.avatar.replace(/\\/g, "/") : '../../static/img/user.png'; // 用户头像
-							userData.signature = userData.signature ? userData.signature : '（没有签名）'; // 个性签名
 							
 							self.userData = userData;
 						}
@@ -58,9 +58,9 @@
 			/**
 			 * 跳转编辑个人信息页
 			 */
-			toEditUserInfo(types) {
+			toEditUserInfo(title, key, value) {
 				uni.navigateTo({
-					url: '/pages/user/user-info/user-info-edit?types=' + types
+					url: '/pages/user/user-info/user-info-edit?title=' + title + '&key=' + key + '&value=' + value
 				})
 			}
 		}
