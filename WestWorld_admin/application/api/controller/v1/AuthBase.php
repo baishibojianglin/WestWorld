@@ -33,7 +33,7 @@ class AuthBase extends Common
         parent::_initialize();
 
         // 判断是否登录
-        if (empty($this->isLogin())) {
+        if (!($this->isLogin())) {
             throw new ApiException('未登录', 401);
         }
     }
