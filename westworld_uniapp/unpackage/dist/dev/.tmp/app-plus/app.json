@@ -1,0 +1,60 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/index/search/search",
+    "pages/login/login",
+    "pages/login/regist",
+    "pages/pwd/pwd",
+    "pages/user/user",
+    "pages/user/user-info/user-info",
+    "pages/user/user-info/user-info-edit",
+    "pages/user/user-shares/user-shares",
+    "pages/user/user-shares/user-shares-instructions",
+    "pages/game/game",
+    "pages/session-order/session-order",
+    "pages/session-order/session-order-detail"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "WEST WORLD",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#7a7e83",
+    "selectedColor": "#0faeff",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/img/home.png",
+        "selectedIconPath": "static/img/homeHL.png"
+      },
+      {
+        "pagePath": "pages/game/game",
+        "text": "比赛",
+        "iconPath": "static/img/game.png",
+        "selectedIconPath": "static/img/gameHL.png"
+      },
+      {
+        "pagePath": "pages/user/user",
+        "text": "我的",
+        "iconPath": "static/img/user.png",
+        "selectedIconPath": "static/img/userHL.png"
+      }
+    ]
+  },
+  "nvueCompiler": "uni-app",
+  "renderer": "auto",
+  "splashscreen": {
+    "alwaysShowBeforeRender": true,
+    "autoclose": false
+  },
+  "appname": "west",
+  "compilerVersion": "2.4.6",
+  "usingComponents": {
+    "page-head": "/components/page-head",
+    "w-loading": "/components/w-loading/w-loading"
+  }
+}

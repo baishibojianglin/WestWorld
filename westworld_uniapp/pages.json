@@ -1,0 +1,153 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "WEST WORLD",
+				"enablePullDownRefresh": true // 开启下拉刷新
+				// #ifdef APP-PLUS
+				,"app-plus": {
+					"titleNView": {
+						// "titleColor": "#fff",
+						// "backgroundColor": "#007AFF",
+						"buttons": [{
+						    // "color": "#808080",
+							"float": "left",
+						    "fontSize": "28px",
+						    "fontSrc": "/static/uni.ttf",
+						    "text": "\ue537",
+						    "width": "auto"
+						}],
+						// "type": "transparent",
+						"searchInput": {
+						    "backgroundColor": "#fff",
+						    "borderRadius": "6px",
+						    "placeholder": "搜索场馆",
+						    "disabled": true
+						}
+					}
+				}
+				// #endif
+			}
+		}
+		,{
+		    "path": "pages/index/search/search",
+		    "style": {
+		        "navigationBarTitleText": "搜索",
+		        "app-plus": {
+		            "titleNView": {
+		                // "titleColor": "#fff",
+		                // "backgroundColor": "#007AFF",
+		                "buttons": [{
+		                    // "color": "#fff",
+		                    "fontSize": "28px",
+		                    "fontSrc": "/static/uni.ttf",
+		                    "text": "\ue537",
+		                    "width": "auto"
+		                }],
+		                "searchInput": {
+		                    "backgroundColor": "#fff",
+		                    "borderRadius": "6px",
+		                    "placeholder": "请输入场馆名称/地址",
+		                    "autoFocus": true
+		                }
+		            }
+		        }
+		    }
+		}
+        ,{
+            "path" : "pages/login/login",
+            "style" : {
+				"navigationBarTitleText": "登录"
+			}
+        }
+        ,{
+            "path" : "pages/login/regist",
+            "style" : {
+				"navigationBarTitleText": "注册"
+			}
+        }
+        ,{
+            "path" : "pages/pwd/pwd",
+            "style" : {
+				"navigationBarTitleText": "找回密码"
+			}
+        }
+        ,{
+            "path" : "pages/user/user",
+            "style" : {
+				"navigationBarTitleText": "个人中心"
+			}
+        }
+        ,{
+            "path" : "pages/user/user-info/user-info",
+            "style" : {
+				"navigationBarTitleText": "个人信息"
+			}
+        }
+        ,{
+            "path" : "pages/user/user-info/user-info-edit",
+            "style" : {
+				"navigationBarTitleText": "编辑个人信息"
+			}
+        }
+        ,{
+            "path" : "pages/user/user-shares/user-shares",
+            "style" : {
+				"navigationBarTitleText": "用户红利"
+			}
+        }
+        ,{
+            "path" : "pages/user/user-shares/user-shares-instructions",
+            "style" : {
+            	"navigationBarTitleText": "用户红利说明"
+            }
+        }
+	    ,{
+            "path" : "pages/game/game",
+            "style" : {
+				"navigationBarTitleText": "比赛"
+			}
+        }
+        ,{
+            "path" : "pages/session-order/session-order",
+            "style" : {
+				"navigationBarTitleText": "比赛订单",
+				"enablePullDownRefresh": true
+			}
+        }
+        ,{
+            "path" : "pages/session-order/session-order-detail",
+            "style" : {
+				"navigationBarTitleText": "比赛订单信息"
+            }
+        }
+    ],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "WEST WORLD",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+	    "color": "#7a7e83",
+	    "selectedColor": "#0faeff",
+	    "backgroundColor": "#ffffff",
+	    "list": [{
+	        "pagePath": "pages/index/index",
+	        "text": "首页",
+	        "iconPath": "static/img/home.png",
+	        "selectedIconPath": "static/img/homeHL.png"
+	    }, {
+	        "pagePath": "pages/game/game",
+	        "text": "比赛",
+	        "iconPath": "static/img/game.png",
+	        "selectedIconPath": "static/img/gameHL.png"
+	    }, {
+	        "pagePath": "pages/user/user",
+	        "text": "我的",
+	        "iconPath": "static/img/user.png",
+	        "selectedIconPath": "static/img/userHL.png"
+	    }]
+	}
+}

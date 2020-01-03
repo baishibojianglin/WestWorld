@@ -1,0 +1,2 @@
+setCssToHead([".",[1],"footer-box { display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-pack: center; -webkit-justify-content: center; justify-content: center; -webkit-box-orient: horizontal; -webkit-box-direction: normal; -webkit-flex-direction: row; flex-direction: row; }\n",],undefined,{path:"./pages/user/user-shares/user-shares.wxss"})();
+document.dispatchEvent(new CustomEvent("generateFuncReady", { detail: { generateFunc: $gwx('./pages/user/user-shares/user-shares.wxml') } }));

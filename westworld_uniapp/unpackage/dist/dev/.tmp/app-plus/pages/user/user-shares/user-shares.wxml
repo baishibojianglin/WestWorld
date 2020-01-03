@@ -1,0 +1,1 @@
+<view><uni-card vue-id="1" title="用户红利" note="Tips" is-shadow="{{true}}" bind:__l="__l" vue-slots="{{['default','footer']}}"><view slot="footer"><view class="footer-box"><view data-event-opts="{{[['tap',[['footerClick',['说明']]]]]}}" catchtap="__e">说明</view></view></view><view class="uni-center"><text class="red uni-bold">{{user_shares}}</text></view></uni-card></view>

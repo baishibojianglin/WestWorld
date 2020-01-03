@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+    <head>
+        <meta charset="UTF-8" />
+        <script>
+            var coverSupport = 'CSS' in window && typeof CSS.supports === 'function' && (CSS.supports('top: env(a)') ||
+                CSS.supports('top: constant(a)'))
+            document.write(
+                '<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' +
+                (coverSupport ? ', viewport-fit=cover' : '') + '" />')
+        </script>
+        <title>View</title>
+        <style>
+            * {
+                -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            input[type="search"]::-webkit-search-cancel-button {
+                display: none;
+            }
+        </style>
+        <script>
+            var __wxConfig = {"debug":false,"appname":"west","entryPagePath":"pages/index/index.html","page":{"pages/index/index.html":{"window":{"navigationBarTitleText":"WEST WORLD","enablePullDownRefresh":true,"titleNView":{"buttons":[{"float":"left","fontSize":"28px","fontSrc":"/static/uni.ttf","text":"","width":"auto"}],"searchInput":{"backgroundColor":"#fff","borderRadius":"6px","placeholder":"搜索场馆","disabled":true}},"usingComponents":{"w-loading":"/components/w-loading/w-loading","page-head":"/components/page-head","uni-search-bar":"/node-modules/@dcloudio/uni-ui/lib/uni-search-bar/uni-search-bar","uni-swiper-dot":"/node-modules/@dcloudio/uni-ui/lib/uni-swiper-dot/uni-swiper-dot","uni-load-more":"/node-modules/@dcloudio/uni-ui/lib/uni-load-more/uni-load-more"}}},"pages/index/search/search.html":{"window":{"navigationBarTitleText":"搜索","titleNView":{"buttons":[{"fontSize":"28px","fontSrc":"/static/uni.ttf","text":"","width":"auto"}],"searchInput":{"backgroundColor":"#fff","borderRadius":"6px","placeholder":"请输入场馆名称/地址","autoFocus":true}},"usingComponents":{}}},"pages/login/login.html":{"window":{"navigationBarTitleText":"登录","usingComponents":{}}},"pages/login/regist.html":{"window":{"navigationBarTitleText":"注册","usingComponents":{}}},"pages/pwd/pwd.html":{"window":{"navigationBarTitleText":"找回密码","usingComponents":{}}},"pages/user/user.html":{"window":{"navigationBarTitleText":"个人中心","usingComponents":{"uni-badge":"/node-modules/@dcloudio/uni-ui/lib/uni-badge/uni-badge"}}},"pages/user/user-info/user-info.html":{"window":{"navigationBarTitleText":"个人信息","usingComponents":{"uni-list":"/node-modules/@dcloudio/uni-ui/lib/uni-list/uni-list","uni-list-item":"/node-modules/@dcloudio/uni-ui/lib/uni-list-item/uni-list-item"}}},"pages/user/user-info/user-info-edit.html":{"window":{"navigationBarTitleText":"编辑个人信息","usingComponents":{}}},"pages/user/user-shares/user-shares.html":{"window":{"navigationBarTitleText":"用户红利","usingComponents":{"uni-card":"/node-modules/@dcloudio/uni-ui/lib/uni-card/uni-card"}}},"pages/user/user-shares/user-shares-instructions.html":{"window":{"navigationBarTitleText":"用户红利说明","usingComponents":{"uni-card":"/node-modules/@dcloudio/uni-ui/lib/uni-card/uni-card"}}},"pages/game/game.html":{"window":{"navigationBarTitleText":"比赛","usingComponents":{}}},"pages/session-order/session-order.html":{"window":{"navigationBarTitleText":"比赛订单","enablePullDownRefresh":true,"usingComponents":{"w-loading":"/components/w-loading/w-loading","uni-segmented-control":"/node-modules/@dcloudio/uni-ui/lib/uni-segmented-control/uni-segmented-control","uni-card":"/node-modules/@dcloudio/uni-ui/lib/uni-card/uni-card","uni-swipe-action":"/node-modules/@dcloudio/uni-ui/lib/uni-swipe-action/uni-swipe-action","uni-swipe-action-item":"/node-modules/@dcloudio/uni-ui/lib/uni-swipe-action-item/uni-swipe-action-item","tki-qrcode":"/components/tki-qrcode/tki-qrcode"}}},"pages/session-order/session-order-detail.html":{"window":{"navigationBarTitleText":"比赛订单信息","usingComponents":{"w-loading":"/components/w-loading/w-loading","uni-card":"/node-modules/@dcloudio/uni-ui/lib/uni-card/uni-card","uni-countdown":"/node-modules/@dcloudio/uni-ui/lib/uni-countdown/uni-countdown","tki-qrcode":"/components/tki-qrcode/tki-qrcode"}}}},"global":{"window":{"navigationBarTextStyle":"black","navigationBarTitleText":"WEST WORLD","navigationBarBackgroundColor":"#F8F8F8","backgroundColor":"#F8F8F8"}},"tabBar":{"color":"#7a7e83","selectedColor":"#0faeff","backgroundColor":"#ffffff","borderStyle":"black","list":[{"pagePath":"pages/index/index.html","text":"首页","iconPath":"static/img/home.png","selectedIconPath":"static/img/homeHL.png"},{"pagePath":"pages/game/game.html","text":"比赛","iconPath":"static/img/game.png","selectedIconPath":"static/img/gameHL.png"},{"pagePath":"pages/user/user.html","text":"我的","iconPath":"static/img/user.png","selectedIconPath":"static/img/userHL.png"}],"position":"bottom"},"networkTimeout":{"request":60000,"connectSocket":60000,"uploadFile":60000,"downloadFile":60000},"platform":"devtools","pages":["pages/index/index","pages/index/search/search","pages/login/login","pages/login/regist","pages/pwd/pwd","pages/user/user","pages/user/user-info/user-info","pages/user/user-info/user-info-edit","pages/user/user-shares/user-shares","pages/user/user-shares/user-shares-instructions","pages/game/game","pages/session-order/session-order","pages/session-order/session-order-detail"],"nvueCompiler":"uni-app","renderer":"auto","splashscreen":{"alwaysShowBeforeRender":true,"autoclose":false},"compilerVersion":"2.4.6","usingComponents":{"page-head":"/components/page-head","w-loading":"/components/w-loading/w-loading"}}
+        </script>
+        <script>
+            var __id__ = '';
+            window.__dispatchGenerateFunc__ = function(page) {
+                __id__ = page;
+                document.title = page;
+                // window.history.pushState('', '', page);
+                var wxss = page.replace('.html', '.wxss')
+                if (
+                    typeof __wxAppCode__ !== 'undefined' &&
+                    __wxAppCode__.hasOwnProperty(wxss)
+                ) {
+                    var setCssToHead = __wxAppCode__[wxss]
+                    typeof setCssToHead === 'function' && setCssToHead()
+                    document.dispatchEvent(new CustomEvent("generateFuncReady", {
+                        detail: {
+                            generateFunc: $gwx(page.replace('.html', '.wxml'))
+                        }
+                    }));
+                } else {
+                    plus.webview.currentWebview().setJsFile('_www/' + page.replace('.html', '.js'));
+                }
+            };
+        </script>
+        <script src="__uniappes6.js"></script>
+        <script src="uniapp://ready"></script>
+    </head>
+
+    <body>
+        <div></div>
+    </body>
+
+</html>
