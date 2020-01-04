@@ -13,8 +13,8 @@ import wLoading from "@/components/w-loading/w-loading.vue"
 Vue.component('w-loading', wLoading)
 
 Vue.config.productionTip = false
-Vue.prototype.$serverUrl = 'http://westworld.com/index.php/api/v1/'
-Vue.prototype.$imgServerUrl = 'http://westworld.com/'
+Vue.prototype.$serverUrl = 'http://west.dilinsat.com/index.php/api/v1/'
+Vue.prototype.$imgServerUrl = 'http://west.dilinsat.com/'
 Vue.prototype.$store = store
 
 App.mpType = 'app'

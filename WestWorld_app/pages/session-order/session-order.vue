@@ -40,13 +40,13 @@
 </template>
 
 <script>
-	import {uniSegmentedControl, uniCard, uniSwipeAction, uniCountDown} from '@dcloudio/uni-ui';
+	import {uniSegmentedControl, uniCard, uniSwipeAction} from '@dcloudio/uni-ui';
 	import tkiQrcode from '@/components/tki-qrcode/tki-qrcode.vue';
 	import {mapState} from 'vuex';
 	import common from '@/common/common.js';
 	
 	export default {
-		components: {uniSegmentedControl, uniCard, uniSwipeAction, uniCountDown, tkiQrcode},
+		components: {uniSegmentedControl, uniCard, uniSwipeAction, tkiQrcode},
 		data() {
 			return {
 				/* 分段器 s */

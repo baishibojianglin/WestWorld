@@ -1,31 +1,10 @@
 <template>
 	<view class="content">
 		<!-- uniapp loading加载动画 -->
-		<w-loading text="" mask="true" click="true" ref="loading"></w-loading>
-		
-		<!-- #ifndef APP-PLUS -->
-		<view class="header uni-flex uni-row" :style="styleHeader">
-			<view class="text" style="width: 120upx;margin-top: 20upx;">
-				<text class="uni-icon uni-icon-location uni-icon-warn" @click="getVenueListByLocation()"></text>
-				<text class="uni-bold">定位</text>
-			</view>
-			<view class="text" style="-webkit-flex: 1;flex: 1;">
-				<uni-search-bar placeholder="搜索场馆" @confirm="search" @input="input" @cancel="cancel" />
-				<view class="search-result uni-center">
-					<text class="search-result-text"><!-- 当前输入为： -->{{ searchVal }}</text>
-				</view>
-			</view>
-		</view>
-		<!-- #endif -->
+		<w-loading text="" mask="true" click="false" ref="loading"></w-loading>
 		
 		<!-- swiper s -->
 		<view class="uni-margin-wrap">
-			<!-- <swiper class="swiper" :indicator-dots="indicatorDots" :autoplay="autoplay" :interval="interval" :duration="duration" circular="true">
-				<swiper-item v-for="(value, key) in adList" :key="key">
-					<view class="swiper-item uni-bg-red" :style="{background: value.bgcolor + ' url(' + value.ad_pic + ')'}" @click="toAdDetail(value.ad_link)">{{ value.ad_name }}</view>
-				</swiper-item>
-			</swiper> -->
-			
 			<!-- uniSwiperDot s -->
 			<uni-swiper-dot :info="adList" :current="current" :mode="mode" field="ad_name">
 				<swiper class="swiper-box" @change="swiperChange" :indicator-dots="false" :autoplay="autoplay" :interval="interval" :duration="duration" circular="true">
@@ -77,11 +56,10 @@
 
 <script>
 	import {uniSearchBar, uniSwiperDot, uniLoadMore} from '@dcloudio/uni-ui';
-	// import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
-	import dragButton from "@/components/drag-button/drag-button.vue";
 	var dateUtils = require('../../common/util.js').dateUtils;
 	import {mapState} from 'vuex';
 	import common from '../../common/common.js';
+	import dragButton from "@/components/drag-button/drag-button.vue";
 	
 	export default {
 		components: {
@@ -92,11 +70,6 @@
 		},
 		data() {
 			return {
-				/* 搜索栏 s */
-				styleHeader: '',
-				searchVal: '',
-				/* 搜索栏 e */
-				
 				/* 顶部轮播 s */
 				/* swiper s */
 				// background: ['color1', 'color2', 'color3'],
@@ -110,7 +83,7 @@
 				
 				/* uniSwiperDot s */
 				current: 0,
-				mode: 'nav',
+				mode: 'round',
 				/* uniSwiperDot e */
 				/* 顶部轮播 e */
 				
@@ -150,12 +123,7 @@
 			}, 1000);
 		},
 		onPageScroll(event) {
-			// 顶部样式
-			if (event.scrollTop > 0) {
-				this.styleHeader = 'position: fixed; z-index: 9; top: 87upx; background-color: rgba(255, 255, 255, 0.9);';
-			} else {
-				this.styleHeader = '';
-			}
+			
 		},
 		onPullDownRefresh() { // 监听用户下拉动作
 			this.reload = true;
@@ -170,31 +138,6 @@
 			this.status = 'more';
 			this.getVenueList();
 		},
-		
-		/**
-		 * 当 searchInput 配置 disabled 为 true 时触发
-		 */
-		onNavigationBarSearchInputClicked(e) {
-			console.log('事件执行了')
-			uni.navigateTo({
-				url: '/pages/index/search/search'
-			});
-		},
-		/**
-		 *  点击导航栏 buttons 时触发
-		 */
-		onNavigationBarButtonTap() {
-			uni.showModal({
-				title: '提示',
-				content: '用户点击了功能按钮，这里仅做展示。',
-				success: res => {
-					if (res.confirm) {
-						console.log('用户点击了确定');
-					}
-				}
-			});
-		},
-		
 		computed: mapState(['userInfo']), // 对全局变量 userInfo 进行监控
 		methods: {
 			/**
@@ -236,25 +179,6 @@
 				});
 			},
 			
-			/* 搜索栏 s */
-			search(res) {
-				uni.showToast({
-					title: '搜索：' + res.value,
-					icon: 'none'
-				})
-				this.getVenueListByLocation();
-			},
-			input(res) {
-				this.searchVal = res.value
-			},
-			cancel(res) {
-				uni.showToast({
-					title: '点击取消，输入值为：' + res.value,
-					icon: 'none'
-				})
-			},
-			/* 搜索栏 e */
-			
 			swiperChange(e) {
 				this.current = e.detail.current
 			},
@@ -266,7 +190,7 @@
 				uni.request({
 					url: this.$serverUrl + 'ad',
 					data: {
-						position_id: 1, // 广告位ID
+						position_id: 2, // 广告位ID
 					},
 					header: {
 						'sign': common.sign(), // 验签
@@ -318,12 +242,6 @@
 					size: 10, // 首次加载条数
 					// column: 'venue_id,venue_name,thumb,venue_phone,address' //需要的字段名
 				};
-				
-				// 搜索条件
-				if(this.searchVal != null) {
-					data.venue_name = this.searchVal;
-				}
-				
 				if (this.last_id) {
 					//说明已有数据，目前处于上拉加载
 					this.status = 'loading';
@@ -421,12 +339,6 @@
 		align-items: center;
 		justify-content: center;
 	}
-	
-	/* 顶部 s */
-	.header {
-		width:690upx;
-	}
-	/* 顶部 e */
 	
 	/* swiper s */
 	.uni-margin-wrap {

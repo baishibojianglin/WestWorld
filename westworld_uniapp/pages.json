@@ -103,10 +103,49 @@
             	"navigationBarTitleText": "用户红利说明"
             }
         }
+		,{
+		    "path" : "pages/venue/venue",
+		    "style" : {
+				"navigationBarTitleText": "场馆",
+				"enablePullDownRefresh": true
+			}
+		}
+		,{
+		    "path" : "pages/venue/venue-detail",
+		    "style": {
+		    	"navigationBarTitleText": "场馆信息",
+		    	"app-plus": {
+		    		"titleNView": {
+		    			"type": "transparent",
+		    			"buttons": [{
+		    				"type": "share"
+		    			}]
+		    		}
+		    	},
+		    	"h5": {
+		    		"titleNView": {
+		    			"type": "transparent",
+		    			"buttons": []
+		    		}
+		    	}
+		    }
+		}
 	    ,{
             "path" : "pages/game/game",
             "style" : {
 				"navigationBarTitleText": "比赛"
+			}
+        }
+        ,{
+            "path" : "pages/game/join-game",
+            "style" : {
+				"navigationBarTitleText": "加入比赛"
+			}
+        }
+        ,{
+            "path" : "pages/scene/scene-detail",
+            "style" : {
+				"navigationBarTitleText": "场景描述与比赛规则"
 			}
         }
         ,{
@@ -115,6 +154,12 @@
 				"navigationBarTitleText": "比赛订单",
 				"enablePullDownRefresh": true
 			}
+        }
+        ,{
+            "path" : "pages/session-order/session-order-detail",
+            "style" : {
+				"navigationBarTitleText": "比赛订单信息"
+            }
         }
     ],
 	"globalStyle": {
