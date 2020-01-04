@@ -1,1 +1,0 @@
-<view><view class="uni-padding-wrap uni-common-mt"><button class="uni-common-mt" type="default" data-event-opts="{{[['tap',[['toSessionOrder',['$event']]]]]}}" bindtap="__e">查看比赛</button><button class="uni-common-mt" type="default" data-event-opts="{{[['tap',[['toVenue',['$event']]]]]}}" bindtap="__e">加入比赛</button></view></view>

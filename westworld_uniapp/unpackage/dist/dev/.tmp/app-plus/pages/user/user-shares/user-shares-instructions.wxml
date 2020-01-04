@@ -1,1 +1,0 @@
-<view><uni-card vue-id="1" is-shadow="{{true}}" bind:__l="__l" vue-slots="{{['default']}}"><view class="article-content"><rich-text nodes="{{htmlNodes}}"></rich-text></view></uni-card></view>

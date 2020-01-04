@@ -116,12 +116,6 @@
 				"enablePullDownRefresh": true
 			}
         }
-        ,{
-            "path" : "pages/session-order/session-order-detail",
-            "style" : {
-				"navigationBarTitleText": "比赛订单信息"
-            }
-        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
