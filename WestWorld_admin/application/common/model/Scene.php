@@ -25,7 +25,7 @@ class Scene extends Base
         $order = ['s.scene_id' => 'asc'];
 
         $result = $this->alias('s')
-            ->field('s.scene_id, s.scene_name, s.venue_id, s.thumb, s.status, v.venue_name') // 字段排除 s.scene_description, s.game_rules等
+            ->field('s.scene_id, s.scene_name, s.venue_id, s.thumb, s.booking_days, s.status, v.venue_name') // 字段排除 s.scene_description, s.game_rules等
             ->join('__VENUE__ v', 's.venue_id = v.venue_id', 'LEFT')
             ->where($map)
             ->order($order)
@@ -83,6 +83,7 @@ class Scene extends Base
             'scene_name',
             'venue_id',
             'thumb',
+            'booking_days',
             'status',
         ];
     }

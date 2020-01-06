@@ -506,7 +506,7 @@
 						// 场次列表
 						let sessionArray = res.data.data.data;
 						if (sessionArray) {
-							sessionArray.unshift({});
+							sessionArray.unshift({}); // 向数组 sessionArray 的开头添加一个空的 json{} 元素
 							sessionArray.forEach ((item, index) => {
 								// 场次时间
 								item.session_time = item.start_time + '~' + item.end_time;

@@ -186,8 +186,11 @@ class Scene extends Base
             if (!empty($param['scene_description'])) { // 场景介绍
                 $data['scene_description'] = $param['scene_description'];
             }
-            if (!empty($param['game_rules'])) { // 游戏规则
+            if (!empty($param['game_rules'])) { // 比赛规则
                 $data['game_rules'] = $param['game_rules'];
+            }
+            if (!empty($param['booking_days'])) { // 比赛规则
+                $data['booking_days'] = intval($param['booking_days']);
             }
             if (isset($param['status'])) { // 状态
                 $data['status'] = input('param.status', null, 'intval');
