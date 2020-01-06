@@ -143,6 +143,12 @@
 			}
         }
         ,{
+            "path" : "pages/API/request-payment/request-payment",
+            "style" : {
+				"navigationBarTitleText": "发起支付"
+			}
+        }
+        ,{
             "path" : "pages/scene/scene-detail",
             "style" : {
 				"navigationBarTitleText": "场景描述与比赛规则"

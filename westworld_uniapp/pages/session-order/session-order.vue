@@ -8,7 +8,7 @@
 		</view>
 		
 		<view v-for="(item, index) in sessionOrderList" :key="index" ref="sessionOrderDom">
-			<uni-card :title="item.venue_name" :extra="item.pay_status ? '已付款' : '未付款'" :note="(item.pay_status && item.order_status != 3) ? '' : 'Tips'" :thumbnail="item.thumb" :is-shadow="true" @click="clickCard(item.session_order_id)">
+			<uni-card :title="item.venue_name" :extra="item.pay_status == 1 ? '已付款' : '未付款'" :note="(item.pay_status == 1 && item.order_status != 3) ? '' : 'Tips'" :thumbnail="item.thumb" :is-shadow="true" @click="clickCard(item.session_order_id)">
 				
 				<uni-swipe-action>
 					<uni-swipe-action-item :options="options" @click="swipeActionClick($event, item)" >
@@ -28,7 +28,7 @@
 				</uni-swipe-action>
 				
 				<template slot="footer">
-					<view class="footer-box" v-if="0 == item.pay_status">
+					<view class="footer-box" v-if="item.pay_status == 0">
 						<view @click.stop="footerClick('取消比赛', item.session_order_id, item.order_sn, index)"> <button class="mini-btn" type="default" size="mini" plain="true">取消比赛</button></view>
 						<view @click.stop="footerClick('付款', item.session_order_id, item.order_sn, '', item.total_price)"> <button class="mini-btn" type="warn" size="mini" plain="true">付款</button></view>
 					</view>
@@ -123,7 +123,12 @@
 		onPageScroll(event) {
 			// 分段器定位样式
 			if (event.scrollTop > 0) {
-				this.stylePosition = 'position: fixed; z-index: 9; top: 59upx; background-color: rgba(255, 255, 255, 0.9);';
+				// #ifndef APP-PLUS
+				this.stylePosition = 'position: fixed; top: 59upx; z-index: 9; background-color: rgba(255, 255, 255, 0.9);';
+				// #endif
+				// #ifdef APP-PLUS
+				this.stylePosition = 'position: fixed; top: -30upx; z-index: 9; background-color: rgba(255, 255, 255, 0.9);';
+				// #endif
 			} else {
 				this.stylePosition = '';
 			}

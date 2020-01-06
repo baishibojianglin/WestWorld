@@ -57,7 +57,7 @@
 			if (sys.windowTop) {
 				this.windowHeight += sys.windowTop;
 			}
-			console.log(sys)
+			// console.log(sys)
 			
 			const query = uni.createSelectorQuery().in(this);
 			query.select('#_drag_button').boundingClientRect(data => {
