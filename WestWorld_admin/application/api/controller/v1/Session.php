@@ -33,6 +33,9 @@ class Session extends Common
             if (!empty($param['scene_id'])) { // 场景ID
                 $map['se.scene_id'] = intval($param['scene_id']);
             }
+            if (!empty($param['session_date'])) { // 判断传入的比赛日期是否为可预订日期内的停场日期
+                $map['se.close_date'] =  ['not like', '%' . $param['session_date'] . '%'];
+            }
 
             // 获取分页page、size
             $this->getPageAndSize($param);

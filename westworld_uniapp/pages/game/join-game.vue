@@ -5,9 +5,9 @@
 		
 		<!-- 场馆信息 -->
 		<view class="example-title uni-common-mb">
-			<image :src="venueData.thumb" style="width: 80upx; height: 80upx; border-radius: 10upx;"></image>
-			<view>{{venueData.venue_name}}</view>
-			<view><text class="uni-icon uni-icon-location"></text>{{venueData.address}}</view>
+			<image :src="venueData.thumb" style="width: 80upx; height: 80upx; border-radius: 5upx;"></image>
+			<view class="uni-bold">{{venueData.venue_name}}</view>
+			<view style="width: 40%; text-align: right; font-size: 26upx;"><text class="uni-icon uni-icon-location"></text>{{venueData.address}}</view>
 		</view>
 		
 		<!-- 步骤条 s -->
@@ -45,7 +45,7 @@
 				<view v-if="current === 1">
 					<view class="uni-flex uni-row">
 						<view class="text uni-common-pl">可预订日期</view>
-						<view class="text uni-common-pl uni-bold">{{ timeInfo.startDate }}~{{ timeInfo.endDate }}</view>
+						<view class="text uni-common-pl uni-bold">{{ (timeInfo.startDate === timeInfo.endDate) ? timeInfo.startDate : (timeInfo.startDate + '~' + timeInfo.endDate) }}</view>
 					</view>
 					<view class="uni-common-mt">
 						<!-- <view class="example-title">选择日期</view> -->
@@ -218,18 +218,19 @@
 				showCalendar: false,
 				timeInfo: {
 					date: '', // 当前时间，默认为今天
-					startDate: '2019-06-15',
-					endDate: '2020-10-15',
+					startDate: '',
+					endDate: '',
 					lunar: true, // 显示农历
 					// range: true, // 范围选择，默认为false
 					insert: false,
 					selected: []
 				},
 				sessionDate: '', // 比赛场次日期
+				bookingDays: '', // 可预订天数
 				/* 可预订日期 e */
 				
 				/* 场次 s */
-				sessionArray: [{}], //场景列表，如：[{session_id: 1, session_time: '10:00~11:00', session_price: 1.00, session: '10:00~11:00' + ' ￥1.00'}, {…}]
+				sessionArray: [{}], //场次列表，如：[{session_id: 1, session_time: '10:00~11:00', session_price: 1.00, session: '10:00~11:00' + ' ￥1.00'}, {…}]
 				sessionIndex: 0,
 				/* 场次 e */
 				
@@ -447,13 +448,13 @@
 				console.log('场景sceneId = ', this.sceneId);
 				
 				// 初始化选中的比赛场次日期、场次ID、房间ID、组队ID、装备ID、比赛费用
-				this.sessionDate = ''; this.sessionId = ''; this.sessionIndex = 0;
+				this.sessionDate = ''; this.sessionId = ''; this.sessionIndex = 0; this.sessionArray= [{}];
 				this.roomId = ''; this.currentRoom = '';
 				this.teams = []; this.teamArray = [{}]; this.teamIndex = 0; this.teamId = '';
 				this.equipmentId = ''; this.equipmentIndex = 0;
 				this.price = 0;
 				
-				this.getSessionList(this.venueId, this.sceneId); // 获取场次列表
+				this.getSceneDetail(); // 获取场景信息
 				this.getSceneRoomList(this.venueId, this.sceneId); // 获取房间列表
 				this.getEquipmentList(this.venueId, this.sceneId); // 获取装备列表
 			},
@@ -467,6 +468,53 @@
 					url: '/pages/scene/scene-detail?scene_id=' + scene_id + '&types=' + types
 				});
 			},
+			
+			/**
+			 * 获取场景信息
+			 */
+			getSceneDetail() {
+				let self = this;
+				uni.request({
+					url: this.$serverUrl + 'scene/' + this.sceneId,
+					header: {
+						'sign': common.sign(), // 验签
+						'version': getApp().globalData.version, // 应用大版本号
+						'model': getApp().globalData.systemInfo.model, // 手机型号
+						'apptype': getApp().globalData.systemInfo.platform, // 客户端平台
+						'did': getApp().globalData.did, // 设备号
+					},
+					success:function(res){
+						let sceneDetail = res.data.data;
+						sceneDetail.thumb = sceneDetail.thumb ? self.$imgServerUrl + sceneDetail.thumb.replace(/\\/g, "/") : '/static/img/home.png'; // 场景缩略图
+						self.bookingDays = sceneDetail.booking_days;
+						self.getBookingDate(); // 获取比赛场次可预订日期
+					}
+				})
+			},
+			
+			/**
+			 * 获取比赛场次可预订日期
+			 */
+			getBookingDate() {
+				// 获取第一天即今天的日期
+				let date = new Date();
+				let year = date.getFullYear();
+				let month = (date.getMonth() + 1); 
+					month = month < 10 ? '0' + month : month;
+				let day = date.getDate();
+					day = day < 10 ? '0' + day : day;
+				this.timeInfo.startDate = year + '-' + month + '-' + day;
+				
+				// 获取最后一天的日期
+				let date2 = new Date(date);
+				date2.setDate(date.getDate() + (this.bookingDays - 1));
+				let year2 = date2.getFullYear();
+				let month2 = (date2.getMonth() + 1); 
+					month2 = month2 < 10 ? '0' + month2 : month2;
+				let day2 = date2.getDate();
+					day2 = day2 < 10 ? '0' + day2 : day2;
+				this.timeInfo.endDate = year2 + '-' + month2 + '-' + day2;
+			},
 			/* 选择场景 e */
 			
 			/* 选择场次 s */
@@ -477,6 +525,10 @@
 			confirmDate(e) {
 				console.log('confirmDate 返回:', e)
 				this.sessionDate = e.fulldate;
+				
+				// 先初始化再重新获取场次列表
+				this.sessionId = ''; this.sessionIndex = 0; this.sessionArray = [{}];
+				this.getSessionList(this.venueId, this.sceneId);
 			},
 			/* 日期 e */
 			
@@ -492,7 +544,8 @@
 				    url: this.$serverUrl + 'session',
 				    data: {
 				        venue_id: venueId,
-						scene_id: sceneId
+						scene_id: sceneId,
+						session_date: this.sessionDate,
 				    },
 				    header: {
 				    	'sign': common.sign(), // 验签
@@ -502,7 +555,7 @@
 				    	'did': getApp().globalData.did, // 设备号
 				    },
 				    success: (res) => {
-				        // console.log(res.data);
+				        console.log(res.data);
 						// 场次列表
 						let sessionArray = res.data.data.data;
 						if (sessionArray) {

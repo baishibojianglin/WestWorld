@@ -49,12 +49,12 @@
 					<image class="uni-media-list-logo" :src="value.thumb"></image>
 					<view class="uni-media-list-body">
 						<view class="uni-media-list-text-top">
-							{{ value.venue_name }}
-							<text style="float: right;margin-right: 20upx;">{{ value.distance }}</text>
+							<text class="uni-bold">{{ value.venue_name }}</text>
+							<text style="float: right;">{{ value.distance }}</text>
 						</view>
 						<view class="uni-media-list-text-bottom">
-							<text>{{ value.address }}</text>
 							<text>{{ value.venue_phone }}</text>
+							<text style="margin-left: 20upx; text-align: right;">{{ value.address }}</text>
 						</view>
 					</view>
 				</view>
