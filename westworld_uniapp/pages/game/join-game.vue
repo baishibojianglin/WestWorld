@@ -372,6 +372,7 @@
 					let self = this;
 					uni.showModal({
 						title: '发起支付',
+						content: '跳转支付页',
 						success:function(res){
 							if (res.confirm) {
 								// 生成订单并跳转支付页面
@@ -912,7 +913,7 @@
 									if (res.data.message == "已加入该场比赛") {
 										uni.showModal({
 											title: '查看比赛订单',
-											// content: res.data.message,
+											content: '跳转个人中心',
 											success:function(res1){
 												if (res1.confirm) {
 													uni.switchTab({

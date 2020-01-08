@@ -11,7 +11,7 @@
 					<view class="uni-text-small">比赛团队：<text class="uni-bold">{{ sessionOrderDetail.session_teams_id + "-" + sessionOrderDetail.team_id }}</text></view>
 					<view class="uni-text-small">付费装备：<text :class="sessionOrderDetail.equipment_name ? 'uni-bold' : ''">{{ sessionOrderDetail.equipment_name ? sessionOrderDetail.equipment_name : "（未使用）" }}</text></view>
 					<view class="uni-text-small">订单编号：{{ sessionOrderDetail.order_sn }}</view>
-					<view class="red uni-bold">{{ '￥' + (sessionOrderDetail.total_price == sessionOrderDetail.total_price > 0 ? sessionOrderDetail.total_price : sessionOrderDetail.order_price) }}</view>
+					<view class="red uni-bold">{{ '￥' + sessionOrderDetail.total_price > 0 ? sessionOrderDetail.total_price : sessionOrderDetail.order_price }}</view>
 					<view class="uni-text-small" v-if="sessionOrderDetail.order_status == 0 || sessionOrderDetail.order_status == 1">
 						距比赛开始：
 						<uni-countdown :second="sessionOrderDetail.session_start_time" color="red" @timeup="timeup" class="uni-bold" />
@@ -98,15 +98,10 @@
 					},
 					success:function(res){
 						let sessionOrderDetail = res.data.data;
-						let timestamp = Date.parse(new Date())/1000; // 当前秒级时间戳
+						// let timestamp = Date.parse(new Date())/1000; // 当前秒级时间戳
 						if (sessionOrderDetail) {
 							// 场馆缩略图
 							sessionOrderDetail.thumb = sessionOrderDetail.thumb ? self.$imgServerUrl + sessionOrderDetail.thumb.replace(/\\/g, "/") : '/static/img/home.png';
-							
-							// 距离比赛开始与结束时间的转秒级时间戳差值
-							sessionOrderDetail.session_start_time = Date.parse(sessionOrderDetail.session_start_time)/1000 - timestamp;
-							sessionOrderDetail.session_end_time = Date.parse(sessionOrderDetail.session_end_time)/1000 - timestamp;
-							
 							self.sessionOrderDetail = sessionOrderDetail;
 						}
 					}
@@ -140,7 +135,8 @@
 				let title = types == '付款' ? '发起支付' : '确认' + types;
 				let self = this;
 				uni.showModal({
-					title: title,
+					title: types,
+					content: title,
 					success:function(res){
 						if (res.confirm) {
 							if (types == '取消比赛') {

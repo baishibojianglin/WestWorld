@@ -1,6 +1,6 @@
 <template>
 	<view class="uni-container">
-		<view class="uni-panel" v-if="hasLogin">
+		<view class="uni-panel" v-if="hasLogin && userData.user_id">
 			<view class="uni-panel-h">
 				<view class="uni-flex uni-row userData">
 					<view class="text uni-flex" style="width: 200upx;height: 220upx;-webkit-justify-content: center;justify-content: center;-webkit-align-items: center;align-items: center;">
@@ -23,7 +23,7 @@
 			</view>
 		</view>
 		
-		<view class="uni-panel" v-for="(item, index) in list" :key="item.id" v-if="hasLogin">
+		<view class="uni-panel" v-for="(item, index) in list" :key="item.id" v-if="hasLogin && userData.user_id">
 		    <view class="uni-panel-h" :class="item.open ? 'uni-panel-h-on' : ''" @click="triggerCollapse(index)">
 		        <text class="uni-panel-text">{{item.name}}</text>
 				<uni-badge :text="item.count > 0 ? item.count : ''" type="success" size="" :inverted="false"></uni-badge>
@@ -42,7 +42,7 @@
 			<!-- <view v-if="!hasLogin">现在是未登录状态，点击按钮进行登录</view>
 			<view v-else>现在是登录状态，您的用户token是：{{userInfo.token}}</view> -->
 			<view class="uni-btn-v uni-common-mt">
-				<button type="default" @click="bindLogin">{{hasLogin ? '退出登录' : '登录'}}</button>
+				<button type="default" @click="bindLogin">{{hasLogin && userData.user_id ? '退出登录' : '登录'}}</button>
 			</view>
 		</view>
 	</view>
@@ -146,7 +146,8 @@
 			 */
 			bindLogin() {
 				if (this.hasLogin) {
-					this.logout()
+					this.logout();
+					this.userData = {};
 				} else {
 					uni.navigateTo({
 						url: '/pages/login/login'
@@ -204,6 +205,9 @@
 							// 获取用户红利
 							self.list[list_index].count = String(userData.user_shares);
 							self.list[list_index].url = '/pages/user/user-shares/user-shares?user_id=' + self.userInfo.user_id + '&user_shares=' + userData.user_shares;
+						},
+						fail(error) {
+							console.log('getUserInfo失败：', error);
 						}
 					})
 				}

@@ -254,7 +254,8 @@
 				let title = types == '付款' ? '发起支付' : '确认' + types;
 				let self = this;
 				uni.showModal({
-					title: title,
+					title: types,
+					content: title,
 					success:function(res){
 						if (res.confirm) {
 							if (types == '取消比赛') {

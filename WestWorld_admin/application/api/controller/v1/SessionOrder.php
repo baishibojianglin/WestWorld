@@ -152,6 +152,9 @@ class SessionOrder extends AuthBase
                 $payStatus = config('code.pay_status');
                 $data['order_status_msg'] = $orderStatus[$data['order_status']]; // 定义订单状态信息order_status_msg
                 $data['pay_status_msg'] = $payStatus[$data['pay_status']]; // 定义付款状态信息pay_status_msg
+                // 距比赛场次开始与结束的时间戳
+                $data['session_start_time'] = (strtotime($data['session_start_time']) - time()) > 0 ? (strtotime($data['session_start_time']) - time()) : 0; // 距比赛场次开始的时间戳
+                $data['session_end_time'] = (strtotime($data['session_end_time']) - time()) > 0 ? (strtotime($data['session_end_time']) - time()) : 0; // 距比赛场次结束的时间戳
 
                 return show(config('code.success'), 'ok', $data);
             } else {
