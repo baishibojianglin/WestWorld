@@ -8,7 +8,7 @@
 				</view>
 				<view class="history-content">
 					<view class="history-item" v-for="(item, index) in historyList" :key="index">
-						{{ item.name }}
+						<text @click="listTap(item)">{{ item.name }}</text>
 					</view>
 				</view>
 			</view>
@@ -63,6 +63,7 @@ export default {
 				// 去做一些相关搜索功能 ，这里直接返回到上一个页面
 				// 点击列表存储搜索数据
 				util.setHistory(item);
+				this.$fire.fire('searchVal', item.name); // onfire.js触发名字为searchVal的事件
 				uni.navigateBack();
 			}
 		},
@@ -103,7 +104,7 @@ export default {
 					console.log(info);
 				}
 			});
-		}
+		},
 	},
 	/**
 	 * 当 searchInput 输入时触发
@@ -146,6 +147,7 @@ export default {
 				success: res => {
 					if (res.confirm) {
 						util.setHistory(text);
+						this.$fire.fire('searchVal', text); // onfire.js触发名字为searchVal的事件
 						uni.navigateBack();
 					}
 				}

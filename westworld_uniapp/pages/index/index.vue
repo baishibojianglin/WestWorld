@@ -3,7 +3,7 @@
 		<!-- uniapp loading加载动画 -->
 		<w-loading text="" mask="true" click="true" ref="loading"></w-loading>
 		
-		<!-- #ifndef APP-PLUS -->
+		<!-- #ifndef APP-PLUS || H5 -->
 		<view class="header uni-flex uni-row" :style="styleHeader">
 			<view class="text" style="width: 120upx;margin-top: 20upx;">
 				<text class="uni-icon uni-icon-location uni-icon-warn" @click="getVenueListByLocation()"></text>
@@ -81,7 +81,7 @@
 	import dragButton from "@/components/drag-button/drag-button.vue";
 	var dateUtils = require('../../common/util.js').dateUtils;
 	import {mapState} from 'vuex';
-	import common from '../../common/common.js';
+	import common from '@/common/common.js';
 	
 	export default {
 		components: {
@@ -141,13 +141,31 @@
 			this.getVenueListByLocation(); // 通过定位获取场馆列表
 		},
 		onReady() {
+			/* loading加载动画 s */
 			let self = this;
-			//打开加载动画
+			// 打开加载动画
 			this.$refs.loading.open()
 			setTimeout(function () {
-				//关闭加载动画
+				// 关闭加载动画
 				self.$refs.loading.close()
 			}, 1000);
+			/* loading加载动画 e */
+		},
+		onShow() {
+			/* 监听搜索结果 s */
+			let self = this;
+			// onfire.js绑定事件searchVal
+			this.$fire.on('searchVal', function(e) {
+				self.searchVal = e;
+			});
+			if(this.searchVal != null) {
+				this.getVenueListByLocation();
+				// this.$fire.off('searchVal'); // 取消事件绑定
+			}
+			/* 监听搜索结果 e */
+		},
+		onHide() {
+			this.searchVal = ''; // 初始化搜索值（因用`this.$fire.off('searchVal')`取消事件绑定导致搜索结果错误），从而重新加载场馆数据
 		},
 		onPageScroll(event) {
 			// 顶部样式
@@ -215,8 +233,7 @@
 						uni.getLocation({
 							type: 'wgs84',
 							success: function (res1) {
-								// console.log('当前位置的经度：' + res.longitude);
-								// console.log('当前位置的纬度：' + res.latitude);
+								// console.log('当前位置的经度：' + res.longitude, '当前位置的纬度：' + res.latitude);
 								getApp().globalData.longitude = res1.longitude.toFixed(6);
 								getApp().globalData.latitude = res1.latitude.toFixed(6);
 								

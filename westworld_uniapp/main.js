@@ -5,6 +5,10 @@ import store from './store' // 导入Vuex.Store
 import './static/icon/iconfont.css'   // 导入外部字体图标
 import './static/css/main.css'        // 导入基本样式
 
+// onfire.js 跨页面/组件传参通信
+import onfire from 'onfire.js'; // 引入onfire.js
+Vue.prototype.$fire = new onfire(); // 初始化onfire.js
+
 // 全局导入和注册 page-head 组件
 import pageHead from './components/page-head.vue' // 导入pageHead
 Vue.component('page-head', pageHead) // 注册pageHead
