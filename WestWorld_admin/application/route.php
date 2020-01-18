@@ -32,6 +32,8 @@ Route::get('test/:id', 'api/test/edit'); // 读取：显示编辑资源表单页
 Route::put('test/:id', 'api/test/update'); // 更新：保存更新的资源
 Route::delete('test/:id', 'api/test/delete'); // 删除：删除指定资源
 Route::resource('test', 'api/test'); // 资源路由：设置后会自动注册7个路由规则
+// 接口测试
+Route::get('testapi', 'home/Login/testApi');
 
 // 客户端路由
 // 登录与注册路由

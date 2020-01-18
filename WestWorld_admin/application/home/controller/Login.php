@@ -50,7 +50,15 @@ class Login
 
 
     }
-    
 
+
+    /**
+     * 测试接口
+     * @return \think\response\Json
+     */
+    public function testApi()
+    {
+        return show(1, 'OK', ['name'=>'test'], 200);
+    }
 
 }
